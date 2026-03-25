@@ -1132,7 +1132,7 @@ Traditional Access (INSECURE):               Azure Bastion (SECURE):
 
 ### 7.3 Bastion Subnet Requirements
 
-Azure Bastion requires a dedicated subnet named exactly **`AzureBasitonsSubnet`** — with minimum size **/27** (supports 2 instances); **/26** or larger recommended for scaling.
+Azure Bastion requires a dedicated subnet named exactly **`AzureBastionSubnet`** — with minimum size **/27** (supports 2 instances); **/26** or larger recommended for scaling.
 
 ```bash
 # Create Bastion subnet (must be named AzureBastionSubnet)
