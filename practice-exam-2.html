@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AZ-500 Practice Exam 2 — Compute, Storage &amp; Security Operations</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      background: linear-gradient(135deg, #1a237e, #0288d1);
+      padding: 2rem 1.5rem 1.5rem;
+      text-align: center;
+    }
+    .site-header h1 {
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+    }
+    .site-header p {
+      margin-top: .5rem;
+      font-size: .95rem;
+      color: #bbdefb;
+    }
+
+    /* ── Sticky score bar ── */
+    .score-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      padding: .75rem 1.5rem;
+      flex-wrap: wrap;
+    }
+    .score-bar .stat {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .9rem;
+    }
+    .score-bar .stat-label { color: #8b949e; }
+    .score-bar .stat-value {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #58a6ff;
+    }
+    #score-fraction { color: #58a6ff; }
+
+    /* ── Main container ── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 6rem;
+    }
+
+    /* ── Question cards ── */
+    .question-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: border-color .2s;
+    }
+    .question-card.answered { border-color: #30363d; }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      margin-bottom: 1rem;
+    }
+    .q-number {
+      background: #1f6feb33;
+      border: 1px solid #58a6ff66;
+      color: #58a6ff;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: .2rem .55rem;
+      border-radius: 20px;
+      white-space: nowrap;
+      margin-top: .15rem;
+    }
+    .domain-badge {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      font-size: .72rem;
+      padding: .2rem .55rem;
+      border-radius: 20px;
+      white-space: nowrap;
+      margin-top: .15rem;
+    }
+    .q-text {
+      font-size: 1rem;
+      line-height: 1.55;
+      color: #e6edf3;
+      flex: 1;
+    }
+
+    /* ── Options ── */
+    .options { display: flex; flex-direction: column; gap: .6rem; }
+
+    .option-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      cursor: pointer;
+      text-align: left;
+      color: #c9d1d9;
+      font-size: .92rem;
+      line-height: 1.5;
+      transition: background .15s, border-color .15s;
+    }
+    .option-btn:hover:not(:disabled) {
+      background: #2d333b;
+      border-color: #58a6ff;
+    }
+    .option-btn:disabled { cursor: default; }
+
+    .option-letter {
+      font-weight: 700;
+      color: #58a6ff;
+      min-width: 1.1rem;
+      margin-top: .05rem;
+    }
+
+    .option-btn.correct {
+      background: #1a3a1a;
+      border-color: #3fb950;
+      color: #3fb950;
+    }
+    .option-btn.correct .option-letter { color: #3fb950; }
+    .option-btn.wrong {
+      background: #3a1a1a;
+      border-color: #f85149;
+      color: #f85149;
+    }
+    .option-btn.wrong .option-letter { color: #f85149; }
+    .option-btn.reveal-correct {
+      background: #1a3a1a44;
+      border-color: #3fb95066;
+      color: #3fb950cc;
+    }
+    .option-btn.reveal-correct .option-letter { color: #3fb95099; }
+
+    /* ── Explanation ── */
+    .explanation {
+      display: none;
+      margin-top: 1rem;
+      background: #0d1117;
+      border-left: 3px solid #58a6ff;
+      border-radius: 0 6px 6px 0;
+      padding: .75rem 1rem;
+      font-size: .88rem;
+      line-height: 1.6;
+      color: #8b949e;
+    }
+    .explanation.show { display: block; }
+    .explanation strong { color: #58a6ff; }
+
+    /* ── Bottom action bar ── */
+    .action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #161b22;
+      border-top: 1px solid #30363d;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: .85rem 1.5rem;
+      z-index: 100;
+    }
+    .btn {
+      padding: .6rem 1.8rem;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary {
+      background: #238636;
+      color: #fff;
+    }
+    .btn-primary:hover { opacity: .88; }
+    .btn-secondary {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+    }
+    .btn-secondary:hover { background: #2d333b; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #00000099;
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+    .modal h2 { font-size: 1.5rem; color: #e6edf3; margin-bottom: .5rem; }
+    .modal .score-big {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin: 1rem 0 .25rem;
+    }
+    .modal .score-big.pass { color: #3fb950; }
+    .modal .score-big.fail { color: #f85149; }
+    .modal .verdict {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: .75rem;
+    }
+    .modal .verdict.pass { color: #3fb950; }
+    .modal .verdict.fail { color: #f85149; }
+    .modal .detail { font-size: .9rem; color: #8b949e; margin-bottom: 1.5rem; line-height: 1.6; }
+    .modal .close-btn {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: .6rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: .95rem;
+      font-weight: 600;
+    }
+    .modal .close-btn:hover { background: #2d333b; }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>AZ-500 Practice Exam 2</h1>
+  <p>Domain 3: Secure Compute, Storage &amp; Databases &nbsp;|&nbsp; Domain 4: Manage Security Operations</p>
+</header>
+
+<div class="score-bar">
+  <div class="stat">
+    <span class="stat-label">Score:</span>
+    <span class="stat-value" id="score-fraction">0 / 0</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">Questions answered:</span>
+    <span class="stat-value" id="answered-count">0 / 50</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">Accuracy:</span>
+    <span class="stat-value" id="accuracy-pct">—</span>
+  </div>
+</div>
+
+<main class="container" id="quiz-container"></main>
+
+<div class="action-bar">
+  <button class="btn btn-primary" onclick="submitExam()">Submit Exam</button>
+  <button class="btn btn-secondary" onclick="resetExam()">Reset</button>
+</div>
+
+<div class="modal-overlay" id="result-modal">
+  <div class="modal">
+    <h2>Exam Results</h2>
+    <div class="score-big" id="modal-pct"></div>
+    <div class="verdict" id="modal-verdict"></div>
+    <div class="detail" id="modal-detail"></div>
+    <button class="close-btn" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    q: "What is Azure Defender for Servers (now Microsoft Defender for Servers) primarily used for?",
+    options: [
+      "Patching server operating systems automatically",
+      "Providing threat detection and advanced protection for Windows and Linux machines",
+      "Managing server backups",
+      "Monitoring server performance metrics"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Microsoft Defender for Servers provides threat detection capabilities for Windows and Linux machines, including behavioral analytics, anomaly detection, and integration with Microsoft Defender for Endpoint."
+  },
+  {
+    q: "Which Azure service provides Just-in-Time (JIT) VM access?",
+    options: [
+      "Azure Bastion",
+      "Microsoft Defender for Cloud",
+      "Azure Security Center (legacy name)",
+      "Both B and C (same service)"
+    ],
+    correct: 3,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Just-in-Time VM access is a feature of Microsoft Defender for Cloud (formerly Azure Security Center). It reduces the attack surface by locking down inbound traffic to VMs and only allowing access when needed."
+  },
+  {
+    q: "What encryption does Azure Disk Encryption use for Windows VMs?",
+    options: [
+      "AES-128",
+      "BitLocker (AES-256)",
+      "VeraCrypt",
+      "TDE (Transparent Data Encryption)"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Azure Disk Encryption for Windows VMs uses BitLocker, which employs AES-256 encryption. The encryption keys are stored in Azure Key Vault."
+  },
+  {
+    q: "Which Azure Key Vault object type is used to store database connection strings and API keys?",
+    options: [
+      "Keys",
+      "Secrets",
+      "Certificates",
+      "Policies"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Azure Key Vault Secrets are used to store any sensitive information such as database connection strings, API keys, passwords, and other sensitive text-based data."
+  },
+  {
+    q: "What is the purpose of Azure Key Vault soft-delete?",
+    options: [
+      "Compressing stored keys to save space",
+      "Protecting secrets, keys, and certificates from accidental or malicious deletion with a retention period",
+      "Automatically rotating cryptographic keys",
+      "Backing up Key Vault to another region"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Soft-delete allows recovery of deleted Key Vault objects (secrets, keys, certificates) within a configurable retention period (7–90 days), protecting against accidental or malicious deletion."
+  },
+  {
+    q: "Which AKS security feature restricts pod-to-pod communication within a Kubernetes cluster?",
+    options: [
+      "Azure RBAC for Kubernetes",
+      "Network Policies",
+      "Pod Security Admission",
+      "Azure Firewall"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Kubernetes Network Policies define rules for how pods can communicate with each other and with other network endpoints, acting as a firewall at the pod level within the cluster."
+  },
+  {
+    q: "What does Microsoft Defender for Containers protect?",
+    options: [
+      "Only Azure Container Registry images",
+      "Kubernetes clusters, container registries, and container environments including vulnerability assessment",
+      "Only running containers",
+      "Container networking only"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Microsoft Defender for Containers provides protection for Kubernetes clusters (AKS and Arc-enabled), container registries (vulnerability assessment), and real-time threat detection for running containers."
+  },
+  {
+    q: "Which type of Azure Storage access control allows time-limited access to specific storage resources without sharing account keys?",
+    options: [
+      "Azure RBAC",
+      "Shared Access Signatures (SAS)",
+      "Access Control Lists",
+      "Storage Firewall"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Storage",
+    explanation: "Shared Access Signatures (SAS) provide delegated, time-limited access to specific Azure Storage resources with granular permissions, without exposing account keys."
+  },
+  {
+    q: "What is the recommended way to disable anonymous access to Azure Blob Storage?",
+    options: [
+      "Set container access level to Private",
+      "Set AllowBlobPublicAccess property to false at the storage account level",
+      "Use Azure Policy to deny anonymous access",
+      "Both B and C"
+    ],
+    correct: 3,
+    domain: "Domain 3 – Secure Storage",
+    explanation: "The best approach is to set AllowBlobPublicAccess to false at the storage account level (which prevents any container from being made public) and enforce this with Azure Policy to ensure compliance across all storage accounts."
+  },
+  {
+    q: "Which Azure SQL Database security feature monitors database activities and writes them to an audit log?",
+    options: [
+      "Advanced Threat Protection",
+      "SQL Auditing",
+      "Dynamic Data Masking",
+      "Transparent Data Encryption"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Databases",
+    explanation: "Azure SQL Auditing tracks database events and writes them to an audit log in your Azure storage account, Log Analytics workspace, or Event Hub, providing compliance evidence and security analysis capabilities."
+  },
+  {
+    q: "What is Transparent Data Encryption (TDE) in Azure SQL Database?",
+    options: [
+      "Encrypting data in transit between app and database",
+      "Encrypting database files, backups, and logs at rest using AES-256",
+      "Masking sensitive data in query results",
+      "Encrypting stored procedures"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Databases",
+    explanation: "TDE protects Azure SQL Database and Azure Synapse Analytics by performing real-time encryption/decryption of the database, associated backups, and transaction log files using AES-256 encryption, with minimal performance impact."
+  },
+  {
+    q: "Which Azure SQL feature hides sensitive data in query results from non-privileged users?",
+    options: [
+      "Row-Level Security",
+      "Dynamic Data Masking",
+      "Always Encrypted",
+      "Transparent Data Encryption"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Databases",
+    explanation: "Dynamic Data Masking limits sensitive data exposure by masking it to non-privileged users. You define masking rules on sensitive fields (e.g., email, credit card), and users without unmask permissions see masked data."
+  },
+  {
+    q: "What is the key advantage of Always Encrypted over Transparent Data Encryption in Azure SQL?",
+    options: [
+      "Always Encrypted is easier to configure",
+      "Always Encrypted ensures data is encrypted at all times including when in use by the database engine, protecting against privileged database administrators",
+      "TDE is deprecated in favor of Always Encrypted",
+      "Always Encrypted works without any client changes"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Databases",
+    explanation: "Unlike TDE which only protects data at rest, Always Encrypted ensures that sensitive data is encrypted end-to-end, even during processing by the database engine. This protects against DBAs and cloud operators who have database access."
+  },
+  {
+    q: "What does Row-Level Security (RLS) in Azure SQL Database provide?",
+    options: [
+      "Encrypting individual rows in a table",
+      "Restricting which rows a user can see or modify based on execution context",
+      "Masking data in specific columns",
+      "Auditing row-level changes"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Databases",
+    explanation: "Row-Level Security enables you to use group membership or execution context to control access to rows in a database table, allowing you to implement fine-grained access control for multi-tenant scenarios."
+  },
+  {
+    q: "Which Microsoft Defender for Cloud feature provides a secure score to measure your security posture?",
+    options: [
+      "Regulatory Compliance dashboard",
+      "Secure Score",
+      "Workload protections",
+      "Recommendations"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "The Secure Score in Microsoft Defender for Cloud aggregates security findings into a single score reflecting your current security situation. A higher score indicates a lower identified risk level."
+  },
+  {
+    q: "What is the purpose of Microsoft Defender for Cloud's regulatory compliance dashboard?",
+    options: [
+      "Measuring overall security posture",
+      "Showing compliance status against frameworks like PCI-DSS, ISO 27001, NIST, and Azure Security Benchmark",
+      "Managing security alerts",
+      "Tracking software vulnerabilities"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "The regulatory compliance dashboard compares your environment's configuration against regulatory standards and industry benchmarks, showing compliance posture and which controls are met or failed."
+  },
+  {
+    q: "Which Microsoft Sentinel component is used to collect data from various sources?",
+    options: [
+      "Analytics rules",
+      "Data connectors",
+      "Workbooks",
+      "Playbooks"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Data connectors in Microsoft Sentinel enable you to connect data sources including Azure services, Microsoft 365, third-party products, and custom sources so that Sentinel can ingest and analyze the data."
+  },
+  {
+    q: "What is a Microsoft Sentinel Playbook?",
+    options: [
+      "A documentation template for incident response",
+      "An Azure Logic App that automates response to security incidents and alerts",
+      "A KQL query for threat detection",
+      "A workbook for visualizing security data"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Sentinel Playbooks are built on Azure Logic Apps and provide automated response capabilities. They can be triggered by alerts or incidents to perform actions like sending notifications, blocking IPs, or creating tickets."
+  },
+  {
+    q: "Which KQL query would help find failed login attempts in Microsoft Sentinel?",
+    options: [
+      "SecurityEvent | where EventID == 4625",
+      "SELECT * FROM SecurityEvent WHERE EventID = 4625",
+      "Get-SecurityEvent -Filter EventID=4625",
+      "FIND SecurityEvent WHERE EventID IS 4625"
+    ],
+    correct: 0,
+    domain: "Domain 4 – Security Operations",
+    explanation: "KQL (Kusto Query Language) is used in Microsoft Sentinel. The query \"SecurityEvent | where EventID == 4625\" finds Windows Security Event 4625, which represents failed logon attempts."
+  },
+  {
+    q: "What is the purpose of Microsoft Sentinel UEBA (User and Entity Behavior Analytics)?",
+    options: [
+      "Encrypting user data in Sentinel",
+      "Detecting anomalous behaviors by building behavioral baselines and identifying deviations that may indicate threats",
+      "Managing user accounts in Azure AD",
+      "Monitoring network traffic"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "UEBA builds behavioral profiles for users, hosts, IP addresses, and applications, then uses machine learning to identify anomalous behaviors that deviate from established baselines, helping detect insider threats and compromised accounts."
+  },
+  {
+    q: "Which Azure service provides SIEM and SOAR capabilities?",
+    options: [
+      "Microsoft Defender for Cloud",
+      "Microsoft Sentinel",
+      "Azure Monitor",
+      "Azure Security Center"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Microsoft Sentinel is Microsoft's cloud-native SIEM (Security Information and Event Management) and SOAR (Security Orchestration, Automation, and Response) solution that provides intelligent security analytics."
+  },
+  {
+    q: "What is the purpose of Azure Monitor Diagnostic Settings?",
+    options: [
+      "Configuring Azure Monitor alerts",
+      "Routing platform logs and metrics to destinations like Log Analytics, Storage, or Event Hub",
+      "Monitoring application performance",
+      "Setting up autoscaling"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Diagnostic Settings configure the routing of platform logs (resource logs, activity logs, metrics) from Azure resources to one or more destinations including Log Analytics workspaces, Azure Storage accounts, and Azure Event Hubs."
+  },
+  {
+    q: "Which type of Azure Key Vault key operation is used for envelope encryption?",
+    options: [
+      "Sign and Verify",
+      "Wrap and Unwrap",
+      "Encrypt and Decrypt",
+      "Import and Export"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "The Wrap and Unwrap operations are used for envelope encryption, where a Key Encryption Key (KEK) in Key Vault wraps (encrypts) the data encryption key, which is then stored alongside the encrypted data."
+  },
+  {
+    q: "What is the maximum retention period for Azure Key Vault soft-deleted objects?",
+    options: [
+      "7 days",
+      "30 days",
+      "90 days",
+      "365 days"
+    ],
+    correct: 2,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Azure Key Vault soft-delete allows a configurable retention period between 7 and 90 days. During this period, deleted objects can be recovered. After the retention period, they are permanently purged."
+  },
+  {
+    q: "Which Microsoft Defender for Cloud pricing tier includes workload protection plans?",
+    options: [
+      "Free tier",
+      "Defender for Cloud plans (paid)",
+      "Azure Security Center",
+      "Basic tier"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Microsoft Defender for Cloud has a free tier (CSPM) and paid Defender plans for specific workloads (servers, storage, SQL, containers, Key Vault, etc.) that provide advanced threat protection features."
+  },
+  {
+    q: "What does CSPM stand for in Microsoft Defender for Cloud?",
+    options: [
+      "Cloud Security Posture Management",
+      "Cloud Service Protection Module",
+      "Centralized Security Policy Management",
+      "Cloud Security Performance Monitoring"
+    ],
+    correct: 0,
+    domain: "Domain 4 – Security Operations",
+    explanation: "CSPM (Cloud Security Posture Management) is a capability in Microsoft Defender for Cloud that continuously assesses resources, identifies security misconfigurations, and provides recommendations to improve security posture."
+  },
+  {
+    q: "Which Azure service should be used to enforce organizational standards and assess compliance at scale?",
+    options: [
+      "Azure RBAC",
+      "Azure Policy",
+      "Azure Blueprints",
+      "Management Groups"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Azure Policy enables you to define, assign, and manage policies to enforce rules across Azure resources, assess compliance at scale, and ensure resources meet organizational standards and regulatory requirements."
+  },
+  {
+    q: "What is the purpose of Azure Security Benchmark (ASB)?",
+    options: [
+      "Benchmarking Azure performance",
+      "Providing Microsoft-authored, Azure-specific security best practices and recommendations mapped to industry frameworks",
+      "Comparing Azure to other cloud providers",
+      "Measuring Azure service reliability"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "The Azure Security Benchmark (ASB) provides prescriptive best practices and recommendations for improving the security of workloads on Azure, mapped to industry frameworks like CIS Controls and NIST."
+  },
+  {
+    q: "Which Log Analytics function helps correlate events across multiple tables in Microsoft Sentinel?",
+    options: [
+      "WHERE clause",
+      "JOIN operator",
+      "UNION operator",
+      "MERGE statement"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "The JOIN operator in KQL (and its variants like inner join, left join) allows correlating data from multiple tables in Log Analytics/Microsoft Sentinel, which is essential for complex threat hunting and detection rules."
+  },
+  {
+    q: "What is the purpose of Microsoft Sentinel Analytics rules?",
+    options: [
+      "Analyzing performance metrics",
+      "Creating alerts by detecting threats through scheduled queries or machine learning models running against ingested data",
+      "Managing data connectors",
+      "Visualizing security data"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Analytics rules in Microsoft Sentinel define conditions for generating security alerts. They include scheduled rules (running KQL queries on a schedule), ML behavior analytics, Microsoft Security rules, and anomaly rules."
+  },
+  {
+    q: "Which Azure feature provides hardware security module (HSM) backed key storage?",
+    options: [
+      "Azure Key Vault Standard",
+      "Azure Key Vault Premium (HSM-backed keys) or Azure Dedicated HSM",
+      "Azure Storage encryption",
+      "Azure Disk Encryption"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Azure Key Vault Premium tier supports HSM-backed keys stored in FIPS 140-2 Level 2 validated HSMs. For stricter requirements, Azure Dedicated HSM and Azure Managed HSM provide single-tenant HSM solutions."
+  },
+  {
+    q: "What does the Azure Container Registry vulnerability assessment in Defender for Containers scan?",
+    options: [
+      "Runtime container behaviors",
+      "Container images for known OS and application vulnerabilities",
+      "Container network policies",
+      "Kubernetes configurations"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Defender for Containers scans container images in Azure Container Registry for known vulnerabilities in OS packages and application dependencies, providing vulnerability reports and remediation guidance."
+  },
+  {
+    q: "Which storage account configuration should be enabled to enforce HTTPS-only access?",
+    options: [
+      "Enable storage firewall",
+      "Enable Secure transfer required (HTTPS only)",
+      "Enable Azure Defender for Storage",
+      "Enable soft delete"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Storage",
+    explanation: "Enabling \"Secure transfer required\" on an Azure Storage account ensures that all requests must be made using HTTPS, preventing unencrypted HTTP requests from accessing the storage account."
+  },
+  {
+    q: "What is the purpose of Azure Storage lifecycle management policies?",
+    options: [
+      "Managing storage account access keys",
+      "Automating data movement between tiers and deleting data based on age and conditions",
+      "Encrypting storage data",
+      "Managing storage account redundancy"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Storage",
+    explanation: "Lifecycle management policies allow you to define rules to automatically transition blobs to cooler tiers (Hot → Cool → Archive) or delete them after a specified period, optimizing storage costs."
+  },
+  {
+    q: "Which Microsoft Defender for Cloud feature helps identify suspicious activities targeting Azure Key Vault?",
+    options: [
+      "Secure Score",
+      "Microsoft Defender for Key Vault",
+      "Regulatory compliance",
+      "Cloud posture management"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Microsoft Defender for Key Vault detects unusual and potentially harmful attempts to access or exploit Key Vault accounts, including anomalous access patterns, high volume operations, and access from Tor exit nodes."
+  },
+  {
+    q: "What is the recommended approach to store secrets used by an AKS workload?",
+    options: [
+      "Store secrets in Kubernetes native secrets encoded in base64",
+      "Use Azure Key Vault with the CSI Secrets Store driver or workload identity",
+      "Store secrets in environment variables in the deployment YAML",
+      "Embed secrets in container images"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "The recommended approach is to use Azure Key Vault with either the Secrets Store CSI driver or workload identity federation. This avoids storing secrets in Kubernetes etcd (which stores native secrets), environment variables, or container images."
+  },
+  {
+    q: "Which Azure SQL Database feature helps detect SQL injection attacks?",
+    options: [
+      "TDE",
+      "Advanced Threat Protection (Microsoft Defender for SQL)",
+      "Dynamic Data Masking",
+      "Row-Level Security"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Databases",
+    explanation: "Microsoft Defender for SQL (formerly Advanced Threat Protection) detects anomalous activities including potential SQL injection attacks, unusual data access patterns, and suspicious database activities."
+  },
+  {
+    q: "What is the default encryption for Azure Managed Disks?",
+    options: [
+      "No encryption by default",
+      "Server-side encryption with platform-managed keys (SSE-PMK)",
+      "Azure Disk Encryption (BitLocker/dm-crypt)",
+      "Customer-managed keys only"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "All Azure Managed Disks are encrypted by default using Server-Side Encryption with platform-managed keys (SSE-PMK), which uses AES-256 encryption. No additional configuration is required."
+  },
+  {
+    q: "Which Defender for Cloud recommendation would you remediate to ensure VMs are patched?",
+    options: [
+      "Enable MFA",
+      "Apply system updates to VMs",
+      "Enable diagnostic settings",
+      "Restrict management port access"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Defender for Cloud provides the \"Apply system updates\" recommendation which identifies VMs with missing OS patches. Remediating this recommendation reduces the risk of exploitation through known vulnerabilities."
+  },
+  {
+    q: "What is the purpose of Microsoft Defender for Storage?",
+    options: [
+      "Encrypting storage accounts",
+      "Detecting unusual and potentially harmful access patterns and activities on Azure Storage accounts",
+      "Managing storage account access keys",
+      "Monitoring storage performance"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Storage",
+    explanation: "Microsoft Defender for Storage detects anomalous access patterns to storage accounts, including access from suspicious locations, hash reputation analysis for malware uploads, and potential data exfiltration activities."
+  },
+  {
+    q: "Which Sentinel workbook feature provides pre-built visualizations?",
+    options: [
+      "Analytics rules",
+      "Community content available through the Content hub",
+      "UEBA",
+      "Threat intelligence"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "The Microsoft Sentinel Content hub provides pre-built content packages including workbooks, analytics rules, playbooks, and data connectors contributed by Microsoft and the community for various data sources and use cases."
+  },
+  {
+    q: "What is the recommended retention period for Azure Activity Logs to meet security compliance requirements?",
+    options: [
+      "30 days",
+      "At least 90 days (or 1 year for many compliance frameworks)",
+      "7 days",
+      "Indefinitely"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "While Azure Activity Log data is retained for 90 days by default in Azure Monitor, many compliance frameworks (SOC 2, PCI-DSS, HIPAA) require 1 year or more of log retention. Archiving to Storage or Log Analytics extends retention."
+  },
+  {
+    q: "Which feature allows you to detect threats using custom machine learning models in Microsoft Sentinel?",
+    options: [
+      "Scheduled analytics rules",
+      "Anomaly rules (with customizable UEBA models)",
+      "Fusion rules",
+      "Microsoft Security integration rules"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Anomaly rules in Microsoft Sentinel use customizable UEBA-based machine learning models to detect anomalous behaviors. Administrators can tune these models to reduce false positives or increase detection sensitivity."
+  },
+  {
+    q: "What is the purpose of the Azure Activity Log?",
+    options: [
+      "Logging application-level events",
+      "Recording subscription-level events such as resource creation, modification, deletion, and administrative actions",
+      "Monitoring VM performance",
+      "Storing security event logs"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "The Azure Activity Log provides an audit trail of operations performed on Azure resources at the subscription level, recording who did what and when for control plane operations. It is essential for governance and security auditing."
+  },
+  {
+    q: "Which Microsoft Defender for Cloud alert indicates that a container is trying to escape its sandbox?",
+    options: [
+      "Suspicious process in container",
+      "Container escape attempt detected",
+      "Vulnerable container image",
+      "Anomalous container activity"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Microsoft Defender for Containers monitors for container escape attempts — where malicious code in a container tries to break out of the container boundary to access the host system or other containers."
+  },
+  {
+    q: "What is the recommended encryption approach for highly sensitive data in Azure SQL Database where even DBAs should not see plaintext data?",
+    options: [
+      "TDE with customer-managed keys",
+      "Always Encrypted with randomized encryption",
+      "Dynamic Data Masking",
+      "Row-Level Security"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Databases",
+    explanation: "Always Encrypted with randomized encryption ensures that data is encrypted on the client side before it is sent to the database. This means that even database administrators and Azure operators cannot access the plaintext data."
+  },
+  {
+    q: "Which Azure service provides distributed denial of service (DDoS) attack analytics and rapid response?",
+    options: [
+      "Azure Firewall",
+      "Azure DDoS Protection Standard",
+      "Azure Front Door",
+      "Network Security Groups"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Azure DDoS Protection Standard provides attack analytics with real-time telemetry and attack mitigation flow logs, along with access to the DDoS Rapid Response team during an active attack."
+  },
+  {
+    q: "What is the purpose of Microsoft Sentinel Fusion?",
+    options: [
+      "Combining multiple data sources",
+      "Correlating multiple low-fidelity alerts using machine learning to detect multi-stage attacks (kill-chain)",
+      "Merging Sentinel workspaces",
+      "Integrating third-party SIEM tools"
+    ],
+    correct: 1,
+    domain: "Domain 4 – Security Operations",
+    explanation: "Sentinel Fusion uses machine learning to correlate multiple low-severity alerts across different products and timeframes to detect sophisticated multi-stage attacks, significantly reducing alert fatigue while catching complex threats."
+  },
+  {
+    q: "Which Log Analytics query would you use to find all Azure Key Vault operations in the last 24 hours?",
+    options: [
+      "AzureDiagnostics | where ResourceType == \"VAULTS\" | where TimeGenerated > ago(24h)",
+      "SELECT * FROM AzureDiagnostics WHERE ResourceType = 'VAULTS'",
+      "Get-AzKeyVaultLog -Last 24",
+      "KeyVaultAuditLogs | last(24h)"
+    ],
+    correct: 0,
+    domain: "Domain 4 – Security Operations",
+    explanation: "KQL (Kusto Query Language) is used in Log Analytics/Sentinel. The correct syntax uses pipe operators and built-in functions. \"ago(24h)\" is the KQL function for the last 24 hours of data."
+  },
+  {
+    q: "What is the primary security benefit of using Azure Managed Disks over unmanaged disks?",
+    options: [
+      "Managed disks are faster",
+      "Managed disks are automatically encrypted with SSE, support private endpoints, and eliminate the need to manage storage account security",
+      "Managed disks are cheaper",
+      "Managed disks support more OS types"
+    ],
+    correct: 1,
+    domain: "Domain 3 – Secure Compute",
+    explanation: "Azure Managed Disks are automatically encrypted using SSE with platform-managed keys, support private endpoints to prevent data exfiltration, integrate with Azure Backup, and eliminate the security risks associated with managing storage account keys for disk VHDs."
+  }
+];
+
+// ── State ──────────────────────────────────────────────────────────────────
+const state = {
+  answered: new Array(QUESTIONS.length).fill(false),
+  correct:  new Array(QUESTIONS.length).fill(false)
+};
+
+// ── Build quiz ─────────────────────────────────────────────────────────────
+function buildQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+
+  QUESTIONS.forEach((q, qi) => {
+    const letters = ['A', 'B', 'C', 'D'];
+
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `card-${qi}`;
+
+    const optionsHTML = q.options.map((opt, oi) => `
+      <button class="option-btn" id="opt-${qi}-${oi}" onclick="handleAnswer(${qi}, ${oi})" data-qi="${qi}" data-oi="${oi}">
+        <span class="option-letter">${letters[oi]}</span>
+        <span>${escapeHtml(opt)}</span>
+      </button>
+    `).join('');
+
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="q-number">Q${qi + 1}</span>
+        <span class="domain-badge">${escapeHtml(q.domain)}</span>
+      </div>
+      <p class="q-text">${escapeHtml(q.q)}</p>
+      <div class="options" id="opts-${qi}">
+        ${optionsHTML}
+      </div>
+      <div class="explanation" id="exp-${qi}">
+        <strong>Explanation:</strong> ${escapeHtml(q.explanation)}
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  updateScoreBar();
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ── Answer handler ─────────────────────────────────────────────────────────
+function handleAnswer(qi, oi) {
+  if (state.answered[qi]) return;
+  state.answered[qi] = true;
+
+  const isCorrect = oi === QUESTIONS[qi].correct;
+  state.correct[qi] = isCorrect;
+
+  const allBtns = document.querySelectorAll(`[id^="opt-${qi}-"]`);
+  allBtns.forEach(btn => {
+    btn.disabled = true;
+    const btnOi = parseInt(btn.dataset.oi);
+    if (btnOi === QUESTIONS[qi].correct) {
+      btn.classList.add(oi === btnOi ? 'correct' : 'reveal-correct');
+    }
+    if (btnOi === oi && !isCorrect) {
+      btn.classList.add('wrong');
+    }
+  });
+
+  // If the chosen option was wrong, also clearly highlight the correct one
+  if (!isCorrect) {
+    document.getElementById(`opt-${qi}-${QUESTIONS[qi].correct}`).classList.remove('reveal-correct');
+    document.getElementById(`opt-${qi}-${QUESTIONS[qi].correct}`).classList.add('correct');
+  }
+
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  document.getElementById(`card-${qi}`).classList.add('answered');
+
+  updateScoreBar();
+}
+
+// ── Score bar ──────────────────────────────────────────────────────────────
+function updateScoreBar() {
+  const answeredCount = state.answered.filter(Boolean).length;
+  const correctCount  = state.correct.filter(Boolean).length;
+  const pct = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : null;
+
+  document.getElementById('score-fraction').textContent  = `${correctCount} / ${answeredCount}`;
+  document.getElementById('answered-count').textContent  = `${answeredCount} / ${QUESTIONS.length}`;
+  document.getElementById('accuracy-pct').textContent    = pct !== null ? `${pct}%` : '—';
+}
+
+// ── Submit ─────────────────────────────────────────────────────────────────
+function submitExam() {
+  const answeredCount = state.answered.filter(Boolean).length;
+  const correctCount  = state.correct.filter(Boolean).length;
+  const pct = Math.round((correctCount / QUESTIONS.length) * 100);
+  const pass = pct >= 70;
+
+  const pctEl    = document.getElementById('modal-pct');
+  const verdictEl = document.getElementById('modal-verdict');
+  const detailEl = document.getElementById('modal-detail');
+
+  pctEl.textContent = `${pct}%`;
+  pctEl.className = `score-big ${pass ? 'pass' : 'fail'}`;
+
+  verdictEl.textContent = pass ? '✅ PASS' : '❌ FAIL';
+  verdictEl.className = `verdict ${pass ? 'pass' : 'fail'}`;
+
+  detailEl.innerHTML = `
+    You answered <strong>${answeredCount}</strong> of <strong>${QUESTIONS.length}</strong> questions.<br>
+    Correct answers: <strong>${correctCount}</strong> &nbsp;|&nbsp; Incorrect: <strong>${answeredCount - correctCount}</strong><br>
+    Unanswered: <strong>${QUESTIONS.length - answeredCount}</strong><br><br>
+    Passing score is <strong>70%</strong>${pass ? ' — well done!' : ' — keep studying and try again!'}
+  `;
+
+  document.getElementById('result-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('result-modal').classList.remove('open');
+}
+
+// ── Reset ──────────────────────────────────────────────────────────────────
+function resetExam() {
+  state.answered.fill(false);
+  state.correct.fill(false);
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+buildQuiz();
+</script>
+</body>
+</html>
