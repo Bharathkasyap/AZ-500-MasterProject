@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AZ-500 Practice Exam 4 - Security Operations</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #F3F2F1; color: #323130; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    header { background: #0078D4; color: #fff; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    header h1 { font-size: 1.3rem; font-weight: 700; }
+    header p { font-size: 0.9rem; opacity: 0.88; margin-top: 2px; }
+    header a.back { color: #fff; text-decoration: none; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.4); border-radius: 5px; padding: 7px 14px; font-size: 0.88rem; font-weight: 600; white-space: nowrap; transition: background 0.15s; }
+    header a.back:hover { background: rgba(255,255,255,0.3); }
+
+    /* Progress */
+    .progress-wrap { background: #fff; padding: 14px 24px; border-bottom: 1px solid #E1DFDD; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }
+    .progress-label { font-size: 0.88rem; color: #605E5C; margin-bottom: 6px; font-weight: 600; }
+    .progress-bar-bg { background: #E1DFDD; border-radius: 999px; height: 10px; overflow: hidden; }
+    .progress-bar-fill { background: #0078D4; height: 100%; border-radius: 999px; transition: width 0.3s ease; width: 0%; }
+
+    /* Main */
+    main { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; width: 100%; flex: 1; }
+
+    /* Question card */
+    .question-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; padding: 24px 26px; border-left: 5px solid #0078D4; }
+    .question-card.reviewed { border-left-color: #F7630C; }
+    .q-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .q-num { font-size: 0.78rem; font-weight: 700; color: #0078D4; background: #EFF6FC; border: 1px solid #C7E0F4; border-radius: 4px; padding: 3px 9px; white-space: nowrap; flex-shrink: 0; }
+    .q-text { font-size: 0.98rem; line-height: 1.65; color: #201F1E; flex: 1; }
+    .options { margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
+    .options input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .options label { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border: 1.5px solid #E1DFDD; border-radius: 6px; cursor: pointer; font-size: 0.93rem; line-height: 1.55; transition: background 0.12s, border-color 0.12s; }
+    .options label:hover { background: #EFF6FC; border-color: #C7E0F4; }
+    .options input[type="radio"]:checked + label { background: #EFF6FC; border-color: #0078D4; font-weight: 600; }
+    .option-correct { background: #DFF6DD !important; border: 2px solid #107C10 !important; color: #107C10; font-weight: bold !important; }
+    .option-incorrect { background: #FDE7E9 !important; border: 2px solid #D13438 !important; color: #D13438 !important; }
+
+    /* Review checkbox */
+    .review-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.85rem; color: #605E5C; cursor: pointer; user-select: none; width: fit-content; }
+    .review-row input[type="checkbox"] { accent-color: #F7630C; width: 15px; height: 15px; cursor: pointer; }
+
+    /* Show answer button */
+    .show-btn { margin-top: 14px; background: #005A9E; color: #fff; border: none; border-radius: 5px; padding: 8px 18px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .show-btn:hover:not(:disabled) { background: #004880; }
+    .show-btn:disabled { background: #C8C6C4; color: #605E5C; cursor: default; }
+
+    /* Explanation */
+    .explanation { display: none; margin-top: 14px; background: #F3F2F1; border-left: 4px solid #0078D4; border-radius: 4px; padding: 12px 16px; font-size: 0.88rem; color: #323130; line-height: 1.6; }
+    .explanation.visible { display: block; }
+    .explanation strong { color: #0078D4; }
+
+    /* Submit */
+    .submit-wrap { text-align: center; margin-top: 32px; }
+    .submit-btn { background: #0078D4; color: #fff; border: none; border-radius: 6px; padding: 14px 48px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: background 0.15s; box-shadow: 0 2px 8px rgba(0,120,212,0.25); }
+    .submit-btn:hover { background: #005A9E; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #fff; border-radius: 12px; padding: 36px 32px; max-width: 460px; width: 100%; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.22); }
+    .modal h2 { font-size: 1.4rem; color: #0078D4; margin-bottom: 8px; }
+    .modal .score-num { font-size: 3rem; font-weight: 800; margin: 16px 0 4px; color: #323130; }
+    .modal .score-pct { font-size: 1.1rem; color: #605E5C; margin-bottom: 10px; }
+    .modal .scaled { font-size: 1rem; color: #605E5C; margin-bottom: 18px; }
+    .modal .result-badge { display: inline-block; font-size: 1.2rem; font-weight: 800; border-radius: 6px; padding: 8px 28px; margin-bottom: 22px; }
+    .result-badge.pass { background: #DFF6DD; color: #107C10; border: 2px solid #107C10; }
+    .result-badge.fail { background: #FDE7E9; color: #D13438; border: 2px solid #D13438; }
+    .modal .retake-btn { background: #0078D4; color: #fff; border: none; border-radius: 6px; padding: 11px 32px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .modal .retake-btn:hover { background: #005A9E; }
+    .modal .back-link { display: block; margin-top: 14px; color: #0078D4; font-size: 0.9rem; text-decoration: none; }
+    .modal .back-link:hover { text-decoration: underline; }
+
+    footer { background: #323130; color: #A19F9D; text-align: center; padding: 14px; font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.05rem; }
+      .question-card { padding: 18px 16px; }
+      main { padding: 20px 12px 50px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>AZ-500 Practice Exam 4</h1>
+    <p>Domain 4: Manage Security Operations &mdash; Questions 151&ndash;200</p>
+  </div>
+  <a class="back" href="index.html">&#8592; Back to Index</a>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label" id="progressLabel">0 of 50 answered</div>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+</div>
+
+<main id="examMain"></main>
+
+<div class="modal-overlay" id="scoreModal">
+  <div class="modal">
+    <h2>Exam Results</h2>
+    <div class="score-num" id="modalScore"></div>
+    <div class="score-pct" id="modalPct"></div>
+    <div class="scaled" id="modalScaled"></div>
+    <div class="result-badge" id="modalBadge"></div>
+    <br>
+    <button class="retake-btn" onclick="location.reload()">&#8635; Retake Exam</button>
+    <a class="back-link" href="index.html">&#8592; Back to Exam Index</a>
+  </div>
+</div>
+
+<footer>AZ-500 Master Project | Practice Exams</footer>
+
+<script>
+const questions = [
+  {
+    q: "What is the primary purpose of Microsoft Sentinel in an Azure security environment?",
+    options: [
+      "Endpoint protection for Azure VMs",
+      "Cloud-native SIEM and SOAR platform for threat detection, investigation, and response",
+      "Identity and access management",
+      "Network traffic filtering"
+    ],
+    correct: 1,
+    explanation: "Microsoft Sentinel is a cloud-native Security Information and Event Management (SIEM) and Security Orchestration Automated Response (SOAR) platform for collecting, detecting, investigating, and responding to threats."
+  },
+  {
+    q: "Which Microsoft Defender for Cloud secure score feature helps prioritize security improvements?",
+    options: [
+      "Compliance dashboard",
+      "Security recommendations with remediation steps",
+      "Resource health alerts",
+      "Activity log analysis"
+    ],
+    correct: 1,
+    explanation: "Defender for Cloud's secure score assigns points for implementing security recommendations, helping teams prioritize the security improvements that will have the greatest positive impact on overall security posture."
+  },
+  {
+    q: "A security analyst needs to query Azure security logs using KQL. Which service provides this capability?",
+    options: [
+      "Azure Monitor Metrics",
+      "Log Analytics workspace with KQL",
+      "Azure Activity Log",
+      "Azure Advisor"
+    ],
+    correct: 1,
+    explanation: "Log Analytics workspaces store security log data and provide the Kusto Query Language (KQL) interface for querying, analyzing, and correlating security events across Azure resources."
+  },
+  {
+    q: "Which Microsoft Sentinel data connector ingests Azure AD sign-in logs and audit logs into Sentinel?",
+    options: [
+      "Azure Activity connector",
+      "Microsoft Defender for Cloud connector",
+      "Azure Active Directory connector",
+      "Microsoft 365 Defender connector"
+    ],
+    correct: 2,
+    explanation: "The Azure Active Directory data connector in Microsoft Sentinel ingests Azure AD sign-in logs and audit logs, providing visibility into identity-based threats and user activities."
+  },
+  {
+    q: "Microsoft Defender for Cloud provides recommendations categorized into security controls. Which control directly improves the \"Remediate vulnerabilities\" secure score?",
+    options: [
+      "Enable MFA",
+      "Apply system updates and vulnerability assessment findings",
+      "Restrict unauthorized network access",
+      "Enable endpoint protection"
+    ],
+    correct: 1,
+    explanation: "The \"Remediate vulnerabilities\" security control in Defender for Cloud includes recommendations for applying system updates and addressing findings from vulnerability assessment tools."
+  },
+  {
+    q: "A SOC analyst receives a Microsoft Sentinel incident with multiple related alerts. What is the process for correlating these alerts?",
+    options: [
+      "Create a new workbook",
+      "Use Sentinel Analytics rules with entity mapping to group related alerts into incidents",
+      "Export to Excel for manual correlation",
+      "Create custom KQL queries only"
+    ],
+    correct: 1,
+    explanation: "Microsoft Sentinel Analytics rules use alert correlation, entity mapping (users, IPs, hosts), and fusion to automatically group related alerts into incidents, reducing alert fatigue and providing context."
+  },
+  {
+    q: "Which Microsoft Sentinel feature allows automated responses to incidents, such as blocking a user or isolating a VM?",
+    options: [
+      "Analytics rules",
+      "Workbooks",
+      "Playbooks (Logic Apps automation)",
+      "Hunting queries"
+    ],
+    correct: 2,
+    explanation: "Microsoft Sentinel Playbooks are based on Azure Logic Apps and can be triggered automatically on incidents or alerts to perform automated response actions like blocking users, sending notifications, or isolating VMs."
+  },
+  {
+    q: "Your organization needs to measure compliance against the Azure CIS benchmark. Which Defender for Cloud feature provides this?",
+    options: [
+      "Secure score",
+      "Regulatory compliance dashboard",
+      "Resource inventory",
+      "Workload protections"
+    ],
+    correct: 1,
+    explanation: "Defender for Cloud's regulatory compliance dashboard shows your compliance posture against standards like CIS Azure Benchmark, NIST SP 800-53, ISO 27001, and others with pass/fail for each control."
+  },
+  {
+    q: "Which log source should you enable to capture all Azure control plane operations (create, update, delete resources)?",
+    options: [
+      "Azure Diagnostics logs",
+      "NSG flow logs",
+      "Azure Activity Log",
+      "Azure AD audit logs"
+    ],
+    correct: 2,
+    explanation: "The Azure Activity Log captures all subscription-level events including resource creation, modification, deletion, and administrative operations — the control plane audit trail for Azure resources."
+  },
+  {
+    q: "A security team wants to proactively search for signs of attack across historical log data in Sentinel. Which feature supports this?",
+    options: [
+      "Analytics rules",
+      "Threat Hunting with KQL queries",
+      "Automation rules",
+      "Watchlists"
+    ],
+    correct: 1,
+    explanation: "Microsoft Sentinel Threat Hunting allows SOC analysts to proactively search through historical log data using KQL queries, looking for indicators of compromise or attack techniques before they trigger alerts."
+  },
+  {
+    q: "Which Microsoft Defender for Cloud plan provides just-in-time VM access and adaptive application controls?",
+    options: [
+      "Defender for Servers",
+      "Defender for DevOps",
+      "Defender for Storage",
+      "Defender CSPM"
+    ],
+    correct: 0,
+    explanation: "Microsoft Defender for Servers includes advanced VM protection features like Just-In-Time VM access, adaptive application controls (application allowlisting), and file integrity monitoring."
+  },
+  {
+    q: "What is the purpose of a Microsoft Sentinel Watchlist?",
+    options: [
+      "Monitor specific Azure resources for changes",
+      "Import reference data (like known bad IPs or VIP users) to use in analytics rules and hunting",
+      "Track security incidents over time",
+      "List all active playbooks"
+    ],
+    correct: 1,
+    explanation: "Sentinel Watchlists allow importing external data such as lists of known bad IPs, privileged users, or asset inventories that can be referenced in KQL queries, analytics rules, and hunting queries."
+  },
+  {
+    q: "Which Microsoft Defender for Cloud feature continuously assesses the security posture of cloud resources against security standards?",
+    options: [
+      "Microsoft Defender CSPM (Cloud Security Posture Management)",
+      "Just-In-Time access",
+      "Adaptive network hardening",
+      "Defender for DevOps"
+    ],
+    correct: 0,
+    explanation: "Defender CSPM continuously assesses cloud resources against security benchmarks and provides recommendations, risk prioritization, attack path analysis, and governance features."
+  },
+  {
+    q: "A security analyst wants to see all security alerts across multiple Azure subscriptions in a single view. Which Defender for Cloud feature provides this?",
+    options: [
+      "Per-subscription security center",
+      "Multi-subscription management via Management Groups and Defender for Cloud hierarchy",
+      "Log Analytics queries across workspaces",
+      "Azure Monitor alert rules"
+    ],
+    correct: 1,
+    explanation: "Defender for Cloud supports multi-subscription management through Management Groups, providing a hierarchical view of security posture and alerts across all subscriptions in the hierarchy."
+  },
+  {
+    q: "Which Microsoft Sentinel feature creates visual dashboards for monitoring security metrics and incidents?",
+    options: [
+      "Analytics rules",
+      "Workbooks",
+      "Notebooks",
+      "Entity pages"
+    ],
+    correct: 1,
+    explanation: "Microsoft Sentinel Workbooks provide interactive visual dashboards built on Azure Monitor Workbooks, allowing security teams to visualize data trends, track KPIs, and monitor security metrics."
+  },
+  {
+    q: "What is an MITRE ATT&CK technique mapping in Microsoft Sentinel Analytics rules used for?",
+    options: [
+      "Automatically block the attack",
+      "Tag alerts and incidents with ATT&CK tactics and techniques for threat intelligence contextualization",
+      "Route alerts to specific teams",
+      "Prioritize alerts by severity automatically"
+    ],
+    correct: 1,
+    explanation: "MITRE ATT&CK mapping in Sentinel Analytics rules adds tactical context to alerts, showing which attack stages (reconnaissance, lateral movement, exfiltration) are being detected, helping analysts understand attack progression."
+  },
+  {
+    q: "A company needs to forward on-premises syslog events to Microsoft Sentinel. What should they deploy?",
+    options: [
+      "Azure Monitor agent directly on all Linux servers",
+      "Log Analytics agent with Syslog connector or CEF forwarder VM",
+      "Microsoft Defender for Endpoint for all servers",
+      "Azure Arc connected servers only"
+    ],
+    correct: 1,
+    explanation: "For on-premises syslog/CEF forwarding to Sentinel, you deploy a Linux forwarder VM with the Log Analytics agent configured as a syslog/CEF relay, collecting events from on-premises sources."
+  },
+  {
+    q: "Which Azure Monitor feature sends proactive alerts when a resource metric exceeds a defined threshold?",
+    options: [
+      "Log Analytics queries",
+      "Azure Monitor Alerts (metric alerts)",
+      "Activity log alerts only",
+      "Workbook threshold indicators"
+    ],
+    correct: 1,
+    explanation: "Azure Monitor metric alerts evaluate resource metrics (like CPU percentage, disk I/O) against thresholds and trigger notifications or actions when conditions are met."
+  },
+  {
+    q: "What is the recommended way to ensure Microsoft Sentinel collects security events from Windows Azure VMs?",
+    options: [
+      "Enable Azure Diagnostics on VMs",
+      "Install the Azure Monitor Agent with a Data Collection Rule for Windows Security Events",
+      "Enable NSG flow logs",
+      "Configure Azure AD audit log collection"
+    ],
+    correct: 1,
+    explanation: "The Azure Monitor Agent (AMA) with a Data Collection Rule configured to collect Windows Security Events is the current recommended approach for ingesting VM security events into Sentinel/Log Analytics."
+  },
+  {
+    q: "Which Defender for Cloud feature provides suggestions to reduce NSG rules to only the ports and IPs actually observed in traffic patterns?",
+    options: [
+      "Just-In-Time VM access",
+      "Adaptive network hardening recommendations",
+      "Azure Firewall integration",
+      "Network topology visualization"
+    ],
+    correct: 1,
+    explanation: "Adaptive Network Hardening in Defender for Cloud analyzes actual traffic patterns to VMs and recommends tightening NSG rules to only allow observed legitimate traffic, reducing the attack surface."
+  },
+  {
+    q: "A SOC team wants to automate the triage of low-severity Sentinel incidents by auto-closing false positives. Which feature enables this?",
+    options: [
+      "Analytics rules suppression",
+      "Automation rules with conditions",
+      "Playbooks only",
+      "Scheduled analytics with low frequency"
+    ],
+    correct: 1,
+    explanation: "Sentinel Automation rules can automatically take actions on incidents based on conditions (severity, title, tactics) without requiring a Playbook, including closing incidents, changing status, or assigning owners."
+  },
+  {
+    q: "Which Microsoft Defender for Cloud recommendation category covers enabling diagnostic logging on Azure resources?",
+    options: [
+      "Remediate vulnerabilities",
+      "Enable audit and logging",
+      "Apply system updates",
+      "Manage access and permissions"
+    ],
+    correct: 1,
+    explanation: "The \"Enable audit and logging\" security control in Defender for Cloud covers recommendations for enabling diagnostic settings and log collection across Azure resources for security monitoring."
+  },
+  {
+    q: "A security team needs to investigate a specific user's activities across all Azure services after detecting suspicious behavior. Which Sentinel feature provides entity-centric investigation?",
+    options: [
+      "Analytics rule tuning",
+      "Sentinel Entity pages and investigation graph",
+      "Log Analytics workspace queries",
+      "Microsoft Defender portal"
+    ],
+    correct: 1,
+    explanation: "Sentinel Entity pages provide a unified view of all activity associated with a specific entity (user, IP, host) across connected data sources, and the investigation graph visualizes relationships between entities."
+  },
+  {
+    q: "Which Microsoft Defender plan covers threat detection for Azure Kubernetes Service workloads?",
+    options: [
+      "Defender for Servers",
+      "Defender for Containers",
+      "Defender for App Service",
+      "Defender CSPM"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for Containers provides threat detection for AKS clusters, container registries, and Kubernetes runtime, detecting suspicious container behavior and cluster-level threats."
+  },
+  {
+    q: "Your security team wants to track the security posture improvement over time and set goals. Which Defender for Cloud feature supports this?",
+    options: [
+      "Security score trend in the secure score dashboard",
+      "Compliance dashboard historical view",
+      "Alert volume trend in workbooks",
+      "Resource health history"
+    ],
+    correct: 0,
+    explanation: "The Defender for Cloud secure score dashboard shows historical trends of the security score over time, allowing teams to track improvement and the impact of security initiatives."
+  },
+  {
+    q: "Which Azure service provides long-term retention of security logs at low cost for compliance archiving?",
+    options: [
+      "Log Analytics workspace hot tier",
+      "Azure Storage with Log Analytics archive tier or Basic logs",
+      "Event Hub log streaming",
+      "Application Insights"
+    ],
+    correct: 1,
+    explanation: "Log Analytics supports an archive tier that retains data for up to 7 years at reduced cost, and data can also be exported to Azure Storage for long-term archiving to meet regulatory retention requirements."
+  },
+  {
+    q: "What is the purpose of Microsoft Defender for Cloud's \"attack path analysis\"?",
+    options: [
+      "Trace past attacks in audit logs",
+      "Identify exploitable paths attackers could use to breach resources based on misconfigurations and vulnerabilities",
+      "Monitor real-time network attack traffic",
+      "Correlate Sentinel alerts into attack chains"
+    ],
+    correct: 1,
+    explanation: "Attack path analysis in Defender CSPM proactively identifies potential attack vectors by analyzing the combination of vulnerabilities, exposed resources, and identities, helping prioritize the most critical risks."
+  },
+  {
+    q: "A company needs Microsoft Sentinel to correlate identity-based threats across Azure AD, Microsoft 365, and Defender for Endpoint. Which data connector bundle provides this?",
+    options: [
+      "Azure Security Center connector",
+      "Microsoft 365 Defender connector (XDR integration)",
+      "Individual Azure AD + MDE connectors",
+      "Azure Activity Log connector"
+    ],
+    correct: 1,
+    explanation: "The Microsoft 365 Defender connector (XDR) provides a single integrated connection that brings in correlated incidents and alerts from Microsoft Defender products including Entra ID Protection, MDE, and Defender for Office 365."
+  },
+  {
+    q: "Which KQL query would you use in Sentinel to find failed sign-in attempts from the same IP address in the last 24 hours?",
+    options: [
+      "SecurityEvent | where EventID == 4624",
+      "SigninLogs | where ResultType != \"0\" | summarize count() by IPAddress, TimeGenerated | where TimeGenerated > ago(24h)",
+      "AuditLogs | where OperationName contains \"SignIn\"",
+      "AADNonInteractiveUserSignInLogs | where Status == \"Success\""
+    ],
+    correct: 1,
+    explanation: "The KQL query on SigninLogs filtering for non-successful ResultType (not 0) and summarizing by IP address identifies sources with multiple failed sign-ins, which is a pattern for brute-force or password spray attacks."
+  },
+  {
+    q: "Which Microsoft Sentinel feature allows you to import threat indicators (IOCs) like malicious IPs and domain hashes?",
+    options: [
+      "Hunting bookmarks",
+      "Threat Intelligence connector and TI blade",
+      "Watchlists for IOCs",
+      "Analytics rule conditions"
+    ],
+    correct: 1,
+    explanation: "Microsoft Sentinel's Threat Intelligence connector can ingest IOCs from TAXII servers or Microsoft Threat Intelligence Platform, and the TI blade allows manual import of indicators for use in analytics rules."
+  },
+  {
+    q: "Your organization is required to retain Azure Activity Logs for 2 years. What is the default retention period and how do you extend it?",
+    options: [
+      "90 days default; extend via Diagnostic Settings to Log Analytics or Storage",
+      "30 days default; extend via Azure Policy",
+      "1 year default; no extension needed",
+      "7 days default; extend via Azure Monitor"
+    ],
+    correct: 0,
+    explanation: "Azure Activity Logs are retained for 90 days by default. To retain them longer, configure Diagnostic Settings to send logs to a Log Analytics workspace (up to 2 years) or Azure Storage (unlimited with retention policies)."
+  },
+  {
+    q: "What does a Microsoft Sentinel Fusion alert indicate?",
+    options: [
+      "A single high-severity event was detected",
+      "Multiple low-fidelity signals were correlated using ML to detect a multi-stage attack",
+      "A playbook automation failed",
+      "A new data connector was added"
+    ],
+    correct: 1,
+    explanation: "Sentinel's Fusion detection engine uses machine learning to correlate multiple low-fidelity signals across different data sources into high-confidence, multi-stage attack detections with reduced false positives."
+  },
+  {
+    q: "A security incident was declared and a VM was found to be compromised. Which Defender for Cloud action allows you to isolate the VM from the network?",
+    options: [
+      "Just-In-Time VM access revocation",
+      "Initiate an investigation and use Defender for Endpoint network isolation",
+      "Delete the VM immediately",
+      "Apply NSG deny-all rule manually"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for Endpoint (integrated with Defender for Cloud) provides the ability to isolate machines from the network directly from the Defender portal, containing the threat while investigation continues."
+  },
+  {
+    q: "Which Defender for Cloud feature provides security hardening recommendations specifically for container images?",
+    options: [
+      "Adaptive application controls",
+      "Defender for Containers vulnerability assessment for container images",
+      "File integrity monitoring",
+      "Just-In-Time access for containers"
+    ],
+    correct: 1,
+    explanation: "Defender for Containers scans container images in ACR for OS and application layer vulnerabilities and provides remediation recommendations for hardening images before deployment."
+  },
+  {
+    q: "What is the role of the Microsoft Sentinel UEBA (User and Entity Behavior Analytics) feature?",
+    options: [
+      "Block suspicious users automatically",
+      "Establish behavioral baselines and detect anomalies that may indicate insider threats or compromised accounts",
+      "Map user activities to MITRE ATT&CK",
+      "Enforce MFA for all users"
+    ],
+    correct: 1,
+    explanation: "UEBA in Sentinel builds behavioral profiles for users and entities over time, detecting deviations from normal patterns that may indicate compromised credentials, insider threats, or advanced persistent threats."
+  },
+  {
+    q: "You need to ensure that Microsoft Defender for Cloud recommendations are automatically remediated across all new subscriptions added to your organization. What should you configure?",
+    options: [
+      "Manual remediation for each subscription",
+      "Azure Policy initiatives with DeployIfNotExists or Modify effects",
+      "Defender for Cloud manual onboarding",
+      "Management group security policies"
+    ],
+    correct: 1,
+    explanation: "Azure Policy with DeployIfNotExists or Modify effects can automatically deploy security configurations (like enabling Defender plans or diagnostic settings) to resources as they are created, ensuring consistent security posture."
+  },
+  {
+    q: "Which Microsoft Sentinel notebook feature allows advanced threat hunting using Python and machine learning?",
+    options: [
+      "KQL hunting queries",
+      "Jupyter notebooks integration with Azure Machine Learning",
+      "Workbook custom visualizations",
+      "Logic Apps playbooks"
+    ],
+    correct: 1,
+    explanation: "Microsoft Sentinel integrates with Azure Machine Learning to run Jupyter notebooks using Python, enabling advanced threat hunting with ML models, statistical analysis, and custom visualizations."
+  },
+  {
+    q: "What is the primary function of the Microsoft Defender for Cloud \"Security Alerts\" page?",
+    options: [
+      "Shows compliance assessment results",
+      "Displays detected threats and security incidents across protected resources with severity and remediation guidance",
+      "Lists all Sentinel incidents",
+      "Shows Azure Policy violation results"
+    ],
+    correct: 1,
+    explanation: "The Security Alerts page in Defender for Cloud shows threat detection alerts generated by Microsoft's security analytics across all protected Azure resources, with severity ratings and remediation guidance."
+  },
+  {
+    q: "A Sentinel analytics rule is generating too many false positive alerts for a legitimate admin activity. What should you do?",
+    options: [
+      "Delete the analytics rule",
+      "Add an exclusion or tuning condition to the analytics rule to filter the known legitimate activity",
+      "Increase the alert threshold",
+      "Disable all alerts from that data connector"
+    ],
+    correct: 1,
+    explanation: "Tuning Sentinel analytics rules by adding exclusion conditions (e.g., excluding a specific admin account or known IP) reduces false positives while maintaining detection capability for genuine threats."
+  },
+  {
+    q: "Which Azure Monitor feature allows you to query logs across multiple Log Analytics workspaces in a single query?",
+    options: [
+      "Azure Monitor Metrics explorer",
+      "Cross-workspace queries using the workspace() expression in KQL",
+      "Azure Workbooks multi-workspace",
+      "Sentinel workspace manager"
+    ],
+    correct: 1,
+    explanation: "KQL's workspace() function allows cross-workspace queries, enabling analysts to correlate data across multiple Log Analytics workspaces in a single query for comprehensive visibility."
+  },
+  {
+    q: "What is the maximum data retention period for a Log Analytics workspace in the interactive (hot) tier?",
+    options: [
+      "90 days",
+      "180 days",
+      "2 years (730 days)",
+      "7 years"
+    ],
+    correct: 2,
+    explanation: "Log Analytics workspaces support interactive (hot) data retention up to 730 days (2 years). For longer retention, data can be moved to the archive tier (up to 7 years total) or exported to Azure Storage."
+  },
+  {
+    q: "Which Defender for Cloud feature specifically protects Azure App Service applications by detecting attack attempts and suspicious activities?",
+    options: [
+      "Defender for Servers",
+      "Defender for App Service",
+      "Defender for Containers",
+      "Defender for APIs"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for App Service monitors App Service plans for indicators of attack, including web shell uploads, suspicious scanning, suspicious requests, and anomalous outbound connections."
+  },
+  {
+    q: "A security team needs to ensure that when a new high-severity alert is created in Defender for Cloud, a ticket is automatically created in their ITSM tool. What should they configure?",
+    options: [
+      "Email notifications only",
+      "ITSM connector via Azure Monitor action groups or Sentinel playbook",
+      "Manual alert export",
+      "Defender for Cloud API polling"
+    ],
+    correct: 1,
+    explanation: "Azure Monitor action groups with ITSM connector, or Sentinel playbooks integrated with ITSM tools (ServiceNow, Jira), can automatically create tickets when new security alerts trigger, enabling efficient incident tracking."
+  },
+  {
+    q: "What does enabling \"Enhanced Security Features\" in Microsoft Defender for Cloud provide beyond the free tier?",
+    options: [
+      "Only network security features",
+      "Threat detection, vulnerability assessment, JIT VM access, adaptive controls, and workload-specific protection plans",
+      "Azure Policy compliance only",
+      "Log Analytics workspace creation"
+    ],
+    correct: 1,
+    explanation: "Enabling Defender for Cloud's enhanced security (paid plans) adds advanced threat protection for specific workload types (servers, SQL, storage, containers, etc.), vulnerability assessment, JIT access, and adaptive controls."
+  },
+  {
+    q: "Which Microsoft Sentinel feature helps map your detected threats to specific ATT&CK techniques in a visual matrix?",
+    options: [
+      "Threat intelligence workbook",
+      "MITRE ATT&CK coverage workbook",
+      "Hunting dashboard",
+      "Entity behavior timeline"
+    ],
+    correct: 1,
+    explanation: "The MITRE ATT&CK workbook in Sentinel visualizes which ATT&CK techniques are covered by your analytics rules, showing coverage gaps and helping prioritize detection rule development."
+  },
+  {
+    q: "Your organization needs to monitor for anomalous data export from Azure SQL databases as part of a DLP strategy. Which feature should you enable?",
+    options: [
+      "SQL Auditing to storage only",
+      "Microsoft Defender for SQL with anomalous activity alerts",
+      "Dynamic Data Masking",
+      "Row-Level Security"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for SQL detects unusual data access patterns including anomalous data exports, which could indicate data exfiltration, generating alerts for the security team to investigate."
+  },
+  {
+    q: "Which Defender for Cloud pricing tier is free and provides continuous security assessment without threat protection?",
+    options: [
+      "Defender for Cloud Free/Foundational CSPM",
+      "Defender for Servers P1",
+      "Defender CSPM (paid)",
+      "Defender for Storage"
+    ],
+    correct: 0,
+    explanation: "Defender for Cloud's Foundational CSPM (free tier) provides continuous security assessment, secure score, and basic recommendations without the advanced threat protection available in paid Defender plans."
+  },
+  {
+    q: "A Sentinel incident has been investigated and confirmed as a true positive. The attacker used a compromised service principal. Which response action should you take first?",
+    options: [
+      "Revoke the compromised service principal credentials/rotate secrets",
+      "Delete all Azure resources in the affected subscription",
+      "Contact Microsoft support immediately",
+      "Archive the incident and document findings"
+    ],
+    correct: 0,
+    explanation: "The immediate response to a compromised service principal is to rotate or revoke its credentials (client secrets or certificates), preventing the attacker from using them for further access while investigation continues."
+  },
+  {
+    q: "Which log in Azure AD provides information about changes to users, groups, applications, and policies in the tenant?",
+    options: [
+      "Sign-in logs",
+      "Audit logs",
+      "Provisioning logs",
+      "Activity logs"
+    ],
+    correct: 1,
+    explanation: "Azure AD Audit logs capture all administrative changes to the directory including user/group creation, role assignments, application permission grants, and policy modifications, providing an administrative change trail."
+  },
+  {
+    q: "A company needs to demonstrate to auditors that their Azure environment complies with ISO 27001. Which Defender for Cloud feature provides this evidence?",
+    options: [
+      "Secure score report export",
+      "Regulatory compliance dashboard with ISO 27001 assessment and downloadable compliance report",
+      "Security alerts report",
+      "Resource inventory export"
+    ],
+    correct: 1,
+    explanation: "The Defender for Cloud regulatory compliance dashboard maps your Azure controls to ISO 27001 requirements, showing compliance status for each control and allowing export of compliance reports for auditors."
+  }
+];
+
+const TOTAL = questions.length;
+let answeredCount = 0;
+const answeredFlags = new Array(TOTAL).fill(false);
+
+function updateProgress() {
+  const pct = (answeredCount / TOTAL) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = answeredCount + ' of ' + TOTAL + ' answered';
+}
+
+function showAnswer(qIndex) {
+  const q = questions[qIndex];
+  const card = document.getElementById('card-' + qIndex);
+  const labels = card.querySelectorAll('.options label');
+  labels.forEach((lbl, i) => {
+    if (i === q.correct) {
+      lbl.classList.add('option-correct');
+    } else {
+      lbl.classList.add('option-incorrect');
+    }
+    const radio = lbl.previousElementSibling;
+    if (radio) radio.disabled = true;
+  });
+  const btn = document.getElementById('showbtn-' + qIndex);
+  btn.disabled = true;
+  btn.textContent = 'Answer Shown \u2713';
+  document.getElementById('exp-' + qIndex).classList.add('visible');
+  if (!answeredFlags[qIndex]) {
+    answeredFlags[qIndex] = true;
+    answeredCount++;
+    updateProgress();
+  }
+}
+
+function toggleReview(qIndex) {
+  const card = document.getElementById('card-' + qIndex);
+  const cb = document.getElementById('review-' + qIndex);
+  if (cb.checked) {
+    card.classList.add('reviewed');
+  } else {
+    card.classList.remove('reviewed');
+  }
+}
+
+function submitExam() {
+  let correct = 0;
+  questions.forEach((q, i) => {
+    const selected = document.querySelector('input[name="q' + i + '"]:checked');
+    if (selected && parseInt(selected.value) === q.correct) {
+      correct++;
+    }
+  });
+  const pct = Math.round((correct / TOTAL) * 100);
+  const scaled = Math.round((correct / TOTAL) * 1000);
+  const pass = scaled >= 700;
+  document.getElementById('modalScore').textContent = correct + ' / ' + TOTAL;
+  document.getElementById('modalPct').textContent = pct + '% correct';
+  document.getElementById('modalScaled').textContent = 'Scaled Score: ' + scaled + ' / 1000';
+  const badge = document.getElementById('modalBadge');
+  badge.textContent = pass ? '\u2714 PASS' : '\u2718 FAIL';
+  badge.className = 'result-badge ' + (pass ? 'pass' : 'fail');
+  document.getElementById('scoreModal').classList.add('active');
+}
+
+// Render questions
+(function renderQuestions() {
+  const main = document.getElementById('examMain');
+  const letters = ['A', 'B', 'C', 'D'];
+  questions.forEach((q, i) => {
+    const qNum = 151 + i;
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'card-' + i;
+
+    const qHeader = document.createElement('div');
+    qHeader.className = 'q-header';
+
+    const qNumSpan = document.createElement('span');
+    qNumSpan.className = 'q-num';
+    qNumSpan.textContent = 'Q' + qNum;
+
+    const qText = document.createElement('div');
+    qText.className = 'q-text';
+    qText.textContent = q.q;
+
+    qHeader.appendChild(qNumSpan);
+    qHeader.appendChild(qText);
+    card.appendChild(qHeader);
+
+    const optionsDiv = document.createElement('div');
+    optionsDiv.className = 'options';
+    q.options.forEach((opt, j) => {
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'q' + i;
+      radio.id = 'q' + i + 'o' + j;
+      radio.value = j;
+
+      const label = document.createElement('label');
+      label.htmlFor = 'q' + i + 'o' + j;
+      label.innerHTML = '<span style="font-weight:700;min-width:20px;color:#0078D4;">' + letters[j] + '.</span> ' + escapeHtml(opt);
+
+      optionsDiv.appendChild(radio);
+      optionsDiv.appendChild(label);
+    });
+    card.appendChild(optionsDiv);
+
+    const reviewRow = document.createElement('label');
+    reviewRow.className = 'review-row';
+    const reviewCb = document.createElement('input');
+    reviewCb.type = 'checkbox';
+    reviewCb.id = 'review-' + i;
+    reviewCb.onchange = function() { toggleReview(i); };
+    reviewRow.appendChild(reviewCb);
+    reviewRow.appendChild(document.createTextNode(' Mark for Review'));
+    card.appendChild(reviewRow);
+
+    const showBtn = document.createElement('button');
+    showBtn.className = 'show-btn';
+    showBtn.id = 'showbtn-' + i;
+    showBtn.textContent = 'Show Answer';
+    showBtn.onclick = function() { showAnswer(i); };
+    card.appendChild(showBtn);
+
+    const expDiv = document.createElement('div');
+    expDiv.className = 'explanation';
+    expDiv.id = 'exp-' + i;
+    expDiv.innerHTML = '<strong>Explanation:</strong> ' + escapeHtml(q.explanation);
+    card.appendChild(expDiv);
+
+    main.appendChild(card);
+  });
+
+  const submitWrap = document.createElement('div');
+  submitWrap.className = 'submit-wrap';
+  const submitBtn = document.createElement('button');
+  submitBtn.className = 'submit-btn';
+  submitBtn.textContent = 'Submit Exam';
+  submitBtn.onclick = submitExam;
+  submitWrap.appendChild(submitBtn);
+  main.appendChild(submitWrap);
+})();
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
