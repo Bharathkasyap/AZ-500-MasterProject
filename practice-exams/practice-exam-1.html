@@ -368,13 +368,13 @@ const questions = [
     domainLabel: "Domain 1: Identity & Access",
     text: "A partner company needs read-only access to a specific Azure subscription resource group. The partner's users must authenticate with their own corporate identities. What is the correct approach?",
     choices: [
-      "A. Create local Azure AD accounts for each partner user and assign them the Reader role",
-      "B. Use Azure AD B2C to federate the partner identity provider",
-      "C. Invite the partner users via Azure AD B2B collaboration and assign them the Reader role on the resource group",
+      "A. Create local Microsoft Entra ID accounts for each partner user and assign them the Reader role",
+      "B. Use Microsoft Entra External ID (B2C) to federate the partner identity provider",
+      "C. Invite the partner users via Microsoft Entra B2B collaboration and assign them the Reader role on the resource group",
       "D. Configure a site-to-site VPN and grant the partner network access to the subscription"
     ],
     correct: 2,
-    explanation: "Azure AD B2B collaboration allows external users to sign in with their own organizational identities. After invitation, you assign them an RBAC role (Reader) scoped to the specific resource group."
+    explanation: "Microsoft Entra B2B collaboration allows external users to sign in with their own organizational identities. After invitation, you assign them an RBAC role (Reader) scoped to the specific resource group."
   },
   {
     domain: "D1",
@@ -434,12 +434,12 @@ const questions = [
     text: "A developer is building a multi-tenant SaaS application where customers can sign up using their personal email addresses (Gmail, Outlook.com). Which Azure identity service is most appropriate for handling customer authentication?",
     choices: [
       "A. Microsoft Entra ID (workforce tenant) with B2B guest invitations",
-      "B. Azure AD B2C with social identity provider federation",
+      "B. Azure AD B2C (Microsoft Entra External ID for customers) with social identity provider federation",
       "C. Microsoft Entra External Identities with cross-tenant sync",
       "D. Privileged Identity Management with just-in-time access"
     ],
     correct: 1,
-    explanation: "Azure AD B2C is designed for customer-facing (CIAM) scenarios, supporting federation with social identity providers like Google and Microsoft accounts, allowing end-users to self-register with personal email addresses."
+    explanation: "Azure AD B2C (now Microsoft Entra External ID for customers) is designed for customer-facing (CIAM) scenarios, supporting federation with social identity providers like Google and Microsoft accounts, allowing end-users to self-register with personal email addresses."
   },
   {
     domain: "D1",
@@ -473,12 +473,12 @@ const questions = [
     text: "A virtual machine in Azure needs to authenticate to Microsoft SQL Database without any stored credentials. The VM is in a different resource group from the SQL server. What is the best solution?",
     choices: [
       "A. Create a service principal, store its secret in Azure Key Vault, and reference it from the VM",
-      "B. Enable a system-assigned managed identity on the VM and configure Azure AD authentication on SQL, granting the managed identity access",
+      "B. Enable a system-assigned managed identity on the VM and configure Microsoft Entra authentication on SQL, granting the managed identity access",
       "C. Use a user-assigned managed identity attached to the SQL server",
       "D. Configure a connection string with Windows Integrated Authentication"
     ],
     correct: 1,
-    explanation: "A system-assigned managed identity on the VM provides an automatically managed Azure AD identity. By enabling Azure AD authentication on Azure SQL and granting the managed identity a database role, the VM can authenticate without any stored credentials."
+    explanation: "A system-assigned managed identity on the VM provides an automatically managed Microsoft Entra identity. By enabling Microsoft Entra authentication on Azure SQL and granting the managed identity a database role, the VM can authenticate without any stored credentials."
   },
   {
     domain: "D1",
