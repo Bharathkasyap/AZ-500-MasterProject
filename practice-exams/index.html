@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AZ-500 Practice Exams — 2026 Edition</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #0078d4, #003f72);
+      color: #fff;
+      padding: 3rem 1.5rem;
+      text-align: center;
+    }
+    header h1 { font-size: 2.2rem; margin-bottom: .5rem; }
+    header p  { font-size: 1.1rem; opacity: .9; max-width: 600px; margin: 0 auto; }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .stat {
+      background: rgba(255,255,255,.15);
+      border-radius: 10px;
+      padding: .75rem 1.5rem;
+      text-align: center;
+    }
+    .stat strong { display: block; font-size: 1.8rem; }
+    .stat span { font-size: .85rem; opacity: .9; }
+    main {
+      max-width: 900px;
+      margin: 2.5rem auto 3rem;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+    }
+    .exam-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .exam-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,.15);
+    }
+    .card-header {
+      padding: 1.5rem;
+      color: #fff;
+    }
+    .card-header h2 { font-size: 1.3rem; margin-bottom: .3rem; }
+    .card-header p  { font-size: .9rem; opacity: .9; }
+    .card-body {
+      padding: 1.2rem 1.5rem;
+      flex: 1;
+    }
+    .card-body ul {
+      list-style: none;
+      padding: 0;
+    }
+    .card-body ul li {
+      padding: .3rem 0;
+      font-size: .9rem;
+      color: #374151;
+    }
+    .card-body ul li::before {
+      content: '✓ ';
+      color: #10b981;
+      font-weight: bold;
+    }
+    .card-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .85rem;
+      color: #6b7280;
+    }
+    .btn-start {
+      display: inline-block;
+      padding: .5rem 1.2rem;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 600;
+      font-size: .9rem;
+      text-decoration: none;
+    }
+    .c1 { background: linear-gradient(135deg, #0078d4, #005a9e); }
+    .c2 { background: linear-gradient(135deg, #005a9e, #003f72); }
+    .c3 { background: linear-gradient(135deg, #107c10, #054b05); }
+    .c4 { background: linear-gradient(135deg, #7c3aed, #4c1d95); }
+    .info {
+      max-width: 900px;
+      margin: 0 auto 2rem;
+      padding: 0 1rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+      padding: 1.5rem 2rem;
+    }
+    .info h2 { font-size: 1.1rem; margin-bottom: .8rem; color: #0078d4; }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .info-item { font-size: .9rem; }
+    .info-item strong { display: block; color: #374151; }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: .85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🛡️ AZ-500 Practice Exams</h1>
+  <p>Microsoft Azure Security Technologies — 2026 Edition<br>
+     Complete practice question bank with detailed explanations</p>
+  <div class="stats">
+    <div class="stat"><strong>200</strong><span>Total Questions</span></div>
+    <div class="stat"><strong>4</strong><span>Practice Exams</span></div>
+    <div class="stat"><strong>50</strong><span>Questions Each</span></div>
+    <div class="stat"><strong>70%</strong><span>Pass Threshold</span></div>
+  </div>
+</header>
+
+<main>
+  <a href="practice-exam-1.html" class="exam-card">
+    <div class="card-header c1">
+      <h2>Practice Exam 1 — Questions 1–50</h2>
+      <p>Identity &amp; Access · Secure Networking</p>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Microsoft Entra ID &amp; Conditional Access</li>
+        <li>Privileged Identity Management (PIM)</li>
+        <li>RBAC, Managed Identities &amp; B2B</li>
+        <li>Azure Firewall &amp; NSGs</li>
+        <li>Private Endpoints, VNet Service Endpoints</li>
+        <li>DDoS Protection &amp; Azure Bastion</li>
+        <li>ExpressRoute &amp; VPN Gateway</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <span>50 questions · ~60 min</span>
+      <span class="btn-start c1">Start Exam →</span>
+    </div>
+  </a>
+
+  <a href="practice-exam-2.html" class="exam-card">
+    <div class="card-header c2">
+      <h2>Practice Exam 2 — Questions 51–100</h2>
+      <p>Secure Compute, Storage &amp; Databases · Security Operations</p>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Azure Disk Encryption &amp; VM Security</li>
+        <li>AKS Security &amp; Container Protection</li>
+        <li>Azure Storage Security (SAS, Immutability)</li>
+        <li>Azure SQL Security (TDE, Always Encrypted)</li>
+        <li>Microsoft Defender for Cloud &amp; Secure Score</li>
+        <li>Microsoft Sentinel &amp; SOAR Playbooks</li>
+        <li>Azure Key Vault &amp; HSM</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <span>50 questions · ~60 min</span>
+      <span class="btn-start c2">Start Exam →</span>
+    </div>
+  </a>
+
+  <a href="practice-exam-3.html" class="exam-card">
+    <div class="card-header c3">
+      <h2>Practice Exam 3 — Questions 101–150</h2>
+      <p>Mixed Domains — All Four Security Areas</p>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Identity Protection &amp; Risk Policies</li>
+        <li>Zero Trust Principles</li>
+        <li>Network Micro-segmentation</li>
+        <li>AKS Workload Identity &amp; etcd Encryption</li>
+        <li>Sentinel KQL Hunting &amp; Fusion Detection</li>
+        <li>Azure Policy &amp; Governance</li>
+        <li>DevSecOps &amp; Defender for DevOps</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <span>50 questions · ~60 min</span>
+      <span class="btn-start c3">Start Exam →</span>
+    </div>
+  </a>
+
+  <a href="practice-exam-4.html" class="exam-card">
+    <div class="card-header c4">
+      <h2>Practice Exam 4 — Questions 151–200</h2>
+      <p>Advanced Mixed — Scenario-Based Across All Domains</p>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Incident Response &amp; Forensics</li>
+        <li>Ransomware Response Procedures</li>
+        <li>Multi-cloud Security (AWS, GCP)</li>
+        <li>GDPR &amp; PCI DSS Compliance</li>
+        <li>Managed HSM &amp; Security Domain</li>
+        <li>Microsoft Defender XDR Correlation</li>
+        <li>Advanced KQL for Threat Hunting</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <span>50 questions · ~60 min</span>
+      <span class="btn-start c4">Start Exam →</span>
+    </div>
+  </a>
+</main>
+
+<div style="max-width:900px;margin:0 auto 2rem;padding:0 1rem;">
+  <div class="info">
+    <h2>📋 Exam Coverage</h2>
+    <div class="info-grid">
+      <div class="info-item">
+        <strong>Domain 1 — 25–30%</strong>
+        Manage Identity and Access
+      </div>
+      <div class="info-item">
+        <strong>Domain 2 — 20–25%</strong>
+        Secure Networking
+      </div>
+      <div class="info-item">
+        <strong>Domain 3 — 20–25%</strong>
+        Secure Compute, Storage &amp; Databases
+      </div>
+      <div class="info-item">
+        <strong>Domain 4 — 25–30%</strong>
+        Manage Security Operations
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>AZ-500 Master Project — Educational use only. Not affiliated with or endorsed by Microsoft.<br>
+<a href="../README.md" style="color:#0078d4">← Back to Study Guide</a></footer>
+</body>
+</html>

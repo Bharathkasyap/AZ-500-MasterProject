@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AZ-500 Practice Exam 1 — Questions 1–50</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #0078d4, #005a9e);
+      color: #fff;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    header h1 { font-size: 1.8rem; margin-bottom: .4rem; }
+    header p  { font-size: 1rem; opacity: .9; }
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,.2);
+      border-radius: 20px;
+      padding: .25rem .9rem;
+      font-size: .85rem;
+      margin-top: .6rem;
+    }
+    .controls {
+      max-width: 860px;
+      margin: 1.5rem auto .5rem;
+      padding: 0 1rem;
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .controls button {
+      padding: .5rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: opacity .2s;
+    }
+    .controls button:hover { opacity: .85; }
+    #btn-submit  { background: #0078d4; color: #fff; }
+    #btn-reset   { background: #6b7280; color: #fff; }
+    #score-box {
+      max-width: 860px;
+      margin: 0 auto .5rem;
+      padding: 0 1rem;
+    }
+    #score-display {
+      background: #fff;
+      border-left: 4px solid #0078d4;
+      border-radius: 6px;
+      padding: .75rem 1rem;
+      font-weight: 600;
+      display: none;
+    }
+    main {
+      max-width: 860px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+    }
+    .question-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.1);
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 1.2rem;
+    }
+    .question-card h3 {
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: #0078d4;
+      margin-bottom: .5rem;
+    }
+    .question-card p.question-text {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .options label {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      padding: .55rem .75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1.5px solid #e5e7eb;
+      margin-bottom: .5rem;
+      transition: background .15s, border-color .15s;
+    }
+    .options label:hover { background: #f0f9ff; border-color: #93c5fd; }
+    .options input[type="radio"] { margin-top: .2rem; flex-shrink: 0; }
+    .options label.correct   { background: #d1fae5; border-color: #10b981; }
+    .options label.incorrect { background: #fee2e2; border-color: #ef4444; }
+    .options label.reveal    { background: #d1fae5; border-color: #10b981; }
+    .explanation {
+      margin-top: .8rem;
+      padding: .75rem 1rem;
+      background: #eff6ff;
+      border-left: 3px solid #3b82f6;
+      border-radius: 4px;
+      font-size: .9rem;
+      display: none;
+    }
+    .explanation.visible { display: block; }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: .85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>AZ-500 Practice Exam 1</h1>
+  <p>Microsoft Azure Security Technologies — 2026 Edition</p>
+  <span class="badge">Questions 1–50 &nbsp;|&nbsp; Identity &amp; Access · Secure Networking</span>
+</header>
+
+<div class="controls">
+  <button id="btn-submit">Submit &amp; Score</button>
+  <button id="btn-reset">Reset Exam</button>
+</div>
+<div id="score-box"><div id="score-display"></div></div>
+
+<main id="exam"></main>
+
+<footer>AZ-500 Master Project — Educational use only. Not affiliated with Microsoft.</footer>
+
+<script>
+const questions = [
+  // ── DOMAIN 1: MANAGE IDENTITY & ACCESS ──────────────────────────────────
+  {
+    q: "A company needs to enforce MFA for all users accessing the Azure portal from outside the corporate network. Which Azure feature should be configured?",
+    options: ["Azure AD Identity Protection", "Conditional Access policy", "Privileged Identity Management (PIM)", "Azure AD Password Protection"],
+    answer: 1,
+    explanation: "Conditional Access policies allow administrators to enforce MFA requirements based on conditions such as location (named locations). Identity Protection detects risks but enforces through Conditional Access."
+  },
+  {
+    q: "Which Azure AD feature allows you to require users to justify their need for a privileged role before it is activated, and limits activation to a set time window?",
+    options: ["Conditional Access", "Azure AD B2C", "Privileged Identity Management (PIM)", "Access Reviews"],
+    answer: 2,
+    explanation: "PIM provides just-in-time privileged access with approval workflows, activation justifications, and time-bound assignments."
+  },
+  {
+    q: "An administrator wants to ensure that Guest users can only view Azure AD resources they are explicitly granted access to. Which default permission setting should be modified?",
+    options: ["Guest user access restrictions in External Identities", "Conditional Access guest policy", "Azure RBAC Reader role", "Azure AD Application Proxy settings"],
+    answer: 0,
+    explanation: "In Microsoft Entra ID External Identities settings, 'Guest user access restrictions' controls what guest users can see in the directory. Setting it to the most restrictive option limits guests to their own objects."
+  },
+  {
+    q: "A developer's application must access Azure Key Vault secrets without storing credentials in code. Which identity type should be used?",
+    options: ["Service principal with client secret", "User-assigned managed identity", "Azure AD B2B guest account", "Shared access signature (SAS)"],
+    answer: 1,
+    explanation: "A managed identity (user-assigned or system-assigned) provides an Azure-managed credential that applications can use to authenticate to Key Vault without any secrets stored in code."
+  },
+  {
+    q: "Which Azure AD Premium P2 feature continuously evaluates user sign-in risk and can automatically block or require MFA when risk is detected?",
+    options: ["Azure AD Connect Health", "Microsoft Entra ID Protection (Identity Protection)", "Conditional Access with named locations", "Azure AD Access Reviews"],
+    answer: 1,
+    explanation: "Microsoft Entra ID Protection (formerly Azure AD Identity Protection) uses machine learning to evaluate sign-in risk and user risk, and can enforce remediation via Conditional Access risk-based policies."
+  },
+  {
+    q: "You need to grant a team member the ability to manage all Azure resources in a subscription except for role assignments. Which built-in RBAC role is most appropriate?",
+    options: ["Owner", "Contributor", "Reader", "User Access Administrator"],
+    answer: 1,
+    explanation: "The Contributor role grants full access to manage all Azure resources but does not allow managing role assignments. Owner includes role assignment permissions, which is broader than needed."
+  },
+  {
+    q: "An organization requires that users who haven't signed in for 90 days have their Azure AD accounts reviewed and disabled. Which feature automates this?",
+    options: ["PIM access reviews", "Azure AD Access Reviews", "Conditional Access sign-in frequency policy", "Azure AD audit logs"],
+    answer: 1,
+    explanation: "Azure AD Access Reviews can be scheduled to periodically review user access. Reviewers or the system can automatically disable accounts not used within a defined period."
+  },
+  {
+    q: "Which Azure AD concept allows a single user identity to access resources across multiple Azure AD tenants using a trust relationship?",
+    options: ["Azure AD B2C federation", "Azure AD B2B collaboration (guest invitation)", "Cross-tenant synchronization", "Azure AD Application Proxy"],
+    answer: 1,
+    explanation: "Azure AD B2B collaboration allows external users to be invited as guests into another tenant, enabling cross-tenant access with their home identity credentials."
+  },
+  {
+    q: "A Conditional Access policy needs to block legacy authentication protocols (IMAP, POP3, SMTP). What client app condition should be selected?",
+    options: ["Browser", "Mobile apps and desktop clients", "Exchange ActiveSync clients", "Other clients"],
+    answer: 3,
+    explanation: "'Other clients' in Conditional Access targets legacy authentication protocols like IMAP, POP3, SMTP, and older Office clients that do not support modern authentication."
+  },
+  {
+    q: "Which Microsoft Entra feature provides a certificate-based, phishing-resistant MFA method that meets AAL3 requirements without requiring a hardware token?",
+    options: ["FIDO2 security keys", "Microsoft Authenticator push notifications", "Windows Hello for Business", "Certificate-based authentication (CBA)"],
+    answer: 3,
+    explanation: "Microsoft Entra Certificate-Based Authentication (CBA) allows users to authenticate with X.509 certificates and meets phishing-resistant MFA requirements at NIST AAL3 when using hardware-protected certs."
+  },
+  {
+    q: "An Azure AD custom role must be created to allow users to only reset passwords for non-admin users. Where are custom roles created?",
+    options: ["Azure RBAC at the subscription level", "Microsoft Entra ID > Roles and administrators > New custom role", "Azure Policy definitions", "Azure Security Center"],
+    answer: 1,
+    explanation: "Microsoft Entra ID custom roles are created under 'Roles and administrators' in the Entra portal. Azure RBAC custom roles are for Azure resource permissions, not directory permissions."
+  },
+  {
+    q: "You need to prevent users from registering applications in Azure AD unless they have been explicitly allowed to do so. Which setting controls this?",
+    options: ["User settings — 'Users can register applications'", "Conditional Access application policy", "PIM application role assignment", "Enterprise application — User assignment required"],
+    answer: 0,
+    explanation: "In Azure AD User Settings, the 'Users can register applications' toggle controls whether non-admin users can register applications. Setting it to 'No' restricts this to administrators."
+  },
+  {
+    q: "Which authentication method in Microsoft Entra ID supports certificate-based authentication directly at the Azure AD layer, replacing the need for on-premises AD FS?",
+    options: ["Password Hash Sync", "Pass-through Authentication", "Federation with AD FS", "Microsoft Entra Certificate-Based Authentication (CBA)"],
+    answer: 3,
+    explanation: "Microsoft Entra CBA enables direct certificate-based authentication against Azure AD, eliminating the need for federated AD FS infrastructure while meeting high-assurance authentication requirements."
+  },
+  {
+    q: "A Conditional Access policy is set to 'Report-only' mode. What does this mean?",
+    options: ["The policy is disabled and has no effect", "The policy is enforced but users are not notified", "The policy evaluates conditions and logs results, but does not enforce access decisions", "The policy only applies to admin accounts"],
+    answer: 2,
+    explanation: "Report-only mode allows administrators to evaluate the impact of a Conditional Access policy before enforcing it. It logs what would have happened without blocking or allowing access changes."
+  },
+  {
+    q: "What is the minimum Azure AD license required to use Privileged Identity Management (PIM)?",
+    options: ["Azure AD Free", "Azure AD Premium P1", "Azure AD Premium P2", "Microsoft 365 E3"],
+    answer: 2,
+    explanation: "PIM requires Azure AD Premium P2 (or Microsoft Entra ID Governance). It is not available in Free or Premium P1 tiers."
+  },
+  // ── DOMAIN 1 continued ──
+  {
+    q: "A security team needs to audit all role activations in PIM over the last 30 days. Where are these logs available?",
+    options: ["Azure Monitor Activity Log", "Microsoft Entra ID > PIM > Audit history", "Microsoft Defender for Cloud > Recommendations", "Azure Security Center Secure Score"],
+    answer: 1,
+    explanation: "PIM maintains its own audit history in Microsoft Entra ID under Privileged Identity Management > Audit history, showing role activations, approvals, and assignments."
+  },
+  {
+    q: "Which Azure AD setting should be enabled to require users to perform MFA re-registration every 180 days?",
+    options: ["Conditional Access sign-in frequency control", "Authentication methods policy — re-registration enforcement", "MFA service settings — remember MFA on trusted devices", "Identity Protection user risk policy"],
+    answer: 0,
+    explanation: "The Conditional Access sign-in frequency control can be used to require periodic re-authentication or MFA refresh. Setting it ensures users periodically complete MFA even on persistent sessions."
+  },
+  {
+    q: "An application registered in Azure AD needs to call the Microsoft Graph API on behalf of users. Which OAuth 2.0 grant type should be used?",
+    options: ["Client credentials grant", "Authorization code grant with PKCE", "Device authorization grant", "Resource owner password credentials grant"],
+    answer: 1,
+    explanation: "Authorization code grant with PKCE is used when an application acts on behalf of a signed-in user. Client credentials is used for app-only (daemon) access without a user context."
+  },
+  {
+    q: "You are configuring Azure AD Password Protection for on-premises Active Directory. Which component must be installed on each domain controller?",
+    options: ["Azure AD Connect", "DC Agent for Azure AD Password Protection", "Azure AD Application Proxy connector", "Microsoft Entra Private Access connector"],
+    answer: 1,
+    explanation: "The DC Agent for Azure AD Password Protection is installed on each domain controller and enforces the custom banned password list locally using the Microsoft Entra ID Password Protection proxy service."
+  },
+  {
+    q: "What is the effect of enabling the 'Require compliant device' grant control in a Conditional Access policy?",
+    options: ["Users must register their device in Azure AD", "Users must use a device marked compliant by Microsoft Intune (or compatible MDM)", "Users must use an Azure AD-joined device only", "Users must complete MFA on every sign-in"],
+    answer: 1,
+    explanation: "'Require compliant device' enforces that the device must be marked compliant by an MDM solution such as Microsoft Intune before access is granted."
+  },
+  // ── DOMAIN 2: SECURE NETWORKING ─────────────────────────────────────────
+  {
+    q: "Which Azure service provides a managed, stateful firewall as a service with built-in high availability and supports FQDN-based application rules?",
+    options: ["Network Security Groups (NSG)", "Azure Firewall", "Azure Front Door WAF", "Azure Application Gateway WAF"],
+    answer: 1,
+    explanation: "Azure Firewall is a managed, cloud-native network security service that provides stateful firewall capabilities, including FQDN filtering, threat intelligence integration, and network/application rules."
+  },
+  {
+    q: "A company requires that all traffic to its Azure Storage account originate only from a specific virtual network subnet. Which feature should be configured?",
+    options: ["Azure Private Endpoint", "VNet Service Endpoint", "NSG application security group rule", "Azure Firewall DNAT rule"],
+    answer: 1,
+    explanation: "VNet Service Endpoints extend the virtual network identity to Azure services and allow restricting Azure Storage access to specific subnets. Private Endpoint also works but routes via private IP; Service Endpoint is the classic approach for subnet-level restriction."
+  },
+  {
+    q: "What is the key difference between a VNet Service Endpoint and an Azure Private Endpoint for Azure Storage?",
+    options: ["Service Endpoints use a private IP in the VNet; Private Endpoints use the public endpoint", "Private Endpoints assign a private IP in the VNet; Service Endpoints route over the Azure backbone but the storage still has a public endpoint", "Both use the same private IP in the VNet", "Service Endpoints are more secure than Private Endpoints"],
+    answer: 1,
+    explanation: "Private Endpoints inject a private IP address from your VNet into the service, making it appear on the VNet. Service Endpoints route traffic over the Azure backbone but the service still retains its public endpoint; only the network path is optimized."
+  },
+  {
+    q: "An NSG rule has the following properties: Priority 100, Source Any, Destination Any, Port 3389, Action Deny. A second rule has Priority 200, Source 10.0.0.0/8, Destination Any, Port 3389, Action Allow. What is the effective result for RDP from 10.1.2.3?",
+    options: ["RDP is allowed because the Allow rule exists", "RDP is denied because the Deny rule has lower priority number (higher precedence)", "RDP is allowed because Allow overrides Deny", "RDP is blocked by the default deny-all rule"],
+    answer: 1,
+    explanation: "In NSGs, lower priority number means higher precedence. Priority 100 Deny is processed before Priority 200 Allow, so RDP from any source including 10.1.2.3 is denied."
+  },
+  {
+    q: "Which Azure DDoS Protection tier offers adaptive tuning, attack analytics, rapid response support, and cost guarantees for protected resources?",
+    options: ["DDoS Infrastructure Protection (Basic)", "DDoS Network Protection (Standard)", "Azure Firewall Premium DDoS mode", "Azure Front Door DDoS protection"],
+    answer: 1,
+    explanation: "Azure DDoS Network Protection (formerly Standard) provides advanced mitigation with adaptive tuning, telemetry, attack analytics, SLA guarantees for protected resources, and access to the DDoS Rapid Response team."
+  },
+  {
+    q: "You need to inspect and filter HTTPS traffic from Azure VMs to the internet at the application layer. Which Azure Firewall tier supports TLS inspection?",
+    options: ["Azure Firewall Basic", "Azure Firewall Standard", "Azure Firewall Premium", "Azure Application Gateway Standard_v2"],
+    answer: 2,
+    explanation: "Azure Firewall Premium supports TLS inspection (IDPS), URL filtering, and web categories. Standard supports application rules with FQDNs but does not perform TLS decryption."
+  },
+  {
+    q: "A company wants to allow only specific outbound FQDNs from their AKS cluster. Without deploying Azure Firewall, which Kubernetes-native mechanism can restrict egress at the pod level?",
+    options: ["Network Security Groups on the subnet", "Kubernetes NetworkPolicy with an egress rule", "Azure Route Table with 0.0.0.0/0 to None", "Azure Private DNS zone"],
+    answer: 1,
+    explanation: "Kubernetes NetworkPolicy with egress rules can restrict pod-level traffic. However, FQDN-based egress filtering at the cluster level typically requires a firewall; NetworkPolicy works with IP/port at the pod level."
+  },
+  {
+    q: "Which feature of Azure Firewall allows it to integrate with Microsoft Threat Intelligence to alert or deny traffic to/from known malicious IPs and domains?",
+    options: ["Application rules with FQDN tags", "Threat intelligence-based filtering", "Network rules with IP Groups", "DNS proxy with custom DNS settings"],
+    answer: 1,
+    explanation: "Azure Firewall's threat intelligence-based filtering uses Microsoft Threat Intelligence to alert on or block traffic to/from known malicious IPs and FQDNs."
+  },
+  {
+    q: "Which Azure networking feature allows you to connect an on-premises network to Azure over the Microsoft backbone without traversing the public internet, providing dedicated bandwidth?",
+    options: ["Site-to-Site VPN", "Point-to-Site VPN", "Azure ExpressRoute", "Azure Virtual WAN"],
+    answer: 2,
+    explanation: "Azure ExpressRoute provides a private, dedicated connection from on-premises to Azure through a connectivity provider, bypassing the public internet for higher reliability and security."
+  },
+  {
+    q: "You need to restrict access to an Azure Key Vault so that only resources within a specific VNet subnet can access it. Which two features should you configure? (Choose the best single answer representing both.)",
+    options: ["Key Vault firewall with VNet service endpoint on the subnet", "Key Vault access policy and Azure Private Endpoint only", "Key Vault RBAC and Conditional Access policy", "Key Vault soft-delete and purge protection"],
+    answer: 0,
+    explanation: "Enabling a VNet service endpoint on the subnet and configuring the Key Vault firewall to allow that subnet restricts access to only traffic from that subnet."
+  },
+  {
+    q: "An Azure Application Gateway with WAF is deployed. Which WAF mode actively blocks malicious requests instead of only logging them?",
+    options: ["Detection mode", "Prevention mode", "Inspection mode", "Audit mode"],
+    answer: 1,
+    explanation: "In Prevention mode, Azure WAF actively blocks requests that match malicious rule patterns. Detection mode only logs the events without blocking traffic."
+  },
+  {
+    q: "Which component of Azure Virtual Network allows filtering traffic between subnets within the same VNet using rules based on source/destination IP, port, and protocol?",
+    options: ["Azure Firewall", "User-Defined Routes (UDR)", "Network Security Groups (NSG)", "Azure Bastion"],
+    answer: 2,
+    explanation: "NSGs can be applied to subnets or NICs within a VNet and provide stateful filtering of inbound and outbound traffic based on 5-tuple rules."
+  },
+  {
+    q: "What is the primary security benefit of Azure Bastion over a public-IP-based jump server for RDP/SSH access to VMs?",
+    options: ["Azure Bastion is cheaper than a jump server", "Azure Bastion eliminates exposure of RDP/SSH ports on public IPs; access is through TLS on port 443 via the Azure portal", "Azure Bastion requires no Azure AD authentication", "Azure Bastion supports only Linux VMs"],
+    answer: 1,
+    explanation: "Azure Bastion provides secure RDP/SSH over TLS through the Azure portal, eliminating the need to expose RDP (3389) or SSH (22) ports on public IPs, reducing the attack surface."
+  },
+  {
+    q: "You need to enable Just-in-Time (JIT) VM access for a virtual machine in Azure. Which service provides this capability?",
+    options: ["Azure Bastion", "Microsoft Defender for Cloud (JIT VM Access)", "Azure Security Center (deprecated)", "Azure AD Privileged Identity Management"],
+    answer: 1,
+    explanation: "Just-in-Time VM Access is a feature of Microsoft Defender for Cloud (formerly Security Center) that temporarily opens NSG rules for specific ports only when requested and approved."
+  },
+  {
+    q: "An administrator configures a User-Defined Route (UDR) on a subnet with a next hop of 10.0.1.4 (an NVA). What must also be done to ensure traffic is forwarded correctly through the NVA?",
+    options: ["Enable IP forwarding on the NVA's network interface", "Add an NSG allow rule for 0.0.0.0/0 on the NVA subnet", "Configure Azure Firewall DNAT rules", "Enable accelerated networking on the NVA"],
+    answer: 0,
+    explanation: "When a VM acts as an NVA (Network Virtual Appliance), IP forwarding must be enabled on its NIC so it can receive and forward packets that are not destined for its own IP address."
+  },
+  {
+    q: "Which Azure Private DNS zone name should be used for private endpoints connecting to Azure Blob Storage?",
+    options: ["privatelink.file.core.windows.net", "privatelink.blob.core.windows.net", "privatelink.queue.core.windows.net", "privatelink.dfs.core.windows.net"],
+    answer: 1,
+    explanation: "The recommended private DNS zone for Azure Blob Storage private endpoints is 'privatelink.blob.core.windows.net'. Each storage service has its own dedicated private DNS zone."
+  },
+  {
+    q: "You need to prevent Azure VMs from sending traffic directly to the internet and instead force all outbound traffic through Azure Firewall. What should you configure?",
+    options: ["NSG outbound deny rule on each VM NIC", "User-Defined Route with 0.0.0.0/0 next hop pointing to Azure Firewall's private IP", "Azure Front Door with WAF policy", "Azure DDoS Network Protection on the VNet"],
+    answer: 1,
+    explanation: "A UDR with a default route (0.0.0.0/0) pointing to Azure Firewall's private IP forces all outbound traffic through the firewall for inspection and filtering."
+  },
+  {
+    q: "Which Azure service provides a globally distributed, cloud-native SASE solution combining SD-WAN with network security services including SWG, CASB, and ZTNA?",
+    options: ["Azure Virtual WAN with Secured Hub", "Microsoft Entra Internet Access (Global Secure Access)", "Azure Front Door Premium", "Microsoft Defender for Cloud Apps"],
+    answer: 1,
+    explanation: "Microsoft Entra Internet Access (part of Global Secure Access / Microsoft's SSE solution) provides SWG, CASB features, and ZTNA for securing internet and SaaS access — Microsoft's cloud-native SASE offering."
+  },
+  {
+    q: "An NSG flow log is enabled on a VNet. What information is captured in the flow logs?",
+    options: ["Full packet payloads for all traffic", "5-tuple information (source/destination IP, port, protocol) and allow/deny decision per flow", "DNS queries made by VMs in the VNet", "Azure AD sign-in events for VM users"],
+    answer: 1,
+    explanation: "NSG flow logs capture 5-tuple flow information (source IP, destination IP, source port, destination port, protocol) along with the allow/deny decision. They do not capture packet payloads."
+  },
+  {
+    q: "What Azure feature should be used to centrally manage NSG rules across multiple subscriptions using reusable policy-like objects?",
+    options: ["Azure Policy with NSG initiatives", "Azure Firewall Policy", "Azure Network Manager with Security Admin Rules", "Azure Blueprints with NSG artifacts"],
+    answer: 2,
+    explanation: "Azure Network Manager Security Admin Rules allow centralized, hierarchical management of NSG rules across subscriptions and VNets in an organization, enforcing baseline security rules that cannot be overridden locally."
+  },
+  {
+    q: "Which Azure VPN Gateway SKU supports BGP routing and Active-Active configuration for maximum VPN redundancy?",
+    options: ["Basic SKU", "VpnGw1 SKU", "VpnGw2AZ or higher (zone-redundant) SKU", "Standard SKU"],
+    answer: 2,
+    explanation: "Zone-redundant VPN Gateway SKUs (VpnGw1AZ and above) support BGP, Active-Active configuration, and availability zone redundancy. Basic does not support BGP."
+  },
+  {
+    q: "Azure Private Link allows you to access Azure PaaS services over a private endpoint. What is the data exfiltration risk mitigation benefit of Private Link compared to Service Endpoints?",
+    options: ["Private Link prevents access to all public endpoints globally", "Private Link restricts the connection to a specific resource instance, preventing lateral movement to other tenants' resources", "Private Link is free while Service Endpoints incur data charges", "Private Link blocks all inbound traffic from the internet"],
+    answer: 1,
+    explanation: "Private Link connects to a specific resource instance, so even if credentials are compromised, attackers cannot pivot to other tenants' storage using the same endpoint path. Service Endpoints allow access to all resources of that service type."
+  },
+  {
+    q: "A web application on Azure needs to be protected from SQL injection and cross-site scripting (XSS). Which Azure service provides OWASP rule set-based protection?",
+    options: ["Azure Firewall Premium IDPS", "Azure Front Door Standard WAF", "Azure Application Gateway WAF (OWASP CRS)", "Azure DDoS Network Protection"],
+    answer: 2,
+    explanation: "Azure Application Gateway WAF uses OWASP Core Rule Set (CRS) to protect web applications from common attacks including SQL injection, XSS, and other OWASP Top 10 threats."
+  },
+  {
+    q: "Which networking security feature should be enabled on an Azure SQL server's virtual network rule to allow access only from a specific subnet without exposing the server to the public internet?",
+    options: ["Azure Private Endpoint", "VNet service endpoint for Microsoft.Sql on the subnet", "NSG inbound rule on port 1433", "Both A and B are equally appropriate"],
+    answer: 3,
+    explanation: "Both Private Endpoint (which provides a private IP in the VNet) and VNet service endpoint with SQL firewall rules restrict access to specific subnets. Private Endpoint is generally preferred as it completely eliminates public internet exposure."
+  },
+  {
+    q: "Which Azure feature enables you to route all outbound traffic from a VNet through a fixed, dedicated public IP address, ensuring consistent outbound IP for firewall whitelisting?",
+    options: ["Azure Load Balancer outbound rules", "NAT Gateway", "Azure Firewall public IP", "Instance-level public IP on each VM"],
+    answer: 1,
+    explanation: "Azure NAT Gateway provides a dedicated outbound IP (or prefix) for all VMs in a subnet, ensuring a consistent outbound source IP. This is important for scenarios requiring IP whitelisting."
+  },
+  {
+    q: "In Azure Firewall Policy, what is a 'Rule Collection Group' and how does it affect processing order?",
+    options: ["A group of VNet service endpoints grouped for policy application", "A container for rule collections; groups with lower priority numbers are processed first", "A logical grouping of NSG rules for reporting purposes", "A set of Conditional Access policies for network access"],
+    answer: 1,
+    explanation: "Rule Collection Groups in Azure Firewall Policy are containers for rule collections and are processed in priority order (lower number = higher priority). Within a group, DNAT, Network, then Application rules are processed in collection priority order."
+  },
+  {
+    q: "Which Azure network security service provides layer 7 (application layer) load balancing with an integrated WAF and SSL offloading for web applications hosted in Azure?",
+    options: ["Azure Load Balancer (Standard)", "Azure Traffic Manager", "Azure Application Gateway", "Azure Front Door"],
+    answer: 2,
+    explanation: "Azure Application Gateway is a layer 7 load balancer for web applications that supports SSL offloading, cookie-based session affinity, URL-based routing, and an integrated WAF."
+  },
+  {
+    q: "When using Azure ExpressRoute with FastPath enabled, what is the network flow optimization achieved?",
+    options: ["ExpressRoute traffic is compressed for higher throughput", "Network traffic bypasses the ExpressRoute Gateway and flows directly to VNet VMs, reducing latency", "BGP route advertisements are accelerated", "Encryption is applied end-to-end at IPsec layer"],
+    answer: 1,
+    explanation: "ExpressRoute FastPath bypasses the ExpressRoute Virtual Network Gateway for data plane traffic, allowing network packets to flow directly to VMs, significantly reducing latency."
+  },
+  {
+    q: "Azure Defender for DNS (now part of Microsoft Defender for Cloud) detects which type of attack where DNS queries are used as a covert data channel?",
+    options: ["DNS amplification DDoS attack", "DNS cache poisoning", "DNS tunneling", "BGP hijacking via DNS"],
+    answer: 2,
+    explanation: "DNS tunneling encodes data in DNS queries and responses to create a covert communication channel, often used by malware for C2 communication. Microsoft Defender for DNS detects this anomalous DNS behavior."
+  },
+  {
+    q: "An organization wants to enforce that no Azure subscription can be created without going through an approval process. Which Azure governance feature enables this?",
+    options: ["Azure Policy 'Deny' effect on Microsoft.Subscription resource type", "Azure Subscription vending process using Management Group subscription placement policy and Azure Blueprints", "Azure Lighthouse cross-tenant management restriction", "Azure Cost Management subscription budget"],
+    answer: 1,
+    explanation: "Azure landing zone and subscription vending processes use Management Group policies and Azure Blueprints (or Bicep/Terraform pipelines) to enforce that new subscriptions are provisioned through an approved, governed process and placed in the correct management group hierarchy."
+  }
+];
+
+function buildExam() {
+  const exam = document.getElementById('exam');
+  exam.innerHTML = '';
+  questions.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.dataset.index = idx;
+    card.dataset.answer = item.answer;
+
+    const label = document.createElement('h3');
+    label.textContent = `Question ${idx + 1} of ${questions.length} · Series Q${idx + 1}`;
+    card.appendChild(label);
+
+    const qText = document.createElement('p');
+    qText.className = 'question-text';
+    qText.textContent = item.q;
+    card.appendChild(qText);
+
+    const optDiv = document.createElement('div');
+    optDiv.className = 'options';
+    item.options.forEach((opt, oi) => {
+      const lbl = document.createElement('label');
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = `q${idx}`;
+      radio.value = oi;
+      lbl.appendChild(radio);
+      lbl.appendChild(document.createTextNode(String.fromCharCode(65 + oi) + '. ' + opt));
+      optDiv.appendChild(lbl);
+    });
+    card.appendChild(optDiv);
+
+    const exp = document.createElement('div');
+    exp.className = 'explanation';
+    exp.textContent = '💡 ' + item.explanation;
+    card.appendChild(exp);
+
+    exam.appendChild(card);
+  });
+}
+
+document.getElementById('btn-submit').addEventListener('click', () => {
+  let score = 0;
+  document.querySelectorAll('.question-card').forEach(card => {
+    const idx = parseInt(card.dataset.index);
+    const correct = parseInt(card.dataset.answer);
+    const selected = card.querySelector(`input[name="q${idx}"]:checked`);
+    const labels = card.querySelectorAll('.options label');
+    labels.forEach(l => { l.style.pointerEvents = 'none'; });
+    labels[correct].classList.add('reveal');
+    if (selected) {
+      const val = parseInt(selected.value);
+      if (val === correct) {
+        score++;
+        labels[val].classList.add('correct');
+      } else {
+        labels[val].classList.add('incorrect');
+      }
+    }
+    card.querySelector('.explanation').classList.add('visible');
+  });
+  const pct = Math.round(score / questions.length * 100);
+  const sd = document.getElementById('score-display');
+  sd.style.display = 'block';
+  sd.textContent = `Score: ${score} / ${questions.length} (${pct}%) — ${pct >= 70 ? '✅ Pass' : '❌ Keep studying!'}`;
+  sd.scrollIntoView({ behavior: 'smooth' });
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  document.getElementById('score-display').style.display = 'none';
+  buildExam();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+buildExam();
+</script>
+</body>
+</html>

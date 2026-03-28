@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AZ-500 Practice Exam 2 — Questions 51–100</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #005a9e, #003f72);
+      color: #fff;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    header h1 { font-size: 1.8rem; margin-bottom: .4rem; }
+    header p  { font-size: 1rem; opacity: .9; }
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,.2);
+      border-radius: 20px;
+      padding: .25rem .9rem;
+      font-size: .85rem;
+      margin-top: .6rem;
+    }
+    .controls {
+      max-width: 860px;
+      margin: 1.5rem auto .5rem;
+      padding: 0 1rem;
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .controls button {
+      padding: .5rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: opacity .2s;
+    }
+    .controls button:hover { opacity: .85; }
+    #btn-submit  { background: #005a9e; color: #fff; }
+    #btn-reset   { background: #6b7280; color: #fff; }
+    #score-box {
+      max-width: 860px;
+      margin: 0 auto .5rem;
+      padding: 0 1rem;
+    }
+    #score-display {
+      background: #fff;
+      border-left: 4px solid #005a9e;
+      border-radius: 6px;
+      padding: .75rem 1rem;
+      font-weight: 600;
+      display: none;
+    }
+    main {
+      max-width: 860px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+    }
+    .question-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.1);
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 1.2rem;
+    }
+    .question-card h3 {
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: #005a9e;
+      margin-bottom: .5rem;
+    }
+    .question-card p.question-text {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .options label {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      padding: .55rem .75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1.5px solid #e5e7eb;
+      margin-bottom: .5rem;
+      transition: background .15s, border-color .15s;
+    }
+    .options label:hover { background: #f0f9ff; border-color: #93c5fd; }
+    .options input[type="radio"] { margin-top: .2rem; flex-shrink: 0; }
+    .options label.correct   { background: #d1fae5; border-color: #10b981; }
+    .options label.incorrect { background: #fee2e2; border-color: #ef4444; }
+    .options label.reveal    { background: #d1fae5; border-color: #10b981; }
+    .explanation {
+      margin-top: .8rem;
+      padding: .75rem 1rem;
+      background: #eff6ff;
+      border-left: 3px solid #3b82f6;
+      border-radius: 4px;
+      font-size: .9rem;
+      display: none;
+    }
+    .explanation.visible { display: block; }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: .85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>AZ-500 Practice Exam 2</h1>
+  <p>Microsoft Azure Security Technologies — 2026 Edition</p>
+  <span class="badge">Questions 51–100 &nbsp;|&nbsp; Secure Compute, Storage &amp; Databases · Security Operations</span>
+</header>
+
+<div class="controls">
+  <button id="btn-submit">Submit &amp; Score</button>
+  <button id="btn-reset">Reset Exam</button>
+</div>
+<div id="score-box"><div id="score-display"></div></div>
+
+<main id="exam"></main>
+
+<footer>AZ-500 Master Project — Educational use only. Not affiliated with Microsoft.</footer>
+
+<script>
+const questions = [
+  // ── DOMAIN 3: SECURE COMPUTE, STORAGE & DATABASES ───────────────────────
+  {
+    q: "Which Microsoft Defender plan must be enabled to get vulnerability assessments for Azure virtual machines and receive recommendations for OS patches?",
+    options: ["Microsoft Defender for Storage", "Microsoft Defender for Servers", "Microsoft Defender for Containers", "Microsoft Defender for SQL"],
+    answer: 1,
+    explanation: "Microsoft Defender for Servers enables vulnerability assessment for VMs, integration with Qualys or Microsoft Defender Vulnerability Management, and recommendations for OS patches and misconfigurations."
+  },
+  {
+    q: "A company needs to ensure that all Azure virtual machine disks are encrypted with customer-managed keys stored in Azure Key Vault. Which encryption feature should they enable?",
+    options: ["Azure Disk Encryption (ADE) with customer-managed key in Key Vault", "Platform-managed encryption (PME) — default", "Storage Service Encryption with Microsoft-managed keys", "BitLocker with TPM only (no Key Vault)"],
+    answer: 0,
+    explanation: "Azure Disk Encryption (ADE) uses BitLocker (Windows) or DM-Crypt (Linux) and can use customer-managed keys stored in Azure Key Vault, giving the customer full control over the encryption key lifecycle."
+  },
+  {
+    q: "Which Azure Kubernetes Service (AKS) feature ensures that pods run with the minimum necessary privileges and prevents privilege escalation?",
+    options: ["Kubernetes RBAC with ClusterRoleBinding", "Pod Security Admission (PSA) with 'restricted' profile", "AKS managed identity for pod authentication", "Azure Policy for AKS (Gatekeeper)"],
+    answer: 1,
+    explanation: "Pod Security Admission (PSA) enforces pod security standards at the namespace level. The 'restricted' profile prevents privilege escalation, requires non-root users, and drops capabilities."
+  },
+  {
+    q: "An AKS cluster stores secrets for database connection strings. Which is the most secure approach to providing these secrets to application pods?",
+    options: ["Kubernetes Secrets stored in etcd with default encryption", "Azure Key Vault integration via the Secrets Store CSI Driver", "Environment variables set in the pod spec", "ConfigMap storing base64-encoded values"],
+    answer: 1,
+    explanation: "The Secrets Store CSI Driver integrates Azure Key Vault with AKS, mounting secrets directly from Key Vault into pods. This avoids storing secrets in Kubernetes etcd and provides centralized secret management."
+  },
+  {
+    q: "Which feature should be enabled on an AKS cluster to ensure that container images are scanned for vulnerabilities before deployment?",
+    options: ["Azure Container Registry Tasks with Base Image Update", "Microsoft Defender for Containers with image scanning", "Kubernetes Admission WebHook with custom logic", "Both B and C are equivalent"],
+    answer: 1,
+    explanation: "Microsoft Defender for Containers provides vulnerability assessment for container images stored in Azure Container Registry, scanning for CVEs and providing recommendations before and after deployment."
+  },
+  {
+    q: "You need to control which container images can be deployed to an AKS cluster, ensuring only images from a trusted registry are allowed. Which Azure feature provides this?",
+    options: ["Azure Container Registry geo-replication", "Azure Policy for Kubernetes — allowed container registries policy", "AKS network policy for egress to registries", "Kubernetes ImagePullPolicy: Always"],
+    answer: 1,
+    explanation: "Azure Policy for Kubernetes (using OPA Gatekeeper) can enforce that pods only use images from specified, trusted registries, blocking deployments from unauthorized sources."
+  },
+  {
+    q: "A storage account should only be accessed using HTTPS. Which setting enforces this at the Azure Storage service level?",
+    options: ["Enable Azure Defender for Storage", "Set 'Secure transfer required' to Enabled on the storage account", "Apply an NSG rule blocking port 80 on the storage subnet", "Enable blob soft delete"],
+    answer: 1,
+    explanation: "'Secure transfer required' on an Azure Storage account rejects all HTTP requests, enforcing HTTPS-only access. This protects data in transit from being exposed over unencrypted connections."
+  },
+  {
+    q: "Which Azure Storage feature allows you to grant time-limited, delegated access to specific blobs or containers without sharing the storage account key?",
+    options: ["Stored Access Policy", "Shared Access Signature (SAS) token", "Azure AD service principal with Blob Data Reader", "Anonymous public access"],
+    answer: 1,
+    explanation: "A Shared Access Signature (SAS) token provides delegated, time-limited access to Azure Storage resources with configurable permissions. User Delegation SAS (backed by Azure AD) is the most secure form."
+  },
+  {
+    q: "What is the recommended SAS type in Azure Storage that provides the highest security by using Azure AD credentials rather than the storage account key?",
+    options: ["Account SAS", "Service SAS", "User Delegation SAS", "Anonymous SAS"],
+    answer: 2,
+    explanation: "User Delegation SAS is signed with Azure AD credentials (a user delegation key) rather than the storage account key. If the SAS is compromised, it can be revoked by revoking the delegation key without rotating the account key."
+  },
+  {
+    q: "An Azure Storage account has soft delete enabled for blobs with a 14-day retention period. A blob is deleted maliciously. What can administrators do?",
+    options: ["Nothing — once deleted, blobs are permanently gone", "Restore the blob within 14 days using the 'undelete' operation", "Restore from the last snapshot only if snapshots exist", "Contact Microsoft support to recover the blob"],
+    answer: 1,
+    explanation: "With soft delete enabled, deleted blobs are retained in a soft-deleted state for the configured retention period (14 days in this case) and can be restored using the 'Undelete Blob' operation."
+  },
+  {
+    q: "Which Azure Storage feature prevents deletion or modification of blobs for a specified period, meeting regulatory requirements for immutable storage?",
+    options: ["Blob soft delete", "Blob versioning", "Immutability policies (WORM — Write Once Read Many)", "Azure Backup for storage"],
+    answer: 2,
+    explanation: "Azure Blob Storage immutability policies (time-based retention or legal hold) implement WORM (Write Once, Read Many) storage that prevents blob modification or deletion for compliance purposes."
+  },
+  {
+    q: "An Azure SQL database should use Microsoft Entra-only authentication. What does this configuration change?",
+    options: ["SQL authentication (username/password) is also allowed alongside Entra ID", "SQL authentication is disabled; only Entra ID (Azure AD) identities can authenticate", "Only Managed Identities can connect to the database", "SQL authentication is required as a fallback"],
+    answer: 1,
+    explanation: "Enabling Microsoft Entra-only authentication on Azure SQL disables SQL authentication entirely, requiring all connections to authenticate using Microsoft Entra ID identities (users, groups, or managed identities)."
+  },
+  {
+    q: "Which Azure SQL feature automatically encrypts sensitive data (e.g., credit card numbers) in specific columns and never exposes plaintext to unauthorized users, even DBAs?",
+    options: ["Transparent Data Encryption (TDE)", "Dynamic Data Masking (DDM)", "Always Encrypted", "Azure SQL Auditing"],
+    answer: 2,
+    explanation: "Always Encrypted performs client-side encryption so data is encrypted before it leaves the application and the database engine never sees plaintext. TDE encrypts data at rest but DBAs can query plaintext. DDM masks data but authorized users can see it."
+  },
+  {
+    q: "Azure SQL Transparent Data Encryption (TDE) with customer-managed key (CMK) is configured. What happens if the CMK in Key Vault is deleted or disabled?",
+    options: ["The database continues to operate normally for 24 hours", "The database becomes inaccessible because TDE cannot decrypt the database encryption key", "The database automatically falls back to service-managed encryption", "Data is permanently lost immediately"],
+    answer: 1,
+    explanation: "TDE with CMK requires the key to be available to decrypt the Database Encryption Key (DEK). If the CMK is deleted or access is revoked, the database becomes inaccessible. This provides a 'bring your own key' revocation capability."
+  },
+  {
+    q: "Which feature provides automatic detection of anomalous database activities such as unusual data exfiltration or SQL injection attempts in Azure SQL Database?",
+    options: ["Azure SQL Auditing", "Advanced Threat Protection (ATP) / Microsoft Defender for SQL", "Azure Security Center for databases", "SQL Server Profiler traces"],
+    answer: 1,
+    explanation: "Microsoft Defender for SQL (Advanced Threat Protection) provides anomaly detection for Azure SQL, identifying threats such as SQL injection, unusual access patterns, and potential data exfiltration."
+  },
+  {
+    q: "A company stores sensitive customer data in Azure Blob Storage. They need to classify and discover this data automatically. Which Azure service should they use?",
+    options: ["Microsoft Purview (Azure Purview)", "Azure Security Center data recommendations", "Azure Monitor Log Analytics", "Microsoft Defender for Storage"],
+    answer: 0,
+    explanation: "Microsoft Purview provides data discovery and classification capabilities, automatically scanning Azure storage accounts and other data sources to identify and classify sensitive information."
+  },
+  {
+    q: "Which Azure VM security feature hardens VMs by restricting which software can run on the VM based on a learned baseline of trusted applications?",
+    options: ["Microsoft Defender for Servers — Just-in-Time Access", "Microsoft Defender for Cloud — Adaptive Application Controls", "Azure Disk Encryption", "Azure Update Manager"],
+    answer: 1,
+    explanation: "Adaptive Application Controls in Microsoft Defender for Cloud use machine learning to create an allowlist of trusted applications for VMs, alerting on deviations from the baseline."
+  },
+  {
+    q: "You are designing a container solution and need to run containers without managing VMs, with network isolation in a VNet. Which Azure service should you use?",
+    options: ["Azure Kubernetes Service (AKS)", "Azure Container Instances (ACI) with VNet integration", "Azure App Service containers", "Azure Batch containerized jobs"],
+    answer: 1,
+    explanation: "Azure Container Instances with VNet integration allows running individual containers in a virtual network for network isolation without requiring VM management, suitable for simpler container workloads."
+  },
+  {
+    q: "Microsoft Defender for Containers detects a threat in a running AKS container. What is the recommended immediate response?",
+    options: ["Delete the AKS cluster and redeploy", "Isolate the affected pod by removing its network policy rules", "Use Defender for Cloud's 'Run command' to patch the container in place", "Cordon and drain the affected node, then investigate the container image and kill the pod"],
+    answer: 3,
+    explanation: "Best practice is to cordon the affected node (preventing new pods) and drain it, then kill the suspicious pod. Investigate the container image for vulnerabilities and review the alert details in Defender for Containers."
+  },
+  {
+    q: "Which Azure feature enables you to assess and apply OS updates to Azure VMs at scale, across both Windows and Linux, from a central management console?",
+    options: ["Azure Arc — Update Management Center", "Azure Update Manager", "System Center Configuration Manager (SCCM)", "Azure Automation Update Management"],
+    answer: 1,
+    explanation: "Azure Update Manager (successor to Automation Update Management) provides centralized assessment and deployment of OS updates for Azure VMs (and Arc-enabled servers) across Windows and Linux at scale."
+  },
+  {
+    q: "An Azure Container Registry (ACR) needs to restrict image pushes to only authorized service principals. Which ACR feature should be configured?",
+    options: ["ACR webhooks", "ACR Tasks for automated builds", "Azure RBAC with ACR roles (AcrPush, AcrPull)", "ACR firewall rules with service endpoint"],
+    answer: 2,
+    explanation: "Azure RBAC with ACR-specific roles (AcrPush for push, AcrPull for pull, AcrImageSigner for content trust signing) controls which identities can push or pull images from the registry."
+  },
+  // ── DOMAIN 4: MANAGE SECURITY OPERATIONS ────────────────────────────────
+  {
+    q: "Which Microsoft Defender for Cloud feature provides a numerical measure of an organization's security posture based on implemented security controls?",
+    options: ["Security alerts dashboard", "Regulatory compliance dashboard", "Secure Score", "Workload protections coverage"],
+    answer: 2,
+    explanation: "Secure Score in Microsoft Defender for Cloud measures the organization's security posture as a percentage. Implementing security recommendations increases the score, helping prioritize security improvements."
+  },
+  {
+    q: "A security analyst needs to investigate an alert about a suspicious process execution on a VM. Which Defender for Cloud feature provides detailed timeline of events and process trees for investigation?",
+    options: ["Regulatory compliance reports", "Security alerts with investigation paths", "Defender for Servers — CWPP investigation experience with process tree", "Azure Sentinel alert rules"],
+    answer: 2,
+    explanation: "Microsoft Defender for Servers (CWPP) provides deep investigation capabilities including process trees, network connections, and file access timelines for alerts generated from VMs."
+  },
+  {
+    q: "Which Microsoft Sentinel feature automatically groups related security alerts into a single incident to reduce alert fatigue?",
+    options: ["Analytics rules — Scheduled query rules", "Automation rules with playbooks", "Alert correlation and incident creation rules (Fusion)", "Threat intelligence indicators"],
+    answer: 2,
+    explanation: "Microsoft Sentinel's Fusion detection uses ML-based correlation to group related alerts from multiple data sources into a single, high-fidelity incident, significantly reducing alert noise."
+  },
+  {
+    q: "A security team wants to automatically respond to a specific Microsoft Sentinel alert by blocking a user account in Azure AD. Which Sentinel feature enables this?",
+    options: ["KQL analytical rules", "Threat intelligence TAXII connector", "Automation rules with Logic Apps playbook", "Workbook with custom queries"],
+    answer: 2,
+    explanation: "Microsoft Sentinel Automation rules can trigger Logic Apps playbooks on alert or incident creation. A playbook can call the Microsoft Graph API to disable a user account in Azure AD automatically."
+  },
+  {
+    q: "Which Microsoft Sentinel data connector ingests security events from Azure AD sign-in logs?",
+    options: ["Microsoft 365 Defender connector", "Azure Active Directory (Microsoft Entra ID) connector", "Azure Monitor agent (AMA) connector", "Security Events via AMA connector"],
+    answer: 1,
+    explanation: "The Microsoft Entra ID (Azure Active Directory) data connector in Microsoft Sentinel ingests sign-in logs, audit logs, and other Azure AD activity logs into the Sentinel workspace."
+  },
+  {
+    q: "An analyst needs to query Microsoft Sentinel to find all successful sign-ins from unusual countries in the last 7 days. Which query language is used?",
+    options: ["SQL", "PowerShell DSC", "Kusto Query Language (KQL)", "YAML-based rule expressions"],
+    answer: 2,
+    explanation: "Microsoft Sentinel uses Kusto Query Language (KQL) to query the Log Analytics workspace. KQL is a read-only language optimized for querying large datasets in Azure Monitor and Sentinel."
+  },
+  {
+    q: "What is the purpose of Threat Intelligence (TI) indicators in Microsoft Sentinel?",
+    options: ["To automatically patch vulnerabilities in connected VMs", "To enrich alerts by correlating ingested logs against known malicious IPs, domains, and file hashes", "To generate reports for compliance auditors", "To configure automated playbook triggers"],
+    answer: 1,
+    explanation: "Threat Intelligence indicators (IOCs) in Microsoft Sentinel are used to enrich security logs and alerts by matching observed artifacts against known-malicious indicators, increasing the fidelity of detections."
+  },
+  {
+    q: "A company must retain Azure Activity Logs for 2 years for compliance purposes. Microsoft Sentinel's Log Analytics workspace retains data for 90 days by default. What should be configured?",
+    options: ["Export activity logs to Azure Blob Storage with lifecycle management policy", "Enable Azure Monitor archive tier for the Log Analytics workspace (interactive + archive up to 12 years)", "Purchase additional Sentinel capacity", "Use Azure Policy to enforce log retention"],
+    answer: 1,
+    explanation: "Azure Monitor Log Analytics supports data archiving in the archive tier, enabling retention up to 12 years total (interactive + archive). This allows meeting long-term compliance retention requirements."
+  },
+  {
+    q: "Which Azure Key Vault feature ensures that even Key Vault administrators cannot permanently delete a secret unless an additional purge operation is explicitly performed?",
+    options: ["Soft delete", "Purge protection", "Key rotation policy", "Access policies with 'no delete' permission"],
+    answer: 1,
+    explanation: "Purge protection, when enabled on a Key Vault, prevents purging (permanent deletion) of soft-deleted secrets, keys, or certificates during the retention period — even by administrators or Microsoft."
+  },
+  {
+    q: "An application needs to rotate its Azure Key Vault secrets automatically every 90 days. Which Key Vault feature supports this?",
+    options: ["Key Vault access policies with time-bound permissions", "Key Vault key rotation policy and near-expiry event notifications via Event Grid", "Azure Policy key rotation compliance rule", "PIM-based secret access with expiry"],
+    answer: 1,
+    explanation: "Azure Key Vault supports automatic key rotation policies for keys and near-expiry event notifications via Azure Event Grid and Event Grid for secrets, enabling automated rotation workflows."
+  },
+  {
+    q: "Which Microsoft Defender for Cloud recommendation tier requires enabling enhanced security features (paid plans) to implement?",
+    options: ["Free tier (CSPM) recommendations only", "Defender plans (paid workload protection plans)", "Azure Policy built-in recommendations", "Azure Advisor security recommendations"],
+    answer: 1,
+    explanation: "Microsoft Defender for Cloud's paid workload protection plans (Defender for Servers, Storage, SQL, etc.) unlock advanced threat protection recommendations and alerts not available in the free CSPM tier."
+  },
+  {
+    q: "What does the 'Regulatory compliance' dashboard in Microsoft Defender for Cloud show?",
+    options: ["A list of unpatched VMs", "The organization's compliance posture against standards like ISO 27001, PCI DSS, and NIST SP 800-53", "A log of all audit events in the Azure subscription", "The Secure Score broken down by Azure region"],
+    answer: 1,
+    explanation: "The Regulatory Compliance dashboard in Defender for Cloud maps Azure security controls to compliance requirements of industry standards (PCI DSS, ISO 27001, NIST, CIS, HIPAA, etc.) showing pass/fail status."
+  },
+  {
+    q: "An Azure Key Vault is used to store TLS certificates. Which Key Vault object type stores the private key, public key, and certificate chain together?",
+    options: ["Secret", "Key", "Certificate", "Managed HSM key"],
+    answer: 2,
+    explanation: "Azure Key Vault Certificates store the complete certificate (including private key, public certificate, and chain) as a single managed object, with built-in lifecycle management and renewal capabilities."
+  },
+  {
+    q: "Which Azure Monitor feature collects security-relevant events from VMs and sends them to a Log Analytics workspace for analysis in Microsoft Sentinel?",
+    options: ["Azure Monitor Metrics", "Azure Diagnostics extension", "Azure Monitor Agent (AMA) with Data Collection Rules (DCR)", "Log Analytics Legacy Agent (MMA)"],
+    answer: 2,
+    explanation: "The Azure Monitor Agent (AMA) with Data Collection Rules (DCR) is the current recommended way to collect security events and logs from VMs and send them to Log Analytics workspaces for Sentinel analysis."
+  },
+  {
+    q: "A Security Operations Center (SOC) team needs to perform hunting queries on historical data in Microsoft Sentinel. Which feature is specifically designed for threat hunting?",
+    options: ["Analytics rules", "Playbooks", "Hunting queries with bookmarks", "Workbooks"],
+    answer: 2,
+    explanation: "Microsoft Sentinel's Hunting feature allows analysts to proactively search for threats using pre-built or custom KQL queries, and bookmarks let them annotate and preserve findings for incident investigation."
+  },
+  {
+    q: "What is a SOAR capability in Microsoft Sentinel?",
+    options: ["Security Orchestration, Automation, and Response — using playbooks to automate investigation and response actions", "Security Operations, Analytics, and Reporting — dashboard reporting feature", "Sentinel's built-in threat intelligence feed", "Automated vulnerability scanning"],
+    answer: 0,
+    explanation: "SOAR (Security Orchestration, Automation, and Response) in Sentinel uses Logic Apps playbooks integrated with automation rules to automatically investigate alerts and take response actions, reducing MTTR."
+  },
+  {
+    q: "Microsoft Defender for Cloud generates a 'high severity' alert for an Azure VM. The security team wants to receive an email notification immediately. How should this be configured?",
+    options: ["Create a Log Analytics alert rule", "Configure email notifications in Defender for Cloud > Environment Settings > Email notifications", "Set up an Azure Monitor metric alert", "Create a custom playbook in Sentinel"],
+    answer: 1,
+    explanation: "Microsoft Defender for Cloud email notifications are configured in Environment Settings > Email notifications, where you can set severity thresholds and recipient email addresses for automatic alerts."
+  },
+  {
+    q: "Which component of Microsoft Sentinel allows the visualization of security data trends over time using customizable dashboards?",
+    options: ["Analytics rules", "Playbooks", "Workbooks", "Incidents"],
+    answer: 2,
+    explanation: "Microsoft Sentinel Workbooks (built on Azure Monitor Workbooks) provide interactive, customizable dashboards for visualizing security data, trends, and metrics from the Log Analytics workspace."
+  },
+  {
+    q: "A company wants to centralize security management across multiple Azure subscriptions and AWS accounts. Which feature in Microsoft Defender for Cloud supports this multi-cloud scenario?",
+    options: ["Azure Lighthouse for cross-subscription management", "Defender for Cloud Environment Settings with multi-cloud connectors (AWS, GCP)", "Azure Arc for hybrid server management only", "Microsoft Sentinel multi-workspace deployment"],
+    answer: 1,
+    explanation: "Microsoft Defender for Cloud supports multi-cloud environments through native connectors for AWS and GCP, providing unified security posture management and threat protection across cloud providers."
+  },
+  {
+    q: "What is the purpose of 'Just-in-Time VM Access' in Microsoft Defender for Cloud?",
+    options: ["It automatically patches VMs during off-peak hours", "It temporarily opens NSG ports for management access only when requested and for a limited time, then closes them automatically", "It provisions a temporary VM for administrative tasks", "It enables Azure Bastion for the VM"],
+    answer: 1,
+    explanation: "JIT VM Access locks down management ports (RDP, SSH) on VMs. When access is needed, the user requests it, Defender for Cloud temporarily modifies the NSG to allow access from a specific IP for a time-limited window."
+  },
+  {
+    q: "An organization uses Azure Policy to enforce that all storage accounts must have 'Secure transfer required' enabled. What Azure Policy effect should be used to prevent non-compliant storage accounts from being created?",
+    options: ["Audit", "AuditIfNotExists", "Deny", "DeployIfNotExists"],
+    answer: 2,
+    explanation: "The 'Deny' effect in Azure Policy prevents resource creation or updates that do not comply with the policy definition. 'Audit' only logs non-compliance; 'Deny' actively blocks it."
+  },
+  {
+    q: "Which Azure Defender plan provides threat protection for Azure DNS queries made by Azure resources, detecting DNS-based attacks?",
+    options: ["Microsoft Defender for Servers", "Microsoft Defender for DNS", "Microsoft Defender for Network", "Microsoft Defender for Resource Manager"],
+    answer: 1,
+    explanation: "Microsoft Defender for DNS monitors DNS queries from Azure resources, detecting DNS tunneling, C2 callbacks via DNS, DNS-based DGA (domain generation algorithms), and other DNS-based threats."
+  },
+  {
+    q: "A security engineer needs to ensure all Azure Policy assignments are compliant with a company governance standard. Which feature provides a collection of policy definitions that can be assigned together?",
+    options: ["Azure Blueprint", "Azure Policy Initiative (Policy Set)", "Azure Management Groups", "Azure Governance Dashboard"],
+    answer: 1,
+    explanation: "An Azure Policy Initiative (Policy Set) is a collection of policy definitions grouped to achieve a broader compliance goal (e.g., the Azure Security Benchmark initiative). Initiatives simplify management by assigning multiple policies together."
+  },
+  {
+    q: "Which Microsoft Sentinel feature allows a security analyst to run a custom investigation script automatically when a specific incident is created?",
+    options: ["Analytics rule with scheduled query", "Automation rule triggering a Logic Apps playbook", "Threat intelligence STIX/TAXII feed", "Hunting bookmark"],
+    answer: 1,
+    explanation: "Automation rules in Microsoft Sentinel can trigger Logic Apps playbooks when incidents are created or updated, enabling automated investigation actions such as running scripts or calling APIs."
+  },
+  {
+    q: "An alert in Microsoft Defender for Cloud recommends enabling 'Endpoint protection' on VMs. Which solution does Microsoft recommend for Azure Windows VMs?",
+    options: ["Symantec Endpoint Protection", "Microsoft Defender for Endpoint (MDE)", "CrowdStrike Falcon agent", "Trend Micro Deep Security"],
+    answer: 1,
+    explanation: "Microsoft Defender for Endpoint (MDE) is the recommended EDR solution for Azure VMs. It integrates natively with Microsoft Defender for Cloud and Sentinel for unified threat protection."
+  },
+  {
+    q: "An Azure Log Analytics workspace is used by Microsoft Sentinel. Data from a third-party firewall needs to be ingested. Which connector type should be used for CEF/Syslog data?",
+    options: ["Azure native diagnostic connector", "Common Event Format (CEF) connector via Log Analytics agent or AMA Syslog DCR", "REST API data connector", "Azure Function connector"],
+    answer: 1,
+    explanation: "CEF (Common Event Format) data from firewalls and security appliances is ingested into Sentinel using the AMA-based Syslog/CEF connector, which collects events and normalizes them into the CommonSecurityLog table."
+  },
+  {
+    q: "What is the Microsoft Cloud Security Benchmark (MCSB) and how does it relate to Microsoft Defender for Cloud?",
+    options: ["A Microsoft certification program for cloud architects", "A set of security best-practice recommendations for Azure that Defender for Cloud maps recommendations against by default", "A compliance framework replacing PCI DSS for cloud environments", "A performance benchmark for Azure security services"],
+    answer: 1,
+    explanation: "The Microsoft Cloud Security Benchmark (MCSB) is Microsoft's set of security best practices for Azure. Defender for Cloud uses MCSB as its default policy initiative, mapping security recommendations to MCSB controls."
+  },
+  {
+    q: "A company needs to encrypt all secrets and keys in an HSM that they control. Which Azure Key Vault tier provides dedicated, single-tenant HSM capacity?",
+    options: ["Azure Key Vault Standard tier", "Azure Key Vault Premium tier (software-protected keys)", "Azure Managed HSM (Hardware Security Module)", "Azure Key Vault Premium with HSM-protected keys"],
+    answer: 2,
+    explanation: "Azure Managed HSM provides a fully managed, single-tenant, FIPS 140-2 Level 3 validated HSM service. The customer retains full administrative control, and Microsoft cannot access the keys — unlike Key Vault Premium HSM-backed keys."
+  },
+  {
+    q: "Which Azure feature provides continuous export of Microsoft Defender for Cloud alerts and recommendations to a Log Analytics workspace or Event Hub for integration with SIEM tools?",
+    options: ["Azure Monitor Diagnostic Settings", "Defender for Cloud Continuous Export", "Azure Policy export function", "Azure Activity Log export"],
+    answer: 1,
+    explanation: "Defender for Cloud's Continuous Export feature streams security alerts, recommendations, and secure score data to Log Analytics workspaces or Event Hubs in near-real-time for downstream SIEM integration."
+  },
+];
+
+function buildExam() {
+  const exam = document.getElementById('exam');
+  exam.innerHTML = '';
+  questions.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.dataset.index = idx;
+    card.dataset.answer = item.answer;
+
+    const label = document.createElement('h3');
+    label.textContent = `Question ${idx + 1} of ${questions.length} · Series Q${idx + 51}`;
+    card.appendChild(label);
+
+    const qText = document.createElement('p');
+    qText.className = 'question-text';
+    qText.textContent = item.q;
+    card.appendChild(qText);
+
+    const optDiv = document.createElement('div');
+    optDiv.className = 'options';
+    item.options.forEach((opt, oi) => {
+      const lbl = document.createElement('label');
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = `q${idx}`;
+      radio.value = oi;
+      lbl.appendChild(radio);
+      lbl.appendChild(document.createTextNode(String.fromCharCode(65 + oi) + '. ' + opt));
+      optDiv.appendChild(lbl);
+    });
+    card.appendChild(optDiv);
+
+    const exp = document.createElement('div');
+    exp.className = 'explanation';
+    exp.textContent = '💡 ' + item.explanation;
+    card.appendChild(exp);
+
+    exam.appendChild(card);
+  });
+}
+
+document.getElementById('btn-submit').addEventListener('click', () => {
+  let score = 0;
+  document.querySelectorAll('.question-card').forEach(card => {
+    const idx = parseInt(card.dataset.index);
+    const correct = parseInt(card.dataset.answer);
+    const selected = card.querySelector(`input[name="q${idx}"]:checked`);
+    const labels = card.querySelectorAll('.options label');
+    labels.forEach(l => { l.style.pointerEvents = 'none'; });
+    labels[correct].classList.add('reveal');
+    if (selected) {
+      const val = parseInt(selected.value);
+      if (val === correct) {
+        score++;
+        labels[val].classList.add('correct');
+      } else {
+        labels[val].classList.add('incorrect');
+      }
+    }
+    card.querySelector('.explanation').classList.add('visible');
+  });
+  const pct = Math.round(score / questions.length * 100);
+  const sd = document.getElementById('score-display');
+  sd.style.display = 'block';
+  sd.textContent = `Score: ${score} / ${questions.length} (${pct}%) — ${pct >= 70 ? '✅ Pass' : '❌ Keep studying!'}`;
+  sd.scrollIntoView({ behavior: 'smooth' });
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  document.getElementById('score-display').style.display = 'none';
+  buildExam();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+buildExam();
+</script>
+</body>
+</html>

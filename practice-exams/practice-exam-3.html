@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AZ-500 Practice Exam 3 — Questions 101–150</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #107c10, #054b05);
+      color: #fff;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    header h1 { font-size: 1.8rem; margin-bottom: .4rem; }
+    header p  { font-size: 1rem; opacity: .9; }
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,.2);
+      border-radius: 20px;
+      padding: .25rem .9rem;
+      font-size: .85rem;
+      margin-top: .6rem;
+    }
+    .controls {
+      max-width: 860px;
+      margin: 1.5rem auto .5rem;
+      padding: 0 1rem;
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .controls button {
+      padding: .5rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: opacity .2s;
+    }
+    .controls button:hover { opacity: .85; }
+    #btn-submit  { background: #107c10; color: #fff; }
+    #btn-reset   { background: #6b7280; color: #fff; }
+    #score-box {
+      max-width: 860px;
+      margin: 0 auto .5rem;
+      padding: 0 1rem;
+    }
+    #score-display {
+      background: #fff;
+      border-left: 4px solid #107c10;
+      border-radius: 6px;
+      padding: .75rem 1rem;
+      font-weight: 600;
+      display: none;
+    }
+    main {
+      max-width: 860px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+    }
+    .question-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.1);
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 1.2rem;
+    }
+    .question-card h3 {
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: #107c10;
+      margin-bottom: .5rem;
+    }
+    .question-card p.question-text {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .options label {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      padding: .55rem .75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1.5px solid #e5e7eb;
+      margin-bottom: .5rem;
+      transition: background .15s, border-color .15s;
+    }
+    .options label:hover { background: #f0fdf4; border-color: #86efac; }
+    .options input[type="radio"] { margin-top: .2rem; flex-shrink: 0; }
+    .options label.correct   { background: #d1fae5; border-color: #10b981; }
+    .options label.incorrect { background: #fee2e2; border-color: #ef4444; }
+    .options label.reveal    { background: #d1fae5; border-color: #10b981; }
+    .explanation {
+      margin-top: .8rem;
+      padding: .75rem 1rem;
+      background: #f0fdf4;
+      border-left: 3px solid #22c55e;
+      border-radius: 4px;
+      font-size: .9rem;
+      display: none;
+    }
+    .explanation.visible { display: block; }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: .85rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>AZ-500 Practice Exam 3</h1>
+  <p>Microsoft Azure Security Technologies — 2026 Edition</p>
+  <span class="badge">Questions 101–150 &nbsp;|&nbsp; Mixed Domains — All Four Security Areas</span>
+</header>
+
+<div class="controls">
+  <button id="btn-submit">Submit &amp; Score</button>
+  <button id="btn-reset">Reset Exam</button>
+</div>
+<div id="score-box"><div id="score-display"></div></div>
+
+<main id="exam"></main>
+
+<footer>AZ-500 Master Project — Educational use only. Not affiliated with Microsoft.</footer>
+
+<script>
+const questions = [
+  // ── DOMAIN 1 — IDENTITY & ACCESS (MIXED) ─────────────────────────────────
+  {
+    q: "A company uses Azure AD B2C for customer identity. They need to force customers to re-authenticate after 30 minutes of inactivity. Which B2C feature controls this?",
+    options: ["Conditional Access in B2C", "Token lifetime configuration in user flow or custom policy", "MFA enforcement in B2C user flow", "Azure AD session management policy"],
+    answer: 1,
+    explanation: "Azure AD B2C token lifetime configuration in user flows or custom policies (using the TokenLifetimePolicy) controls access token, refresh token, and session cookie lifetimes, enabling inactivity timeout behavior."
+  },
+  {
+    q: "Which Microsoft Entra feature enables Zero Trust Network Access (ZTNA) by providing secure private access to on-premises applications without requiring a VPN?",
+    options: ["Azure AD Application Proxy", "Microsoft Entra Private Access (Global Secure Access)", "Azure VPN Gateway Point-to-Site", "Azure Bastion for application access"],
+    answer: 1,
+    explanation: "Microsoft Entra Private Access (part of Global Secure Access) provides Zero Trust Network Access to private applications using identity-based, per-application micro-segmentation — replacing traditional VPN clients."
+  },
+  {
+    q: "A developer has a system-assigned managed identity on an Azure Function. The function needs to read blobs from a storage account. Which RBAC role should be assigned to the managed identity?",
+    options: ["Storage Account Contributor", "Storage Blob Data Reader", "Reader", "Storage Queue Data Reader"],
+    answer: 1,
+    explanation: "Storage Blob Data Reader grants read-only access to blob data. Storage Account Contributor gives management-plane access (not data-plane access to blob content). Always use least-privilege for managed identities."
+  },
+  {
+    q: "Which Azure AD Conditional Access policy setting allows administrators to define which sign-in sessions are persistent vs. non-persistent on the browser?",
+    options: ["Sign-in frequency control", "Persistent browser session control", "Token lifetime policy", "Remember MFA on trusted devices"],
+    answer: 1,
+    explanation: "Persistent browser session control in Conditional Access allows administrators to configure whether browser sessions remain signed in after the browser is closed, enabling non-persistent sessions on shared/unmanaged devices."
+  },
+  {
+    q: "An organization wants to prevent users from accessing Azure resources unless they are using a Managed Device. Azure AD has B2B guest users. What is a key consideration?",
+    options: ["Guests cannot be targeted by Conditional Access policies", "Device compliance requires guests to enroll their personal devices in the host tenant's Intune, which may not be possible", "Guests automatically comply with device policies", "Guest users are excluded from all Conditional Access by default"],
+    answer: 1,
+    explanation: "Requiring device compliance from B2B guests is complex because guests' devices are managed by their home tenant's MDM. Requiring compliance in the resource tenant's Intune would require guests to enroll their devices there."
+  },
+  {
+    q: "Which Azure AD feature provides a weekly summary email to administrators showing users at risk, risky sign-ins, and vulnerability reports?",
+    options: ["Azure AD Audit Log email alerts", "Microsoft Entra ID Protection — Weekly digest email", "Microsoft Defender for Identity alerts", "Azure Monitor alert rules for Azure AD"],
+    answer: 1,
+    explanation: "Microsoft Entra ID Protection (Identity Protection) sends a weekly digest email to administrators summarizing risk detections, risky users, and risky sign-ins detected during the past week."
+  },
+  {
+    q: "What is the correct order of processing when both Azure RBAC and Azure AD roles are assigned to a user?",
+    options: ["Azure AD roles take precedence over Azure RBAC", "Azure RBAC and Azure AD roles are independent and each applies to its own scope (Azure resources vs. directory operations)", "Azure RBAC overrides Azure AD roles", "They are merged into a single permission set"],
+    answer: 1,
+    explanation: "Azure RBAC controls access to Azure resources (subscriptions, resource groups, resources), while Azure AD roles control directory-level operations (user management, app registration). They are independent and non-overlapping."
+  },
+  {
+    q: "A security admin wants to block sign-ins from users whose accounts are detected as 'high risk' in Microsoft Entra ID Protection. Which policy type should they create?",
+    options: ["PIM role assignment policy", "Conditional Access policy with 'User risk' condition set to High, action Block access", "Azure AD Identity Protection User Risk policy (classic)", "Azure Monitor alert with auto-remediation"],
+    answer: 1,
+    explanation: "Modern best practice is to create a Conditional Access policy with User risk condition set to High and the Access control set to Block access. The classic Identity Protection risk policies are being deprecated in favor of Conditional Access."
+  },
+  {
+    q: "An organization has Azure AD Premium P1 only. Which feature from the following list requires P2 and is therefore NOT available to them?",
+    options: ["Conditional Access policies", "Self-service password reset (SSPR)", "Privileged Identity Management (PIM)", "Azure AD Application Proxy"],
+    answer: 2,
+    explanation: "PIM requires Azure AD Premium P2. Conditional Access, SSPR, and Application Proxy are available with P1 or in some cases Free/P1 tiers."
+  },
+  {
+    q: "Which Azure AD feature automatically detects and flags impossible travel, anonymous IP sign-ins, and atypical sign-in behavior as risk events?",
+    options: ["Azure AD Audit Logs", "Microsoft Entra ID Protection — Risk detections", "Microsoft Sentinel scheduled analytics rules", "Azure Monitor sign-in alerts"],
+    answer: 1,
+    explanation: "Microsoft Entra ID Protection uses ML to detect anomalous sign-in behaviors including impossible travel, sign-ins from anonymous IPs, password spray, and leaked credentials, generating risk detections for further action."
+  },
+  // ── DOMAIN 2 — SECURE NETWORKING (MIXED) ─────────────────────────────────
+  {
+    q: "An Azure Virtual Network spans multiple Azure regions connected via VNet peering. A security engineer wants to centrally apply security policies from a single point. What should they deploy?",
+    options: ["NSG on every subnet in every region", "Azure Firewall in each region with Firewall Manager policy", "Azure Front Door with WAF", "Azure DDoS Network Protection"],
+    answer: 1,
+    explanation: "Azure Firewall Manager with Azure Firewall deployed in each region (or in a Secured Virtual Hub via Virtual WAN) allows centralized management of firewall policies across multiple regions from a single control plane."
+  },
+  {
+    q: "Which Azure service protects against volumetric network attacks such as UDP floods and ICMP floods at the Microsoft network edge before they reach Azure VNets?",
+    options: ["Azure Firewall Premium IDPS", "Azure DDoS Infrastructure Protection (default, free)", "Azure DDoS Network Protection (Standard)", "Azure Front Door DDoS mitigation"],
+    answer: 1,
+    explanation: "Azure DDoS Infrastructure Protection (formerly Basic) is always-on and protects all Azure services against common volumetric attacks at the Microsoft network edge — it is free and applied automatically."
+  },
+  {
+    q: "Which NSG feature allows grouping of VM NICs into logical sets and writing NSG rules that reference the group name rather than individual IP addresses?",
+    options: ["IP Groups in Azure Firewall", "Application Security Groups (ASG) in NSG rules", "Azure Network Manager IP inventory", "Service tags in NSG rules"],
+    answer: 1,
+    explanation: "Application Security Groups (ASGs) allow grouping of VM NICs by application role and writing NSG rules referencing ASG names (e.g., allow WebServers to AppServers on port 8080) without specifying IP addresses."
+  },
+  {
+    q: "A company requires that all internet-bound traffic from Azure VMs passes through an on-premises security appliance for deep packet inspection. Which networking configuration achieves this?",
+    options: ["Configure NSG deny rules for internet access", "Configure forced tunneling (UDR with 0.0.0.0/0 via VPN/ExpressRoute next hop to on-premises)", "Enable Azure Private Link for all PaaS services", "Deploy Azure Firewall with DNAT rules"],
+    answer: 1,
+    explanation: "Forced tunneling redirects all internet-bound traffic from Azure VMs through an on-premises connection (VPN or ExpressRoute) for inspection by on-premises security appliances."
+  },
+  {
+    q: "Which feature of Azure Front Door protects against application layer (Layer 7) DDoS attacks and bot traffic in addition to geographic filtering?",
+    options: ["Azure Front Door Premium with WAF policy", "Azure DDoS Network Protection on the Front Door VNet", "Azure Firewall Premium in front of Front Door", "NSG on the Front Door backend pool"],
+    answer: 0,
+    explanation: "Azure Front Door with WAF policy (available in Standard and Premium tiers) provides L7 DDoS protection, bot protection, rate limiting, and geo-filtering for web applications at the global edge."
+  },
+  // ── DOMAIN 3 — COMPUTE, STORAGE & DATABASES (MIXED) ─────────────────────
+  {
+    q: "An AKS cluster uses Azure CNI networking. Which network policy option provides kernel-level enforcement of pod-to-pod network policies?",
+    options: ["Calico network policies", "Azure NPM (Network Policy Manager) policies", "Cilium eBPF-based policies", "All of the above are valid options for AKS"],
+    answer: 3,
+    explanation: "AKS supports multiple network policy engines: Azure NPM, Calico, and Cilium (eBPF-based). All provide pod-to-pod network policy enforcement; the choice depends on performance, feature, and kernel requirements."
+  },
+  {
+    q: "Which Azure SQL feature logs all database activity including successful and failed logins, queries, and data access to an Azure Storage account or Log Analytics workspace?",
+    options: ["Microsoft Defender for SQL", "Azure SQL Auditing", "Dynamic Data Masking", "SQL Server Audit (on-premises only)"],
+    answer: 1,
+    explanation: "Azure SQL Auditing tracks database events and writes them to an audit log in Azure Storage, Log Analytics, or Event Hub. It supports compliance requirements and forensic investigation."
+  },
+  {
+    q: "A storage account uses customer-managed keys (CMK) in Azure Key Vault. If the key is accidentally deleted, what happens to the data?",
+    options: ["The data is permanently deleted along with the key", "The data remains encrypted but is inaccessible until the key is recovered or replaced", "Azure automatically generates a new service-managed key", "The storage account reverts to no encryption"],
+    answer: 1,
+    explanation: "Storage encrypted with CMK becomes inaccessible if the key is deleted or revoked. The data remains on disk, encrypted. If Key Vault soft delete and purge protection are enabled, the key can be recovered within the retention period."
+  },
+  {
+    q: "Which Azure Container Registry feature signs container images cryptographically to ensure they have not been tampered with since being published?",
+    options: ["ACR geo-replication", "ACR Content Trust (Docker Content Trust / Notary)", "ACR vulnerability scanning", "ACR webhooks"],
+    answer: 1,
+    explanation: "Azure Container Registry supports Docker Content Trust (DCT) / Notary v1 for image signing. Signed images provide cryptographic assurance that the image was created by a trusted publisher and has not been altered."
+  },
+  {
+    q: "An Azure VM uses Azure Disk Encryption (ADE). What is the key wrapping hierarchy used?",
+    options: ["Data Encryption Key (DEK) encrypted by Key Encryption Key (KEK) stored in Key Vault", "BitLocker Recovery Password stored in Azure AD", "TPM chip encrypts the DEK directly without Key Vault", "Azure Storage Service Encryption wraps the disk key"],
+    answer: 0,
+    explanation: "ADE uses a key wrapping hierarchy: BitLocker (Windows) or DM-Crypt (Linux) generates a DEK which is wrapped (encrypted) by a Key Encryption Key (KEK) stored in Azure Key Vault, providing hardware-backed key protection."
+  },
+  {
+    q: "Which Azure SQL capability prevents SQL injection attacks at the database level by detecting and blocking suspicious queries?",
+    options: ["SQL Firewall rules", "Advanced Threat Protection (Defender for SQL) with SQL Injection detection", "Row-Level Security (RLS)", "Always Encrypted column encryption"],
+    answer: 1,
+    explanation: "Microsoft Defender for SQL (Advanced Threat Protection) includes SQL Injection detection that identifies and alerts on suspicious query patterns, including both SQL injection and SQL injection vulnerabilities."
+  },
+  {
+    q: "A compliance requirement states that Azure Storage blobs containing financial records must be retained for exactly 7 years with no deletion allowed. Which combination of features satisfies this?",
+    options: ["Blob soft delete with 7-year retention", "Immutability policy (time-based retention) with purge protection enabled on the storage account", "Azure Backup with 7-year retention vault", "Lifecycle management policy with delete action after 7 years"],
+    answer: 1,
+    explanation: "Time-based retention immutability policies lock blobs in WORM state for the retention period. With account-level immutability and purge protection, neither users nor Microsoft can delete the data before expiry, meeting regulatory requirements."
+  },
+  {
+    q: "Which Azure service provides a managed secrets store specifically designed for storing and managing secrets, connection strings, and API keys for applications running in Azure?",
+    options: ["Azure Key Vault (Secrets)", "Azure App Configuration", "Azure Managed HSM", "Azure AD App Registration client secrets"],
+    answer: 0,
+    explanation: "Azure Key Vault Secrets is the managed service for securely storing and accessing application secrets, connection strings, passwords, and API keys, with access control, auditing, and versioning."
+  },
+  {
+    q: "A Kubernetes pod requires access to an Azure SQL database. What is the most secure authentication method?",
+    options: ["Connection string with SQL admin credentials stored in a Kubernetes Secret", "Workload Identity for AKS — federated identity credential mapping pod to managed identity for Azure AD authentication", "Azure Key Vault CSI Driver to mount SQL password as a file", "Environment variable with base64-encoded credentials"],
+    answer: 1,
+    explanation: "AKS Workload Identity uses OpenID Connect federation to map a Kubernetes service account to an Azure managed identity, enabling passwordless Azure AD authentication to Azure SQL without storing credentials."
+  },
+  // ── DOMAIN 4 — SECURITY OPERATIONS (MIXED) ────────────────────────────────
+  {
+    q: "A security team needs to detect when an Azure VM is started outside of business hours. Which Microsoft Sentinel feature should they create?",
+    options: ["Watchlist with VM schedules", "Scheduled analytics rule querying Azure Activity logs for VM start events with time-based KQL filter", "Automation playbook triggered on all events", "Defender for Cloud JIT access policy"],
+    answer: 1,
+    explanation: "A Scheduled analytics rule in Microsoft Sentinel using KQL against Azure Activity logs can detect VM start operations (Microsoft.Compute/virtualMachines/start/action) and filter for events outside business hours."
+  },
+  {
+    q: "Which KQL function is used in Microsoft Sentinel to join two tables — for example, joining SecurityAlert with SecurityIncident — to correlate data?",
+    options: ["union", "join", "materialize", "extend"],
+    answer: 1,
+    explanation: "The 'join' operator in KQL combines rows from two tables based on matching column values, similar to SQL JOIN. It is used in Sentinel to correlate alerts with incidents, user data, or threat intelligence."
+  },
+  {
+    q: "A company's Azure subscription has 50+ resource groups. An administrator wants to enforce a specific tagging policy across all resource groups. Which is the most scalable approach?",
+    options: ["Manually tag each resource group", "Use Azure Policy 'Modify' effect with DeployIfNotExists on Management Group scope", "Create an ARM template for each resource group", "Use Azure Blueprint with tagging artifact"],
+    answer: 1,
+    explanation: "Assigning an Azure Policy with the 'Modify' or 'Append' effect at the Management Group scope automatically enforces tagging across all subscriptions and resource groups within the management group hierarchy."
+  },
+  {
+    q: "Microsoft Defender for Cloud shows a 'High' severity recommendation to 'Enable Azure Defender for Key Vault.' What threat does enabling this protect against?",
+    options: ["Unauthorized public internet access to Key Vault", "Unusual access patterns such as access from Tor exit nodes or high volume secret access that may indicate exfiltration", "Expiring certificates in Key Vault", "Missing firewall rules on Key Vault"],
+    answer: 1,
+    explanation: "Microsoft Defender for Key Vault detects unusual and potentially harmful attempts to access or exploit Key Vault accounts, such as access from suspicious IPs, unusual high-volume secret access, and anomalous API patterns."
+  },
+  {
+    q: "An organization needs to provide its SOC team with read-only access to all Microsoft Sentinel incidents and analytics rules without allowing modifications. Which role should be assigned?",
+    options: ["Microsoft Sentinel Reader", "Microsoft Sentinel Responder", "Microsoft Sentinel Contributor", "Log Analytics Reader"],
+    answer: 0,
+    explanation: "The Microsoft Sentinel Reader role provides read-only access to all Sentinel artifacts including incidents, analytics rules, workbooks, and data connectors without modification permissions."
+  },
+  {
+    q: "Which Azure feature provides a unified view of compliance across multiple Azure subscriptions and management groups using built-in and custom regulatory frameworks?",
+    options: ["Azure Security Center Secure Score", "Microsoft Defender for Cloud Regulatory Compliance dashboard", "Azure Compliance Manager (Microsoft Purview Compliance Manager)", "Azure Policy Compliance report"],
+    answer: 1,
+    explanation: "Defender for Cloud's Regulatory Compliance dashboard aggregates compliance data across subscriptions and management groups, showing posture against standards like ISO 27001, PCI DSS, SOC 2, and NIST SP 800-53."
+  },
+  {
+    q: "A security analyst discovers a Sentinel incident involving a compromised user account. Which response action can be taken directly from Microsoft Sentinel without leaving the portal?",
+    options: ["Reset the user's password in on-premises Active Directory", "Trigger an automation rule to run a Logic Apps playbook that disables the user in Azure AD", "Restore the user's VM from a backup snapshot", "Block the user's physical badge access"],
+    answer: 1,
+    explanation: "From Sentinel, an automation rule can trigger a Logic Apps playbook that calls the Microsoft Graph API to disable the user account in Azure AD, containing the incident without leaving the Sentinel interface."
+  },
+  {
+    q: "Azure Key Vault Firewall is enabled and set to 'Allow trusted Microsoft services.' Which scenario allows a Microsoft service to bypass the firewall?",
+    options: ["All Azure services are automatically trusted", "Only services listed in Microsoft's trusted services exception list (e.g., Azure Backup, Azure Disk Encryption, ARM for deployments) bypass the firewall", "Services in the same subscription bypass the firewall", "Services with a managed identity bypass the firewall automatically"],
+    answer: 1,
+    explanation: "Azure Key Vault's 'Allow trusted Microsoft services to bypass this firewall' exception only applies to a specific list of Azure services (Azure Backup, Azure Disk Encryption, ARM template deployments, etc.) — not all Azure services."
+  },
+  {
+    q: "An organization needs to store Azure Activity logs for an entire management group hierarchy for 1 year. Which solution is most cost-effective?",
+    options: ["Configure Diagnostic Settings on each subscription to send to a central Log Analytics workspace", "Use Azure Monitor Activity Log at the management group level with export to Azure Storage", "Create an Azure Policy to deploy Diagnostic Settings DeployIfNotExists to all subscriptions", "Manually configure log export per subscription using PowerShell"],
+    answer: 2,
+    explanation: "An Azure Policy with DeployIfNotExists effect can automatically deploy Diagnostic Settings on all subscriptions within a management group, ensuring consistent Activity Log forwarding to a central storage or Log Analytics workspace at scale."
+  },
+  {
+    q: "Which Microsoft Defender for Cloud feature provides attack path analysis to show how an attacker could move laterally from an exposed VM to sensitive data?",
+    options: ["Secure Score recommendations", "Attack path analysis (Cloud Security Explorer)", "Security alerts timeline", "Regulatory compliance gap analysis"],
+    answer: 1,
+    explanation: "Attack path analysis in Defender for Cloud's Cloud Security Explorer uses graph-based analysis to identify and visualize potential attack paths from exposed resources to sensitive targets, helping prioritize remediations."
+  },
+  {
+    q: "A company suspects their Azure Key Vault is being accessed by a compromised application. Which Azure service provides the most detailed audit trail of every Key Vault operation?",
+    options: ["Azure Activity Log", "Azure Key Vault Diagnostic Logs (AuditEvent category)", "Microsoft Defender for Key Vault alerts only", "Azure Monitor Metrics"],
+    answer: 1,
+    explanation: "Azure Key Vault Diagnostic Logs with the AuditEvent category record every operation performed against the Key Vault including the caller identity, operation type, result, and timestamp, providing a complete audit trail."
+  },
+  {
+    q: "Which Azure Sentinel analytics rule type uses machine learning to detect multi-stage attacks (kill chains) by correlating signals from multiple data sources?",
+    options: ["Scheduled query rule", "NRT (Near Real-Time) rule", "Fusion detection rule", "Threat intelligence matching rule"],
+    answer: 2,
+    explanation: "Fusion detection rules in Microsoft Sentinel use ML-based correlation to detect advanced multi-stage attacks (like command and control followed by exfiltration) by combining signals from disparate data sources."
+  },
+  {
+    q: "What does 'MTTA' and 'MTTR' measure in a Security Operations Center context?",
+    options: ["Mean Time To Analyze and Mean Time To Restore", "Mean Time To Acknowledge and Mean Time To Remediate (or Respond)", "Maximum Threat Tolerance Allowance and Minimum Threat Tolerance Range", "Mean Threat Triage Assessment and Mean Threat Triage Response"],
+    answer: 1,
+    explanation: "MTTA (Mean Time To Acknowledge) measures how quickly the SOC detects and acknowledges an incident. MTTR (Mean Time To Remediate/Respond) measures the average time to resolve security incidents. Reducing both is a key SOC goal."
+  },
+  {
+    q: "Which Azure service should be used to centrally manage and rotate database connection strings, API keys, and TLS certificates for applications across multiple Azure subscriptions?",
+    options: ["Azure App Configuration (feature flags only)", "Azure Key Vault with RBAC and soft-delete enabled", "Azure DevOps variable groups", "Azure Automation Runbook secrets"],
+    answer: 1,
+    explanation: "Azure Key Vault provides centralized, secure secrets management with versioning, access control, soft delete, and audit logging. It can be accessed from any Azure subscription with appropriate permissions."
+  },
+  {
+    q: "A security policy requires that all Azure management operations (create, update, delete) are logged and retained for 90 days. What should be configured?",
+    options: ["Enable Azure Monitor Metrics retention", "Configure Azure Activity Log diagnostic settings to send to Log Analytics or Storage with 90-day retention", "Enable Defender for Cloud standard tier", "Configure NSG flow logs"],
+    answer: 1,
+    explanation: "Azure Activity Log records all management-plane operations (ARM API calls). Configuring Diagnostic Settings to route Activity Logs to Log Analytics workspace or Azure Storage with appropriate retention settings meets this requirement."
+  },
+  {
+    q: "Which Defender for Cloud recommendation specifically addresses the risk of over-privileged Azure service principals with Owner permissions?",
+    options: ["'MFA should be enabled on accounts with owner permissions on your subscription'", "'Service principals with owner permissions should be removed'", "'There should be more than one owner assigned to your subscription'", "'Deprecated accounts with owner permissions should be removed'"],
+    answer: 1,
+    explanation: "Defender for Cloud has a recommendation to remove or review service principals (non-human identities) that have been granted Owner-level permissions, as they represent high-risk over-privileged identities."
+  },
+  {
+    q: "An analyst needs to search Microsoft Sentinel for all events where a specific user accessed Azure Key Vault in the last 30 days. Which table should they query?",
+    options: ["AzureActivity", "KeyVaultAuditLogs (or AzureDiagnostics with ResourceType KeyVaults)", "SecurityAlert", "OfficeActivity"],
+    answer: 1,
+    explanation: "Azure Key Vault audit events are stored in the AzureDiagnostics table (with ResourceType VAULTS) or the dedicated KeyVaultLogs table (if using resource-specific logging), capturing all access operations with caller identity."
+  },
+  {
+    q: "Azure Policy 'DeployIfNotExists' effect is used to automatically remediate non-compliant resources. What additional component is needed to trigger automatic remediation?",
+    options: ["Azure Automation runbook", "Remediation task in Azure Policy with a managed identity", "Azure Logic Apps workflow", "Azure Functions event trigger"],
+    answer: 1,
+    explanation: "For automatic remediation with DeployIfNotExists policies, a Remediation task must be created (manually or via an Azure Policy Automation setting) and the policy assignment needs a managed identity with permissions to deploy the required resources."
+  },
+  {
+    q: "Which Microsoft Sentinel workbook template provides an overview of Microsoft Defender for Cloud alerts, their severity distribution, and resource mapping?",
+    options: ["Azure AD Audit Logs workbook", "Microsoft Defender for Cloud — Events workbook", "Azure Network Watcher workbook", "Microsoft Sentinel Overview workbook"],
+    answer: 1,
+    explanation: "Microsoft Sentinel includes a built-in 'Microsoft Defender for Cloud — Events' workbook template that visualizes Defender for Cloud security alerts, severity distributions, affected resources, and trends over time."
+  },
+  {
+    q: "A DevSecOps team wants to prevent secrets from being committed to a GitHub repository used for Azure IaC (Bicep/ARM) files. Which tool provides secret scanning in GitHub?",
+    options: ["GitHub Advanced Security — Secret scanning", "Azure DevOps Credential Scanner (CredScan)", "Microsoft Defender for DevOps (via Defender for Cloud)", "Both A and C are valid options"],
+    answer: 3,
+    explanation: "Both GitHub Advanced Security Secret scanning (native to GitHub) and Microsoft Defender for DevOps (which integrates with Defender for Cloud to surface GitHub/Azure DevOps security findings) provide secret detection in repositories."
+  },
+  {
+    q: "Which Zero Trust principle is implemented when Azure SQL uses Row-Level Security (RLS) to ensure users can only access rows of data relevant to their user context?",
+    options: ["Verify explicitly", "Use least privilege access", "Assume breach", "Never trust, always verify perimeter"],
+    answer: 1,
+    explanation: "Row-Level Security implements the Zero Trust principle of 'Use least privilege access' by ensuring each user can only access the specific data rows they are authorized for, minimizing data exposure."
+  },
+  {
+    q: "What is the Azure Security Benchmark (ASB) now called, and where is it the default policy initiative in Defender for Cloud?",
+    options: ["It was renamed to CIS Azure Benchmark", "It was renamed to Microsoft Cloud Security Benchmark (MCSB) and is the default initiative in Defender for Cloud", "It was deprecated and replaced by NIST SP 800-53", "It is now called Azure Policy Security Baseline"],
+    answer: 1,
+    explanation: "The Azure Security Benchmark (ASB) was rebranded to the Microsoft Cloud Security Benchmark (MCSB) in 2022/2023 and remains the default security policy initiative applied in Microsoft Defender for Cloud."
+  },
+  {
+    q: "An Azure Key Vault has an access policy granting a specific user 'Get' and 'List' permissions on secrets. The user cannot create or delete secrets. Which additional permission would allow the user to create new secrets?",
+    options: ["'Backup' permission", "'Set' permission", "'Recover' permission", "'Purge' permission"],
+    answer: 1,
+    explanation: "In Azure Key Vault access policies, 'Set' is the permission required to create or update a secret. 'Get' retrieves a secret value, 'List' shows secret names, and 'Delete' removes secrets."
+  },
+  {
+    q: "Microsoft Defender for Cloud shows a recommendation to 'Remediate vulnerabilities in container images.' What does this recommendation address?",
+    options: ["Missing security updates on the container host OS", "Known CVE vulnerabilities in the packages and libraries within container images in Azure Container Registry", "Misconfigured Kubernetes RBAC settings", "Lack of network policies in AKS namespaces"],
+    answer: 1,
+    explanation: "Defender for Containers scans container images in ACR for CVE vulnerabilities in OS packages and application libraries, and the recommendation directs teams to rebuild images with patched base images or dependencies."
+  },
+  {
+    q: "A company uses Azure AD Connect with Password Hash Sync (PHS). After enabling Microsoft Entra ID Protection, which sign-in risk detection requires no additional on-premises infrastructure?",
+    options: ["On-premises AD audit log analysis", "Password spray detection using the Microsoft Entra ID cloud intelligence (PHS enables leaked credentials detection)", "ADFS claims analysis", "On-premises MFA server integration"],
+    answer: 1,
+    explanation: "With Password Hash Sync, Microsoft Entra ID Protection can compare hashed passwords against Microsoft's leaked credentials database (from breach data), enabling leaked credential detection without any on-premises infrastructure changes."
+  },
+  {
+    q: "An organization wants to monitor changes to Azure RBAC role assignments across all subscriptions in real time. Which Azure service and data source combination provides this capability?",
+    options: ["Azure Monitor Metrics for RBAC changes", "Microsoft Sentinel with Azure Activity Log connector — query for Microsoft.Authorization/roleAssignments/write events", "Microsoft Defender for Cloud Secure Score changes", "Azure AD Audit Logs for directory role changes only"],
+    answer: 1,
+    explanation: "Azure Activity Log records all ARM operations including role assignment changes (Microsoft.Authorization/roleAssignments/write). The Microsoft Sentinel Azure Activity connector ingests these logs, enabling real-time KQL-based alerting on RBAC changes."
+  }
+];
+
+function buildExam() {
+  const exam = document.getElementById('exam');
+  exam.innerHTML = '';
+  questions.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.dataset.index = idx;
+    card.dataset.answer = item.answer;
+
+    const label = document.createElement('h3');
+    label.textContent = `Question ${idx + 1} of ${questions.length} · Series Q${idx + 101}`;
+    card.appendChild(label);
+
+    const qText = document.createElement('p');
+    qText.className = 'question-text';
+    qText.textContent = item.q;
+    card.appendChild(qText);
+
+    const optDiv = document.createElement('div');
+    optDiv.className = 'options';
+    item.options.forEach((opt, oi) => {
+      const lbl = document.createElement('label');
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = `q${idx}`;
+      radio.value = oi;
+      lbl.appendChild(radio);
+      lbl.appendChild(document.createTextNode(String.fromCharCode(65 + oi) + '. ' + opt));
+      optDiv.appendChild(lbl);
+    });
+    card.appendChild(optDiv);
+
+    const exp = document.createElement('div');
+    exp.className = 'explanation';
+    exp.textContent = '💡 ' + item.explanation;
+    card.appendChild(exp);
+
+    exam.appendChild(card);
+  });
+}
+
+document.getElementById('btn-submit').addEventListener('click', () => {
+  let score = 0;
+  document.querySelectorAll('.question-card').forEach(card => {
+    const idx = parseInt(card.dataset.index);
+    const correct = parseInt(card.dataset.answer);
+    const selected = card.querySelector(`input[name="q${idx}"]:checked`);
+    const labels = card.querySelectorAll('.options label');
+    labels.forEach(l => { l.style.pointerEvents = 'none'; });
+    labels[correct].classList.add('reveal');
+    if (selected) {
+      const val = parseInt(selected.value);
+      if (val === correct) {
+        score++;
+        labels[val].classList.add('correct');
+      } else {
+        labels[val].classList.add('incorrect');
+      }
+    }
+    card.querySelector('.explanation').classList.add('visible');
+  });
+  const pct = Math.round(score / questions.length * 100);
+  const sd = document.getElementById('score-display');
+  sd.style.display = 'block';
+  sd.textContent = `Score: ${score} / ${questions.length} (${pct}%) — ${pct >= 70 ? '✅ Pass' : '❌ Keep studying!'}`;
+  sd.scrollIntoView({ behavior: 'smooth' });
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  document.getElementById('score-display').style.display = 'none';
+  buildExam();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+buildExam();
+</script>
+</body>
+</html>
