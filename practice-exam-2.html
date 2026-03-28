@@ -982,8 +982,9 @@ function handleAnswer(qi, oi) {
 
   // If the chosen option was wrong, also clearly highlight the correct one
   if (!isCorrect) {
-    document.getElementById(`opt-${qi}-${QUESTIONS[qi].correct}`).classList.remove('reveal-correct');
-    document.getElementById(`opt-${qi}-${QUESTIONS[qi].correct}`).classList.add('correct');
+    const correctBtn = document.getElementById(`opt-${qi}-${QUESTIONS[qi].correct}`);
+    correctBtn.classList.remove('reveal-correct');
+    correctBtn.classList.add('correct');
   }
 
   document.getElementById(`exp-${qi}`).classList.add('show');
