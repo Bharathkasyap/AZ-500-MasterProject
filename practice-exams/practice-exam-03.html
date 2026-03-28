@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AZ-500 Practice Exam 3 — 50 Questions</title>
+<style>
+  :root {
+    --azure-blue: #0078d4;
+    --azure-dark: #003f8f;
+    --azure-light: #e6f3fb;
+    --correct: #107c10;
+    --correct-bg: #dff6dd;
+    --wrong: #a80000;
+    --wrong-bg: #fde7e9;
+    --neutral: #605e5c;
+    --card-bg: #ffffff;
+    --page-bg: #f3f2f1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--page-bg); color: #323130; }
+
+  header {
+    background: linear-gradient(135deg, var(--azure-dark), var(--azure-blue));
+    color: #fff;
+    padding: 24px 32px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+  header p  { font-size: 0.92rem; opacity: 0.9; }
+
+  #progress-wrap {
+    background: #fff;
+    padding: 12px 32px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  #progress-label { font-size: 0.9rem; font-weight: 600; white-space: nowrap; color: var(--azure-dark); min-width: 140px; }
+  #progress-bar-bg { flex: 1; background: #e1dfdd; border-radius: 8px; height: 10px; overflow: hidden; }
+  #progress-bar    { height: 100%; background: var(--azure-blue); border-radius: 8px; transition: width 0.4s ease; width: 0%; }
+
+  #exam-area { max-width: 820px; margin: 40px auto; padding: 0 16px 80px; }
+
+  .question-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
+
+  .domain-badge {
+    display: inline-block;
+    background: var(--azure-light);
+    color: var(--azure-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .question-text { font-size: 1.05rem; font-weight: 600; line-height: 1.6; margin-bottom: 24px; }
+
+  .options-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+  .option-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 2px solid #e1dfdd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    user-select: none;
+  }
+  .option-item:hover:not(.locked) { border-color: var(--azure-blue); background: var(--azure-light); }
+  .option-item input[type="radio"] { accent-color: var(--azure-blue); margin-top: 3px; flex-shrink: 0; cursor: pointer; }
+  .option-letter { font-weight: 700; color: var(--azure-blue); min-width: 20px; flex-shrink: 0; }
+  .option-text   { font-size: 0.96rem; line-height: 1.5; }
+
+  .option-item.selected  { border-color: var(--azure-blue); background: var(--azure-light); }
+  .option-item.correct   { border-color: var(--correct); background: var(--correct-bg); }
+  .option-item.wrong     { border-color: var(--wrong);   background: var(--wrong-bg); }
+  .option-item.locked    { cursor: default; }
+
+  .result-icon { margin-left: auto; font-size: 1.2rem; flex-shrink: 0; }
+
+  .explanation-box {
+    margin-top: 20px;
+    padding: 16px;
+    background: #fffbe6;
+    border-left: 4px solid #ffb900;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.93rem;
+    line-height: 1.6;
+    display: none;
+  }
+  .explanation-box strong { color: #7a5c00; }
+
+  .btn-row { margin-top: 28px; display: flex; gap: 12px; justify-content: flex-end; }
+
+  .btn {
+    padding: 11px 28px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary  { background: var(--azure-blue); color: #fff; }
+  .btn-primary:hover  { opacity: 0.9; }
+  .btn-primary:disabled { background: #a19f9d; cursor: not-allowed; opacity: 1; }
+  .btn-success  { background: var(--correct); color: #fff; }
+  .btn-success:hover  { opacity: 0.9; }
+  .btn-outline  { background: #fff; color: var(--azure-blue); border: 2px solid var(--azure-blue); }
+  .btn-outline:hover  { background: var(--azure-light); }
+
+  #results-page { display: none; max-width: 820px; margin: 40px auto; padding: 0 16px 80px; }
+
+  .results-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 40px 36px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  .results-card h2 { font-size: 2rem; margin-bottom: 8px; }
+  .score-circle {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 24px auto;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .score-circle span { font-size: 0.9rem; font-weight: 400; }
+  .pass { background: var(--correct); }
+  .fail { background: var(--wrong); }
+
+  .score-summary { font-size: 1.1rem; margin-bottom: 8px; }
+  .verdict { font-size: 1.3rem; font-weight: 700; margin-bottom: 28px; }
+  .verdict.pass-text { color: var(--correct); }
+  .verdict.fail-text { color: var(--wrong); }
+
+  .breakdown-table { width: 100%; border-collapse: collapse; margin-top: 28px; text-align: left; }
+  .breakdown-table th { background: var(--azure-blue); color: #fff; padding: 10px 14px; font-size: 0.9rem; }
+  .breakdown-table td { padding: 8px 14px; border-bottom: 1px solid #e1dfdd; font-size: 0.88rem; }
+  .breakdown-table tr:hover td { background: var(--azure-light); }
+  .tag-correct { color: var(--correct); font-weight: 700; }
+  .tag-wrong   { color: var(--wrong);   font-weight: 700; }
+
+  .retake-btn-wrap { margin-top: 32px; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.2rem; }
+    .question-card { padding: 20px 16px; }
+    .btn { padding: 10px 18px; }
+    .results-card { padding: 28px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AZ-500 Practice Exam 3</h1>
+  <p>Microsoft Azure Security Technologies &nbsp;|&nbsp; 50 Questions &nbsp;|&nbsp; Passing Score: 70%</p>
+</header>
+
+<div id="progress-wrap">
+  <div id="progress-label">Question 1 of 50</div>
+  <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+</div>
+
+<div id="exam-area">
+  <div class="question-card" id="question-card">
+    <div class="domain-badge" id="q-domain"></div>
+    <div class="question-text" id="q-text"></div>
+    <ul class="options-list" id="q-options"></ul>
+    <div class="explanation-box" id="q-explanation"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-submit" onclick="submitAnswer()" disabled>Submit Answer</button>
+    </div>
+  </div>
+</div>
+
+<div id="results-page">
+  <div class="results-card">
+    <h2>🎓 Exam Complete!</h2>
+    <div class="score-circle" id="score-circle">
+      <div id="score-pct">--</div>
+      <span id="score-fraction">-- / 50</span>
+    </div>
+    <div class="score-summary" id="score-summary"></div>
+    <div class="verdict" id="score-verdict"></div>
+    <div class="retake-btn-wrap">
+      <button class="btn btn-outline" onclick="retakeExam()">🔄 Retake Exam</button>
+    </div>
+    <table class="breakdown-table">
+      <thead>
+        <tr><th>#</th><th>Domain</th><th>Question (snippet)</th><th>Result</th></tr>
+      </thead>
+      <tbody id="breakdown-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // ── DOMAIN 1 — MANAGE IDENTITY AND ACCESS (Q1–Q13) ──
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Your company wants to block all legacy authentication protocols (IMAP, POP3, SMTP Basic Auth) across the entire tenant. Which is the recommended approach?",
+    options: [
+      "Disable each protocol individually in Exchange Online",
+      "Create a Conditional Access policy targeting 'Other clients' and 'Exchange ActiveSync clients' with a Block grant control",
+      "Enable Security Defaults on the tenant",
+      "Configure per-user MFA for all users"
+    ],
+    correct: 1,
+    explanation: "A Conditional Access policy blocking the 'Other clients' and 'Exchange ActiveSync clients' client app conditions effectively blocks all legacy authentication. Security Defaults also block legacy auth but offer less granularity."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "An organization has on-premises Active Directory and Microsoft Entra ID. They need users to authenticate against on-premises AD in real time when signing into cloud apps, without synchronizing password hashes to the cloud. Which authentication method should they configure?",
+    options: [
+      "Password Hash Synchronization (PHS)",
+      "Pass-through Authentication (PTA)",
+      "Active Directory Federation Services (AD FS)",
+      "Certificate-based authentication (CBA)"
+    ],
+    correct: 1,
+    explanation: "Pass-through Authentication validates passwords directly against on-premises AD in real time without storing password hashes in the cloud. A lightweight agent on-premises handles the authentication request."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "A developer creates an app registration in Microsoft Entra ID. The app needs to access Microsoft Graph to read user profiles. A non-admin user tries to grant consent but receives an error. What should the admin configure to allow a controlled consent workflow?",
+    options: [
+      "Grant the user the Application Administrator role",
+      "Enable the admin consent workflow so users can request consent and admins can approve",
+      "Set user consent to 'Allow user consent for all apps'",
+      "Register the app as a multi-tenant application"
+    ],
+    correct: 1,
+    explanation: "The admin consent workflow allows users to request access to apps requiring permissions they cannot consent to. Admins receive the request and can approve or deny it, maintaining control while reducing friction."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Which Microsoft Entra ID feature enforces that a user must be in a specific group AND use a compliant device AND complete MFA before accessing a sensitive application?",
+    options: [
+      "Azure RBAC with multiple role assignments",
+      "Conditional Access policy with multiple grant controls set to 'Require all selected controls'",
+      "PIM with activation requirements",
+      "Identity Protection sign-in risk policy"
+    ],
+    correct: 1,
+    explanation: "A Conditional Access policy can combine multiple grant controls (require MFA, require compliant device) and apply them to specific groups. Setting grant controls to 'Require all selected controls' enforces AND logic."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "You need to allow Azure DevOps pipelines to deploy resources to Azure without using service principal secrets or certificates. Which credential type should you configure?",
+    options: [
+      "Service principal with client secret stored in Azure Key Vault",
+      "Workload identity federation (federated credential) on the app registration",
+      "Managed identity assigned directly to Azure DevOps",
+      "Personal access token (PAT) with full scope"
+    ],
+    correct: 1,
+    explanation: "Workload identity federation allows external identity providers (like Azure DevOps, GitHub Actions) to exchange their tokens for Entra ID tokens without managing secrets or certificates. It uses OpenID Connect trust."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Microsoft Entra Permissions Management (formerly CloudKnox) provides visibility into permissions across multi-cloud environments. What is its PRIMARY function?",
+    options: [
+      "Managing Azure RBAC role assignments",
+      "Discovering and right-sizing over-provisioned permissions across Azure, AWS, and GCP",
+      "Enforcing Conditional Access policies across clouds",
+      "Synchronizing identities between Azure and AWS"
+    ],
+    correct: 1,
+    explanation: "Entra Permissions Management provides a Permissions Creep Index, discovers unused and excessive permissions across Azure, AWS, and GCP, and enables right-sizing to enforce least privilege across multi-cloud environments."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "A Conditional Access policy is configured in 'Report-only' mode. What does this mean?",
+    options: [
+      "The policy is disabled and has no effect",
+      "The policy evaluates sign-ins and logs what would happen (grant/block) without actually enforcing it",
+      "The policy only applies to users in the 'Report-only' group",
+      "The policy generates a compliance report but does not evaluate sign-ins"
+    ],
+    correct: 1,
+    explanation: "Report-only mode evaluates every sign-in against the policy and logs the result (would have been granted or blocked) in the sign-in logs, without enforcing the policy. This is used to assess impact before enabling the policy."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Which Microsoft Entra role allows a user to manage ONLY the users and groups within a specific Administrative Unit, without tenant-wide administrative access?",
+    options: [
+      "Global Administrator scoped to the AU",
+      "User Administrator assigned at the Administrative Unit scope",
+      "Helpdesk Administrator with directory-level assignment",
+      "Security Administrator scoped to a resource group"
+    ],
+    correct: 1,
+    explanation: "Administrative Units allow scoping directory roles (like User Administrator, Groups Administrator, Helpdesk Administrator) to a specific set of users/groups, enabling delegated administration without full tenant permissions."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "An Access Review in Microsoft Entra ID is configured with auto-apply enabled and set to 'Remove access' for non-responded reviews. What happens when a reviewer does not respond within the review period?",
+    options: [
+      "The user's access remains unchanged until an admin manually intervenes",
+      "The user's access is automatically removed because auto-apply removes access for non-responded reviews",
+      "The user receives an extended review period of 30 additional days",
+      "The review is escalated to the Global Administrator"
+    ],
+    correct: 1,
+    explanation: "When auto-apply is enabled with a 'Remove access' action for non-responses, any review item where the reviewer did not respond will automatically have the user's access removed at the end of the review period."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "You need to ensure all guest (B2B) users in your tenant re-authenticate every 8 hours when accessing sensitive applications, regardless of their session token status. Which Conditional Access control achieves this?",
+    options: [
+      "Grant control: Require MFA",
+      "Session control: Sign-in frequency set to 8 hours",
+      "Grant control: Require password change",
+      "Session control: Persistent browser session disabled"
+    ],
+    correct: 1,
+    explanation: "The sign-in frequency session control forces users to re-authenticate at specified intervals (e.g., every 8 hours). Targeting this policy to guest users and sensitive apps ensures periodic re-authentication."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Which Microsoft Entra feature creates dynamic groups whose membership is automatically managed based on user attributes such as department, job title, or country?",
+    options: [
+      "Administrative Units",
+      "Dynamic membership rules using user attribute expressions",
+      "Entitlement Management catalog assignment",
+      "PIM group assignment"
+    ],
+    correct: 1,
+    explanation: "Dynamic groups use rule expressions (e.g., user.department -eq 'Engineering') to automatically add or remove members based on Entra ID user attributes. No manual membership management is needed."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "A company deploys Microsoft Entra ID Protection. A user's risk level is elevated to 'High' due to detected leaked credentials on the dark web. What is the recommended remediation?",
+    options: [
+      "The admin should delete and recreate the user account",
+      "A user risk policy should enforce a secure password change via SSPR, which dismisses the risk after remediation",
+      "The user should simply sign out and sign back in",
+      "Disable Identity Protection to reset all risk levels"
+    ],
+    correct: 1,
+    explanation: "When Identity Protection detects leaked credentials, a user risk policy can enforce a secure password change via Self-Service Password Reset. Once the user changes their password, the risk is dismissed as remediated."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Which Microsoft Entra Connect feature allows you to filter which on-premises organizational units (OUs) are synchronized to the cloud?",
+    options: [
+      "Password writeback",
+      "OU-based filtering in Entra Connect sync configuration",
+      "Azure AD Connect Health",
+      "Group-based licensing"
+    ],
+    correct: 1,
+    explanation: "Entra Connect provides OU-based filtering during setup (or reconfiguration) that allows you to select specific OUs to include or exclude from synchronization, controlling which users and groups sync to the cloud."
+  },
+
+  // ── DOMAIN 2 — SECURE NETWORKING (Q14–Q25) ──
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "You need to allow Azure VMs in Subnet-A to communicate with VMs in Subnet-B within the same VNet, but block all traffic between Subnet-A and Subnet-C. What should you configure?",
+    options: [
+      "VNet peering between Subnet-A and Subnet-B",
+      "Network Security Groups on Subnet-A and Subnet-C with deny rules for cross-subnet traffic",
+      "A separate VNet for Subnet-C with no peering",
+      "Azure Firewall between all three subnets"
+    ],
+    correct: 1,
+    explanation: "By default, all subnets within a VNet can communicate. NSG rules on Subnet-A (outbound deny to Subnet-C CIDR) and Subnet-C (inbound deny from Subnet-A CIDR) block specific inter-subnet traffic while allowing A↔B."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "An Azure Application Gateway is configured with a WAF policy in Prevention mode. A legitimate API request is being blocked by the SQL injection rule (942100). What is the recommended approach to allow this request?",
+    options: [
+      "Switch the entire WAF to Detection mode",
+      "Create a WAF exclusion rule for the specific request attribute triggering the false positive",
+      "Delete the SQL injection rule set entirely",
+      "Disable the WAF and rely on NSG rules"
+    ],
+    correct: 1,
+    explanation: "WAF exclusion rules allow you to exclude specific request headers, cookies, or query string parameters from specific rule evaluations. This resolves false positives without disabling the entire rule set or switching modes."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "Which Azure networking feature allows you to associate multiple IP configurations, including a public IP and multiple private IPs, with a single network interface?",
+    options: [
+      "Network Security Group with multiple rules",
+      "IP configuration on the network interface (NIC) resource",
+      "Azure Load Balancer frontend IP",
+      "Azure DNS private zone"
+    ],
+    correct: 1,
+    explanation: "Azure NICs support multiple IP configurations. Each IP configuration can have its own private IP and optionally a public IP. This is useful for hosting multiple websites or services on a single VM."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "You configure VNet peering between VNet-A and VNet-B. Resources in VNet-A can reach VNet-B, but VNet-B resources cannot reach VNet-A. What is the most likely cause?",
+    options: [
+      "VNet peering is unidirectional by default; you must also create a peering from VNet-B to VNet-A",
+      "NSG rules on VNet-A are blocking inbound traffic from VNet-B",
+      "VNet-B has a conflicting address space",
+      "Azure Firewall is blocking the traffic"
+    ],
+    correct: 0,
+    explanation: "VNet peering requires a peering link on BOTH sides. If you only created a peering from VNet-A to VNet-B but not from VNet-B to VNet-A, the peering status shows 'Initiated' (not 'Connected') and traffic flows only one way."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "Which Azure Firewall feature allows you to centrally manage firewall policies across multiple Azure Firewall instances in different regions?",
+    options: [
+      "Azure Firewall diagnostic settings",
+      "Azure Firewall Manager with Firewall Policy",
+      "Azure Monitor workbooks",
+      "Network Security Group flow logs"
+    ],
+    correct: 1,
+    explanation: "Azure Firewall Manager provides central management of Azure Firewall instances using hierarchical Firewall Policies. Parent policies set base rules, and child policies can add region-specific rules — enabling consistent security across regions."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "A company uses ExpressRoute to connect their on-premises network to Azure. They also need to ensure that traffic between their on-premises network and Azure is encrypted. What should they enable?",
+    options: [
+      "ExpressRoute Global Reach",
+      "MACsec encryption on ExpressRoute Direct ports",
+      "Azure VPN Gateway in coexistence with ExpressRoute",
+      "ExpressRoute private peering only (traffic is encrypted by default)"
+    ],
+    correct: 1,
+    explanation: "MACsec (IEEE 802.1AE) encrypts Layer 2 traffic between on-premises edge devices and Microsoft edge routers on ExpressRoute Direct ports. Standard ExpressRoute does NOT encrypt traffic by default."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "You need to log all allowed and denied traffic through NSGs for compliance auditing. Which Network Watcher feature should you enable?",
+    options: [
+      "Connection Monitor",
+      "NSG flow logs",
+      "IP flow verify",
+      "Packet capture"
+    ],
+    correct: 1,
+    explanation: "NSG flow logs record information about IP traffic flowing through NSGs, including source/destination IPs, ports, protocol, and whether the traffic was allowed or denied. Logs are stored in a storage account and can be analyzed with Traffic Analytics."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "An Azure Virtual WAN hub is deployed. Which built-in security feature allows routing traffic from all branches and VNets through a central security appliance?",
+    options: [
+      "Azure Virtual WAN routing intent and routing policies",
+      "VNet peering with gateway transit",
+      "Azure DNS Private Resolver",
+      "ExpressRoute FastPath"
+    ],
+    correct: 0,
+    explanation: "Routing intent and routing policies in Azure Virtual WAN enable you to send all internet-bound and private traffic through a security solution (Azure Firewall or third-party NVA) deployed in the Virtual WAN hub."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "You deployed a Private Endpoint for Azure SQL Database in Subnet-A. Can you apply an NSG to the Private Endpoint to control access?",
+    options: [
+      "No — NSGs have no effect on Private Endpoint traffic",
+      "Yes — NSGs can be applied to subnets containing Private Endpoints (feature now generally available)",
+      "Only if using Azure Firewall Premium",
+      "Only for storage Private Endpoints, not SQL"
+    ],
+    correct: 1,
+    explanation: "NSG support for Private Endpoints is now generally available. You can apply NSG rules to subnets containing Private Endpoints to control which sources can reach the private endpoint's IP address."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "Which Azure service provides global Layer 7 load balancing with built-in DDoS protection, SSL offloading, and URL-based routing?",
+    options: [
+      "Azure Load Balancer (Standard)",
+      "Azure Traffic Manager",
+      "Azure Application Gateway",
+      "Azure Front Door"
+    ],
+    correct: 3,
+    explanation: "Azure Front Door provides global Layer 7 load balancing across regions with built-in DDoS protection, SSL offloading, URL-based routing, WAF integration, and caching — optimized for global web applications."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "A Service Endpoint Policy restricts which specific Azure Storage accounts can be accessed from a subnet that has a Microsoft.Storage service endpoint enabled. What is the PRIMARY security benefit?",
+    options: [
+      "It encrypts traffic to the storage accounts",
+      "It prevents data exfiltration to unauthorized storage accounts in the same or different tenants",
+      "It replaces the need for storage account firewall rules",
+      "It enables private IP-based access to storage"
+    ],
+    correct: 1,
+    explanation: "Service Endpoint Policies prevent data exfiltration by restricting which specific storage accounts are reachable from the VNet subnet. Without this, a service endpoint would allow access to ANY storage account in Azure."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "An Azure Firewall Policy has a parent policy and a child policy. The parent policy has a network rule allowing TCP 443. The child policy has a network rule denying TCP 443 from the same source. Which rule takes effect?",
+    options: [
+      "The child policy deny rule overrides the parent allow rule",
+      "The parent policy rules always take priority over child policy rules",
+      "The rules merge and the one with the higher priority number wins",
+      "An error occurs because conflicting rules are not allowed"
+    ],
+    correct: 1,
+    explanation: "In Azure Firewall Policy hierarchy, parent policy rules always take priority and are processed first. Child policies can add additional rules but cannot override parent policy rules. This ensures centralized security governance."
+  },
+
+  // ── DOMAIN 3 — SECURE COMPUTE, STORAGE & DATABASES (Q26–Q37) ──
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "You need to encrypt the temporary disk, caches, and data flows between compute and storage for an Azure VM. Which encryption option covers all of these?",
+    options: [
+      "Azure Disk Encryption (ADE) — encrypts OS and data disks only",
+      "Encryption at host — encrypts temp disks, caches, and OS/data disk flows",
+      "Server-Side Encryption (SSE) with customer-managed keys",
+      "Azure Confidential Computing with AMD SEV-SNP"
+    ],
+    correct: 1,
+    explanation: "Encryption at host ensures that data stored on the VM host, including temp disks and OS/data disk caches, is encrypted at rest and flows encrypted to the Storage service. ADE only covers OS and data disks, not temp disks."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "A company needs to prevent administrators from reading sensitive columns (like Social Security numbers) in Azure SQL Database, where encryption and decryption happen entirely on the client side. Which feature should they use?",
+    options: [
+      "Transparent Data Encryption (TDE)",
+      "Dynamic Data Masking",
+      "Always Encrypted",
+      "Row-Level Security"
+    ],
+    correct: 2,
+    explanation: "Always Encrypted ensures that sensitive data is never in plaintext inside the database engine. Encryption/decryption occurs in the client driver. Even DBAs with full SQL permissions see only ciphertext."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "An AKS cluster uses Azure CNI networking. You need to enforce that pods in the 'frontend' namespace can only communicate with pods in the 'backend' namespace on port 8080, and nothing else. What should you apply?",
+    options: [
+      "Azure Firewall rules between namespaces",
+      "Kubernetes NetworkPolicy resources with ingress/egress rules referencing namespace selectors and port 8080",
+      "AKS node pool separation with different VNet subnets",
+      "Pod Security Standards (PSA) restricted profile"
+    ],
+    correct: 1,
+    explanation: "Kubernetes NetworkPolicy resources define pod-level traffic rules using label selectors and namespace selectors. With Azure CNI and Calico (or Azure Network Policy), you can restrict traffic between namespaces at the port level."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which Azure service scans Azure Container Registry images for OS and application vulnerabilities, providing remediation recommendations?",
+    options: [
+      "Azure Policy for containers",
+      "Microsoft Defender for Containers (integrated Qualys/Trivy scanning)",
+      "AKS Image Cleaner",
+      "Azure Container Instances security scanner"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for Containers includes vulnerability scanning for container images in Azure Container Registry using an integrated scanner. It identifies OS and application-layer vulnerabilities with severity ratings and remediation guidance."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "A storage account has blob versioning enabled. A user accidentally overwrites an important blob. How can the original version be recovered?",
+    options: [
+      "Restore from Azure Backup",
+      "Copy the previous version blob to the current version using the storage API or portal",
+      "Contact Microsoft support for data recovery",
+      "Original data is permanently lost once overwritten"
+    ],
+    correct: 1,
+    explanation: "With blob versioning enabled, every write operation creates a new version. Previous versions are retained and can be listed, downloaded, or promoted to the current version by copying the previous version over the current blob."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which Azure SQL Database feature provides automatic performance tuning by analyzing query execution plans, creating and dropping indexes, and parameterizing queries?",
+    options: [
+      "Azure SQL Automatic tuning",
+      "Query Performance Insight",
+      "Azure SQL Analytics",
+      "Intelligent Insights"
+    ],
+    correct: 0,
+    explanation: "Automatic tuning in Azure SQL Database continuously monitors query performance and automatically applies tuning actions: creating indexes, dropping unused indexes, and forcing/unforcing query plan parameterization."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "You need to create an Azure Key Vault that uses Azure RBAC for access management instead of vault access policies. Which setting must be selected during creation?",
+    options: [
+      "Soft delete enabled",
+      "Permission model set to 'Azure role-based access control'",
+      "Network access set to 'Allow public access from all networks'",
+      "Purge protection enabled"
+    ],
+    correct: 1,
+    explanation: "During Key Vault creation, the 'Permission model' can be set to 'Azure role-based access control' (RBAC) or 'Vault access policy.' RBAC allows fine-grained, scope-based permissions using standard Azure roles like Key Vault Secrets Officer."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "A VM is exposed to the internet on port 3389 (RDP). Microsoft Defender for Cloud recommends restricting this port. Which Defender feature lets you open it only when needed and for a limited time?",
+    options: [
+      "Adaptive application controls",
+      "Just-in-Time (JIT) VM access",
+      "File Integrity Monitoring",
+      "Endpoint protection recommendations"
+    ],
+    correct: 1,
+    explanation: "Just-in-Time VM access locks down management ports (like 3389 for RDP) by creating NSG deny rules. When an authorized user requests access, Defender for Cloud creates a temporary allow rule for the specified IP and duration."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which Azure service provides a managed MySQL/PostgreSQL database with built-in encryption at rest, in-transit TLS enforcement, and integration with Microsoft Entra authentication?",
+    options: [
+      "Azure SQL Database",
+      "Azure Database for MySQL/PostgreSQL Flexible Server",
+      "Azure Cosmos DB",
+      "Azure SQL Managed Instance"
+    ],
+    correct: 1,
+    explanation: "Azure Database for MySQL and PostgreSQL Flexible Server provides managed open-source databases with built-in encryption at rest (SSE), enforced TLS for connections, and Microsoft Entra ID authentication integration."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "An Azure App Service web app needs to be accessible only from a specific VNet subnet and not from the public internet. Which feature provides this restriction?",
+    options: [
+      "VNet Integration (for outbound traffic from the app)",
+      "App Service access restrictions with a VNet/subnet rule",
+      "App Service Environment (ASE) in an isolated VNet",
+      "Azure Front Door with Private Link origin"
+    ],
+    correct: 1,
+    explanation: "Access restrictions on App Service let you define allow/deny rules based on IP addresses or VNet subnets. Adding a VNet/subnet rule restricts inbound access to the app to traffic originating from that specific subnet."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which Azure Cosmos DB feature encrypts specified properties within documents using client-side encryption, so the database engine stores and queries only ciphertext?",
+    options: [
+      "Cosmos DB Server-Side Encryption (SSE) at rest",
+      "Always Encrypted for Cosmos DB (client-side encryption)",
+      "Cosmos DB integrated cache encryption",
+      "Cosmos DB role-based access control"
+    ],
+    correct: 1,
+    explanation: "Always Encrypted for Azure Cosmos DB provides client-side encryption of properties. The client SDK encrypts specified fields before sending to Cosmos DB. The server stores and processes only ciphertext, ensuring data confidentiality even from DBAs."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "An Azure Storage account needs to require all clients to use a minimum of TLS 1.2 for connections. Which setting should be configured?",
+    options: [
+      "Secure transfer required (HTTPS only)",
+      "Minimum TLS version set to TLS 1.2",
+      "Storage account firewall enabled",
+      "Customer-managed keys for encryption"
+    ],
+    correct: 1,
+    explanation: "The 'Minimum TLS version' setting on the storage account rejects connections using older TLS versions (1.0, 1.1). Setting it to TLS 1.2 ensures all clients must use TLS 1.2 or higher for secure connections."
+  },
+
+  // ── DOMAIN 4 — MANAGE SECURITY OPERATIONS (Q38–Q50) ──
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Microsoft Sentinel uses KQL (Kusto Query Language) for log queries. Which Sentinel feature lets analysts save and share KQL queries for proactive threat hunting?",
+    options: [
+      "Analytics rules — automated scheduled detections",
+      "Hunting queries — saved KQL queries for proactive investigation",
+      "Workbooks — interactive visual dashboards",
+      "Notebooks — Jupyter notebook integrations"
+    ],
+    correct: 1,
+    explanation: "Hunting queries are saved KQL queries in the Sentinel Hunting blade. Analysts can run them interactively to proactively search for threats, bookmark interesting results, and convert them to analytics rules if needed."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "You need to automatically enrich Microsoft Sentinel incidents with threat intelligence data when an incident is created. What is the recommended approach?",
+    options: [
+      "Manually look up each IP in the TI blade",
+      "Create an Automation Rule that triggers a Playbook to query TI indicators and add comments to the incident",
+      "Use a Scheduled Analytics rule that joins SigninLogs with ThreatIntelligenceIndicator table",
+      "Export incidents to a SIEM and enrich externally"
+    ],
+    correct: 1,
+    explanation: "Automation Rules trigger on incident creation events and can run Playbooks (Logic Apps). The Playbook can query the ThreatIntelligenceIndicator table or external feeds and add enrichment comments or tags to the incident automatically."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Which Microsoft Defender for Cloud feature recommends which applications should be allowed to run on VMs, based on machine learning analysis of running processes?",
+    options: [
+      "Adaptive network hardening",
+      "Adaptive application controls",
+      "Vulnerability assessment",
+      "Just-in-time VM access"
+    ],
+    correct: 1,
+    explanation: "Adaptive application controls use ML to analyze running processes on VMs and recommend allowlisting policies. Once configured, alerts are generated when unauthorized applications run, reducing the attack surface."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "An Azure subscription uses multiple Azure Policies. A policy with the 'Deny' effect and a policy with the 'Audit' effect both match a resource being created. What is the result?",
+    options: [
+      "The Audit effect takes priority and the resource is created with a non-compliance entry",
+      "The Deny effect takes priority and the resource creation is blocked",
+      "Both effects are applied: the resource is created but flagged as denied",
+      "Policy evaluation fails and the resource creation is retried"
+    ],
+    correct: 1,
+    explanation: "When multiple policies apply, the most restrictive effect wins. 'Deny' prevents resource creation regardless of other policies. The 'Audit' policy would also mark non-compliance, but the resource is not created because 'Deny' blocks it."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Which type of Microsoft Sentinel analytics rule creates alerts in near real-time (NRT) with minimal delay after log ingestion?",
+    options: [
+      "Scheduled analytics rule running every 5 minutes",
+      "NRT (Near Real-Time) analytics rule",
+      "Fusion advanced detection",
+      "Microsoft Security analytics rule"
+    ],
+    correct: 1,
+    explanation: "NRT analytics rules are designed to run with minimal delay (within 1-2 minutes of log ingestion). They provide faster detection compared to scheduled rules (minimum 5-minute intervals) for time-sensitive scenarios."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "You need to ensure that all Azure resources across 100 subscriptions comply with CIS Microsoft Azure Foundations Benchmark. What is the MOST efficient approach?",
+    options: [
+      "Manually review each subscription in the Azure portal",
+      "Assign the CIS benchmark as a regulatory compliance standard in Defender for Cloud at the management group level",
+      "Create custom Azure Policies for each CIS control",
+      "Deploy Azure Sentinel with a CIS workbook"
+    ],
+    correct: 1,
+    explanation: "Defender for Cloud's regulatory compliance feature supports the CIS benchmark as a built-in standard. Assigning it at the management group level automatically evaluates all child subscriptions, providing a centralized compliance dashboard."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "An Azure Key Vault uses role-based access control (RBAC). Which built-in role grants a user the ability to read secrets but NOT keys or certificates?",
+    options: [
+      "Key Vault Reader",
+      "Key Vault Secrets User",
+      "Key Vault Contributor",
+      "Key Vault Administrator"
+    ],
+    correct: 1,
+    explanation: "Key Vault Secrets User grants read access (get, list) to secret contents only. Key Vault Reader can view metadata but not secret values. Key Vault Administrator has full access to all Key Vault objects."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Which Microsoft Sentinel feature allows you to import STIX/TAXII threat indicators (malicious IPs, domains, file hashes) for correlation with log data?",
+    options: [
+      "Data connectors — Threat Intelligence TAXII connector",
+      "Analytics rules — Microsoft Security rule type",
+      "Workbooks — TI visualization dashboard",
+      "Entity pages — IP address entity"
+    ],
+    correct: 0,
+    explanation: "The Threat Intelligence TAXII data connector ingests STIX indicators from TAXII 2.0/2.1 servers into Sentinel's ThreatIntelligenceIndicator table. These indicators are then used in analytics rules for automated detection."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "A company needs to detect when a high-privilege Azure RBAC role (Owner/Contributor) is assigned at the subscription level. Which approach provides real-time detection in Microsoft Sentinel?",
+    options: [
+      "Azure Activity Log alert rule",
+      "Sentinel Scheduled Analytics rule querying AzureActivity table for role assignment operations",
+      "Defender for Cloud Secure Score monitoring",
+      "Azure Policy audit for role assignments"
+    ],
+    correct: 1,
+    explanation: "A Sentinel Scheduled Analytics rule can query the AzureActivity table for 'Microsoft.Authorization/roleAssignments/write' operations where the role is Owner or Contributor at subscription scope, generating an alert/incident in near real-time."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Which Defender for Cloud feature allows you to exempt a specific resource from a security recommendation without disabling the recommendation for all resources?",
+    options: [
+      "Disable the entire recommendation",
+      "Create a recommendation exemption (waiver or mitigated)",
+      "Remove the resource from the subscription",
+      "Assign a custom Azure Policy to override the recommendation"
+    ],
+    correct: 1,
+    explanation: "Recommendation exemptions let you mark a specific resource as 'Waiver' (accepted risk) or 'Mitigated' (addressed by another control) without affecting the recommendation evaluation for other resources."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Microsoft Defender for Cloud generates a 'Secure Score' for each subscription. How is the score calculated?",
+    options: [
+      "The percentage of Azure resources with no detected vulnerabilities",
+      "The ratio of points earned from implemented recommendations to the total possible points across all applicable recommendations",
+      "The number of security alerts resolved divided by total alerts",
+      "A fixed score based on which Defender plans are enabled"
+    ],
+    correct: 1,
+    explanation: "Secure Score is calculated as (points earned / total possible points) × 100%. Each recommendation has assigned points. Implementing a recommendation earns those points. The score reflects your overall security posture improvement."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "You configure Azure Monitor diagnostic settings to send Azure Activity Logs to a Log Analytics workspace. What additional configuration is needed to have Microsoft Sentinel analyze these logs?",
+    options: [
+      "No additional configuration — Sentinel automatically reads from the connected workspace",
+      "Enable the Azure Activity data connector in Microsoft Sentinel",
+      "Create a custom table in the workspace for activity logs",
+      "Deploy a Log Analytics agent on each Azure resource"
+    ],
+    correct: 1,
+    explanation: "While diagnostic settings send logs to the workspace, you must also enable the Azure Activity data connector in Sentinel to ensure the data is recognized and processed by Sentinel's analytics engine, hunting queries, and workbooks."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Which Azure service provides centralized, automated backup and recovery for Azure VMs, SQL databases, Azure Files, and other workloads with built-in encryption?",
+    options: [
+      "Azure Site Recovery",
+      "Azure Backup",
+      "Azure Storage geo-replication",
+      "Azure Snapshot manager"
+    ],
+    correct: 1,
+    explanation: "Azure Backup provides centralized backup management through Recovery Services vaults. It supports VMs, SQL databases, Azure Files, blob storage, and more with built-in encryption, policy-based scheduling, and cross-region restore."
+  }
+];
+
+let current = 0;
+let score = 0;
+let userAnswers = [];
+let answered = false;
+
+function renderQuestion() {
+  const q = questions[current];
+  answered = false;
+
+  document.getElementById('q-domain').textContent = q.domain;
+  document.getElementById('q-text').textContent = `Q${current + 1}. ${q.question}`;
+
+  const ol = document.getElementById('q-options');
+  ol.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.options.forEach((opt, i) => {
+    const li = document.createElement('li');
+    li.className = 'option-item';
+    li.id = `opt-${i}`;
+    li.innerHTML = `
+      <input type="radio" name="option" id="radio-${i}" value="${i}" onchange="selectOption(${i})">
+      <label for="radio-${i}" style="display:flex;gap:12px;cursor:pointer;width:100%;align-items:flex-start;">
+        <span class="option-letter">${letters[i]}</span>
+        <span class="option-text">${opt}</span>
+      </label>`;
+    li.addEventListener('click', () => {
+      if (!answered) {
+        document.getElementById(`radio-${i}`).checked = true;
+        selectOption(i);
+      }
+    });
+    ol.appendChild(li);
+  });
+
+  document.getElementById('q-explanation').style.display = 'none';
+  document.getElementById('q-explanation').innerHTML = '';
+
+  const btnRow = document.querySelector('.btn-row');
+  btnRow.innerHTML = `<button class="btn btn-primary" id="btn-submit" onclick="submitAnswer()" disabled>Submit Answer</button>`;
+
+  const pct = ((current) / questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Question ${current + 1} of ${questions.length}`;
+}
+
+function selectOption(i) {
+  if (answered) return;
+  document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
+  document.getElementById(`opt-${i}`).classList.add('selected');
+  document.getElementById('btn-submit').disabled = false;
+}
+
+function submitAnswer() {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const selected = parseInt(document.querySelector('input[name="option"]:checked')?.value ?? -1);
+  if (selected === -1) return;
+
+  userAnswers.push({ selected, correct: q.correct });
+
+  document.querySelectorAll('.option-item').forEach((el, i) => {
+    el.classList.add('locked');
+    el.classList.remove('selected');
+    if (i === q.correct) {
+      el.classList.add('correct');
+      el.innerHTML += `<span class="result-icon">✔</span>`;
+    } else if (i === selected && selected !== q.correct) {
+      el.classList.add('wrong');
+      el.innerHTML += `<span class="result-icon">✘</span>`;
+    }
+  });
+
+  if (selected === q.correct) score++;
+
+  const expl = document.getElementById('q-explanation');
+  expl.innerHTML = `<strong>💡 Explanation:</strong> ${q.explanation}`;
+  expl.style.display = 'block';
+
+  const btnRow = document.querySelector('.btn-row');
+  if (current < questions.length - 1) {
+    btnRow.innerHTML = `<button class="btn btn-success" onclick="nextQuestion()">Next Question →</button>`;
+  } else {
+    btnRow.innerHTML = `<button class="btn btn-success" onclick="showResults()">View Results 🏁</button>`;
+  }
+
+  const pct = ((current + 1) / questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function nextQuestion() {
+  current++;
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showResults() {
+  document.getElementById('exam-area').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('results-page').style.display = 'block';
+
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+  const pass = pct >= 70;
+
+  const circle = document.getElementById('score-circle');
+  circle.className = 'score-circle ' + (pass ? 'pass' : 'fail');
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-fraction').textContent = `${score} / ${total}`;
+  document.getElementById('score-summary').textContent = `You answered ${score} out of ${total} questions correctly.`;
+
+  const verdict = document.getElementById('score-verdict');
+  if (pass) {
+    verdict.textContent = '✅ PASS — Great work! You met the 70% threshold.';
+    verdict.className = 'verdict pass-text';
+  } else {
+    verdict.textContent = '❌ FAIL — Keep studying! You need 70% to pass.';
+    verdict.className = 'verdict fail-text';
+  }
+
+  const tbody = document.getElementById('breakdown-body');
+  tbody.innerHTML = '';
+  userAnswers.forEach((a, idx) => {
+    const q = questions[idx];
+    const correct = a.selected === a.correct;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${idx + 1}</td>
+      <td>${q.domain.replace('Domain ', 'D').split('—')[0].trim()}</td>
+      <td>${q.question.substring(0, 70)}…</td>
+      <td class="${correct ? 'tag-correct' : 'tag-wrong'}">${correct ? '✔ Correct' : '✘ Wrong'}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function retakeExam() {
+  current = 0; score = 0; userAnswers = [];
+  document.getElementById('results-page').style.display = 'none';
+  document.getElementById('exam-area').style.display = 'block';
+  document.getElementById('progress-wrap').style.display = 'flex';
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+renderQuestion();
+</script>
+</body>
+</html>

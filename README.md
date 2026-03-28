@@ -58,6 +58,11 @@ AZ-500-MasterProject/
 │   ├── 02-secure-networking.md               # Domain 2 study guide
 │   ├── 03-secure-compute-storage-databases.md # Domain 3 study guide
 │   └── 04-manage-security-operations.md       # Domain 4 study guide
+├── practice-exams/
+│   ├── practice-exam-01.html          # Practice Exam 1 — 50 interactive Q&As
+│   ├── practice-exam-02.html          # Practice Exam 2 — 50 interactive Q&As
+│   ├── practice-exam-03.html          # Practice Exam 3 — 50 interactive Q&As
+│   └── practice-exam-04.html          # Practice Exam 4 — 50 interactive Q&As
 ├── scripts/
 │   ├── identity/                      # Azure AD, RBAC, PIM, Conditional Access scripts
 │   ├── networking/                    # NSG, Azure Firewall, Private Endpoint scripts
@@ -77,7 +82,8 @@ AZ-500-MasterProject/
 1. **Start with the domain guides** in `docs/` — read them in order (Domains 1–4).
 2. **Run the scripts** in `scripts/` to practice configurations against a real Azure subscription (or a free trial).
 3. **Complete the hands-on labs** in `labs/` — each lab maps directly to exam objectives.
-4. **Review exam tips** in [STUDY_TIPS.md](STUDY_TIPS.md) before scheduling your exam.
+4. **Take the practice exams** in `practice-exams/` — 4 interactive exams with 200 total questions covering all domains.
+5. **Review exam tips** in [STUDY_TIPS.md](STUDY_TIPS.md) before scheduling your exam.
 
 > 💡 **Tip:** Use the [Microsoft Learn AZ-500 learning path](https://learn.microsoft.com/en-us/training/courses/az-500t00) alongside this guide for free, official video and interactive content.
 
