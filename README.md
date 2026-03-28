@@ -120,6 +120,16 @@ Covers Microsoft Defender for Cloud, Microsoft Sentinel (SIEM/SOAR), Key Vault, 
 
 ---
 
+## Practice tests
+
+### Practice Test #1 | https://htmlpreview.github.io/?https://github.com/Bharathkasyap/AZ-500-MasterProject/blob/main/practice-exams/practice-exam-01.html |
+
+### Practice Test #2 | https://htmlpreview.github.io/?https://github.com/Bharathkasyap/AZ-500-MasterProject/blob/main/practice-exams/practice-exam-02.html |
+
+### Practice Test #3 | https://htmlpreview.github.io/?https://github.com/Bharathkasyap/AZ-500-MasterProject/blob/main/practice-exams/practice-exam-03.html |
+
+### Practice Test #4 | https://htmlpreview.github.io/?https://github.com/Bharathkasyap/AZ-500-MasterProject/blob/main/practice-exams/practice-exam-04.html |
+
 ## 🤝 Contributing
 
 Pull requests are welcome! If you find an error or want to add practice questions, improved examples, or updated content:
