@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AZ-500 Practice Exam 1 | Microsoft Azure Security Technologies</title>
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --azure:       #0078d4;
+      --azure-dark:  #005a9e;
+      --azure-light: #deecf9;
+      --azure-bg:    #f0f6fb;
+      --correct:     #107c10;
+      --correct-bg:  #dff6dd;
+      --wrong:       #a4262c;
+      --wrong-bg:    #fde7e9;
+      --text:        #323130;
+      --text-light:  #605e5c;
+      --border:      #d2d0ce;
+      --white:       #ffffff;
+      --radius:      8px;
+      --shadow:      0 2px 8px rgba(0,0,0,.12);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--azure-bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ───────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, var(--azure-dark) 0%, var(--azure) 100%);
+      color: var(--white);
+      padding: 0;
+    }
+
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px 24px 16px;
+    }
+
+    .breadcrumb {
+      font-size: .8rem;
+      opacity: .85;
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .breadcrumb a {
+      color: var(--azure-light);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { opacity: .7; }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .azure-shield {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    .header-title h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .header-title p {
+      font-size: .88rem;
+      opacity: .85;
+      margin-top: 4px;
+    }
+
+    /* ── Progress bar ─────────────────────────────────────────── */
+    .progress-wrapper {
+      background: rgba(255,255,255,.2);
+      height: 6px;
+      width: 100%;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: #50d0ff;
+      width: 0%;
+      transition: width .4s ease;
+    }
+
+    /* ── Score ticker ─────────────────────────────────────────── */
+    .score-ticker {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .score-ticker-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 10px 24px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+      font-size: .88rem;
+      color: var(--text-light);
+    }
+
+    .ticker-item strong { color: var(--text); }
+
+    .ticker-score { margin-left: auto; }
+
+    /* ── Main quiz area ───────────────────────────────────────── */
+    main {
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      margin: 28px auto;
+      padding: 0 16px 40px;
+    }
+
+    /* ── Question card ────────────────────────────────────────── */
+    .question-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px 32px;
+      animation: fadeIn .25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .q-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .q-number {
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--azure);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .domain-badge {
+      font-size: .73rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .d1 { background: #e3f0ff; color: #0050a0; }
+    .d2 { background: #e8f5e9; color: #1b5e20; }
+    .d3 { background: #fff3e0; color: #b24000; }
+    .d4 { background: #f3e5f5; color: #6a1b9a; }
+
+    .q-text {
+      font-size: 1.06rem;
+      line-height: 1.6;
+      margin-bottom: 22px;
+      color: var(--text);
+    }
+
+    /* ── Answer options ───────────────────────────────────────── */
+    .options { display: flex; flex-direction: column; gap: 10px; }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      background: var(--white);
+      font-size: .95rem;
+      line-height: 1.5;
+      text-align: left;
+      width: 100%;
+    }
+
+    .option:hover:not(.disabled) {
+      border-color: var(--azure);
+      background: var(--azure-light);
+    }
+
+    .option.selected {
+      border-color: var(--azure);
+      background: var(--azure-light);
+    }
+
+    .option.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+    }
+
+    .option.wrong {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+    }
+
+    .option.disabled { cursor: default; }
+
+    .option-letter {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--azure-light);
+      color: var(--azure-dark);
+      font-weight: 700;
+      font-size: .78rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid var(--azure);
+    }
+
+    .option.correct .option-letter {
+      background: var(--correct);
+      color: var(--white);
+      border-color: var(--correct);
+    }
+
+    .option.wrong .option-letter {
+      background: var(--wrong);
+      color: var(--white);
+      border-color: var(--wrong);
+    }
+
+    /* ── Explanation ──────────────────────────────────────────── */
+    .explanation {
+      display: none;
+      margin-top: 20px;
+      padding: 14px 18px;
+      background: #f8f9fa;
+      border-left: 4px solid var(--azure);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: .9rem;
+      line-height: 1.6;
+      color: var(--text-light);
+    }
+
+    .explanation.visible { display: block; animation: fadeIn .2s ease; }
+    .explanation strong { color: var(--text); }
+
+    /* ── Action buttons ───────────────────────────────────────── */
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 22px;
+      border-radius: var(--radius);
+      border: none;
+      font-size: .92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      font-family: inherit;
+    }
+
+    .btn:active { transform: scale(.97); }
+
+    .btn-primary {
+      background: var(--azure);
+      color: var(--white);
+    }
+    .btn-primary:hover { background: var(--azure-dark); }
+    .btn-primary:disabled {
+      background: #c8c6c4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--azure);
+      border: 2px solid var(--azure);
+    }
+    .btn-secondary:hover { background: var(--azure-light); }
+
+    /* ── Result screen ────────────────────────────────────────── */
+    .result-screen {
+      display: none;
+      text-align: center;
+    }
+
+    .result-screen.visible { display: block; animation: fadeIn .3s ease; }
+
+    .result-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 48px 36px;
+    }
+
+    .result-icon {
+      font-size: 4rem;
+      margin-bottom: 12px;
+    }
+
+    .result-card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .result-card p { color: var(--text-light); margin-bottom: 6px; }
+
+    .score-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: conic-gradient(var(--azure) 0% var(--pct, 0%), var(--azure-light) var(--pct, 0%) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 24px auto;
+      box-shadow: 0 4px 16px rgba(0,120,212,.25);
+    }
+
+    .score-circle-inner {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-pct {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--azure);
+      line-height: 1;
+    }
+
+    .score-label {
+      font-size: .72rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+
+    .result-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin: 28px 0;
+      text-align: center;
+    }
+
+    .breakdown-item {
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .breakdown-item .val {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .breakdown-item .lbl {
+      font-size: .78rem;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    .val.correct-val { color: var(--correct); }
+    .val.wrong-val   { color: var(--wrong); }
+    .val.total-val   { color: var(--azure); }
+
+    .pass-banner {
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: .95rem;
+      margin: 12px auto;
+      display: inline-block;
+    }
+
+    .pass  { background: var(--correct-bg); color: var(--correct); }
+    .fail  { background: var(--wrong-bg);   color: var(--wrong); }
+
+    /* ── Exam nav links ───────────────────────────────────────── */
+    .exam-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    .exam-nav a {
+      padding: 8px 18px;
+      border-radius: var(--radius);
+      border: 2px solid var(--azure);
+      color: var(--azure);
+      font-weight: 600;
+      font-size: .88rem;
+      text-decoration: none;
+      transition: background .15s;
+    }
+
+    .exam-nav a:hover  { background: var(--azure-light); }
+    .exam-nav a.active { background: var(--azure); color: var(--white); }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    footer {
+      background: #1b1b1b;
+      color: #c8c6c4;
+      font-size: .82rem;
+      padding: 20px 24px;
+      text-align: center;
+    }
+
+    footer a { color: var(--azure-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    footer .footer-links { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+
+    /* ── Responsive ───────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .question-card { padding: 20px 16px; }
+      .header-title h1 { font-size: 1.2rem; }
+      .result-card { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════ HEADER ══════════════════════════════════ -->
+<header>
+  <div class="header-inner">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Practice Exams</a>
+      <span>›</span>
+      <span>Practice Exam 1</span>
+    </nav>
+    <div class="header-title">
+      <!-- Azure shield SVG -->
+      <svg class="azure-shield" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M24 4L6 12v14c0 10.2 7.6 19.7 18 22 10.4-2.3 18-11.8 18-22V12L24 4z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+        <path d="M17 24l5 5 9-10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <h1>AZ-500 Practice Exam 1 of 4</h1>
+        <p>Microsoft Azure Security Technologies · 50 Questions · All 4 Domains</p>
+      </div>
+    </div>
+  </div>
+  <div class="progress-wrapper">
+    <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════ SCORE TICKER ══════════════════════════ -->
+<div class="score-ticker" id="scoreTicker">
+  <div class="score-ticker-inner">
+    <span class="ticker-item">Question <strong id="qCurrent">1</strong> of <strong>50</strong></span>
+    <span class="ticker-item">Correct: <strong id="tickerCorrect" style="color:var(--correct)">0</strong></span>
+    <span class="ticker-item">Incorrect: <strong id="tickerWrong" style="color:var(--wrong)">0</strong></span>
+    <span class="ticker-score ticker-item">Score: <strong id="tickerScore">0%</strong></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ MAIN ════════════════════════════════════ -->
+<main>
+  <!-- ── Quiz container ── -->
+  <div id="quizContainer">
+    <div class="question-card" id="questionCard">
+      <div class="q-meta">
+        <span class="q-number" id="qNumLabel">Question 1</span>
+        <span class="domain-badge" id="domainBadge"></span>
+      </div>
+      <p class="q-text" id="qText"></p>
+      <div class="options" id="optionsContainer" role="radiogroup"></div>
+      <div class="explanation" id="explanation"></div>
+      <div class="actions">
+        <button class="btn btn-primary" id="checkBtn" disabled>Check Answer</button>
+        <button class="btn btn-secondary" id="nextBtn" style="display:none">Next Question →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Result screen ── -->
+  <div class="result-screen" id="resultScreen">
+    <div class="result-card">
+      <div class="result-icon" id="resultIcon">🎯</div>
+      <h2 id="resultTitle">Exam Complete!</h2>
+      <p id="resultSubtitle"></p>
+
+      <div class="score-circle" id="scoreCircle">
+        <div class="score-circle-inner">
+          <span class="score-pct" id="finalPct">0%</span>
+          <span class="score-label">Score</span>
+        </div>
+      </div>
+
+      <span class="pass-banner" id="passBanner"></span>
+
+      <div class="result-breakdown">
+        <div class="breakdown-item">
+          <div class="val correct-val" id="finalCorrect">0</div>
+          <div class="lbl">Correct</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="val wrong-val" id="finalWrong">0</div>
+          <div class="lbl">Incorrect</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="val total-val">50</div>
+          <div class="lbl">Total Questions</div>
+        </div>
+      </div>
+
+      <p style="font-size:.88rem;color:var(--text-light);margin-bottom:20px">
+        A score of <strong>70%</strong> (35/50) is the approximate passing threshold for AZ-500.
+      </p>
+
+      <button class="btn btn-primary" onclick="restartQuiz()">↺ Restart Exam</button>
+
+      <div class="exam-nav" aria-label="Navigate to other practice exams">
+        <a href="practice-exam-1.html" class="active">Exam 1</a>
+        <a href="practice-exam-2.html">Exam 2</a>
+        <a href="practice-exam-3.html">Exam 3</a>
+        <a href="practice-exam-4.html">Exam 4</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ══════════════════════════════════ FOOTER ══════════════════════════════════ -->
+<footer>
+  <div>AZ-500 Master Project · Microsoft Azure Security Technologies Practice Exams</div>
+  <div class="footer-links">
+    <a href="index.html">All Practice Exams</a>
+    <a href="practice-exam-1.html">Exam 1</a>
+    <a href="practice-exam-2.html">Exam 2</a>
+    <a href="practice-exam-3.html">Exam 3</a>
+    <a href="practice-exam-4.html">Exam 4</a>
+    <a href="../README.md">Study Guide</a>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════ SCRIPT ══════════════════════════════════ -->
+<script>
+  // ── Question bank ────────────────────────────────────────────────────────────
+  const questions = [
+    // ── DOMAIN 1: MANAGE IDENTITY AND ACCESS ─────────────────────────────────
+    {
+      domain: 1,
+      text: "Which Azure AD feature provides just-in-time privileged access and requires role activation with MFA?",
+      options: [
+        "Conditional Access",
+        "Privileged Identity Management (PIM)",
+        "Identity Protection",
+        "Azure AD B2B"
+      ],
+      correct: 1,
+      explanation: "<strong>PIM (Privileged Identity Management)</strong> provides just-in-time privileged access, requiring users to activate eligible roles—which can trigger MFA—for a limited time window. It reduces the risk of standing privileged access."
+    },
+    {
+      domain: 1,
+      text: "A company needs MFA enforced only when users sign in from untrusted locations. What should be configured?",
+      options: [
+        "Per-user MFA with location exclusion",
+        "Conditional Access policy with Named Locations as a condition",
+        "Identity Protection sign-in risk policy",
+        "Azure AD Password Protection"
+      ],
+      correct: 1,
+      explanation: "<strong>Conditional Access policies</strong> can use Named Locations as a condition to scope MFA requirements. Define the corporate IP range as a trusted named location and require MFA when the location is NOT trusted."
+    },
+    {
+      domain: 1,
+      text: "What is the minimum Azure AD license required to use Privileged Identity Management (PIM)?",
+      options: [
+        "Azure AD Free",
+        "Azure AD Premium P1",
+        "Azure AD Premium P2",
+        "Microsoft 365 Business Basic"
+      ],
+      correct: 2,
+      explanation: "<strong>PIM requires Azure AD Premium P2</strong> (or Microsoft Entra ID P2). Both Identity Protection and PIM are P2-only features and are not available in the Free or P1 tiers."
+    },
+    {
+      domain: 1,
+      text: "An application needs to access Azure Key Vault secrets without storing credentials in code. Which solution is recommended?",
+      options: [
+        "Store credentials in Azure App Configuration",
+        "Use a service principal with a client secret",
+        "Assign a system-assigned managed identity to the application",
+        "Use a shared access signature"
+      ],
+      correct: 2,
+      explanation: "<strong>Managed identities</strong> eliminate the need to store credentials. The system-assigned managed identity is automatically managed by Azure and tied to the resource's lifecycle, then granted Key Vault access via RBAC or access policies."
+    },
+    {
+      domain: 1,
+      text: "Which Azure AD feature enables periodic reviews so that access rights that are no longer needed can be removed automatically?",
+      options: [
+        "Conditional Access",
+        "Access Reviews",
+        "Identity Protection",
+        "Azure AD Entitlement Management"
+      ],
+      correct: 1,
+      explanation: "<strong>Azure AD Access Reviews</strong> allow administrators to periodically certify user and guest access to groups, applications, and privileged roles. Auto-apply results can remove access upon review completion, reducing stale permissions."
+    },
+    {
+      domain: 1,
+      text: "Which built-in Azure RBAC role allows managing access to Azure resources but NOT managing the resources themselves?",
+      options: [
+        "Contributor",
+        "Owner",
+        "User Access Administrator",
+        "Security Administrator"
+      ],
+      correct: 2,
+      explanation: "<strong>User Access Administrator</strong> is the minimal Azure RBAC role for managing who has access to Azure resources (role assignments) without granting the ability to manage those resources directly."
+    },
+    {
+      domain: 1,
+      text: "An organization wants to block legacy authentication protocols. Which Conditional Access condition should be configured?",
+      options: [
+        "Sign-in risk",
+        "Device platform",
+        "Client apps (legacy authentication clients)",
+        "Named locations"
+      ],
+      correct: 2,
+      explanation: "<strong>Legacy authentication clients</strong> (e.g., older SMTP, POP, IMAP clients, and Exchange ActiveSync without modern auth) can be targeted via the <em>Client apps</em> condition in Conditional Access to block them from accessing resources."
+    },
+    {
+      domain: 1,
+      text: "What is a \"break-glass\" account in Azure AD?",
+      options: [
+        "An account used for automated testing",
+        "An emergency access account excluded from Conditional Access policies",
+        "An account with limited guest permissions",
+        "A service principal for Azure automation"
+      ],
+      correct: 1,
+      explanation: "<strong>Break-glass accounts</strong> are highly privileged emergency access accounts that must be excluded from all Conditional Access policies and MFA requirements to ensure administrative access if normal admin accounts are locked out."
+    },
+    {
+      domain: 1,
+      text: "Which type of managed identity can be shared and assigned to multiple Azure resources?",
+      options: [
+        "System-assigned managed identity",
+        "User-assigned managed identity",
+        "Service principal managed identity",
+        "Delegated managed identity"
+      ],
+      correct: 1,
+      explanation: "<strong>User-assigned managed identities</strong> exist as independent Azure resources with their own lifecycle and can be assigned to multiple Azure resources simultaneously. System-assigned identities are tied 1:1 to a resource and deleted when that resource is deleted."
+    },
+    {
+      domain: 1,
+      text: "A developer registered an app with application permissions (not delegated). Who must grant admin consent?",
+      options: [
+        "Any licensed user",
+        "The application owner",
+        "A Global Administrator or Privileged Role Administrator",
+        "The subscription Owner"
+      ],
+      correct: 2,
+      explanation: "<strong>Application permissions</strong> grant access without a signed-in user and require tenant-wide admin consent from a <em>Global Administrator</em> or <em>Privileged Role Administrator</em>, as they represent machine-to-machine access."
+    },
+    {
+      domain: 1,
+      text: "What does Azure AD Connect Password Hash Sync (PHS) do?",
+      options: [
+        "Stores plaintext passwords in Azure AD",
+        "Synchronizes a hash of on-premises AD user password hashes to Azure AD",
+        "Passes authentication requests to on-premises AD in real time",
+        "Federates authentication to AD FS"
+      ],
+      correct: 1,
+      explanation: "<strong>PHS synchronizes a hash of on-premises AD password hashes</strong> (not plaintext) to Azure AD, enabling cloud-based authentication. It also enables leaked credential detection through Azure AD Identity Protection."
+    },
+    {
+      domain: 1,
+      text: "Which Azure AD Identity Protection policy forces users to change passwords when their credentials are found in a breach database?",
+      options: [
+        "Sign-in risk policy",
+        "User risk policy",
+        "MFA registration policy",
+        "Conditional Access with device compliance"
+      ],
+      correct: 1,
+      explanation: "<strong>The User risk policy</strong> in Identity Protection detects signals such as leaked credentials (found in breach databases). When user risk meets or exceeds the configured threshold, the policy can require a secure password change."
+    },
+    {
+      domain: 1,
+      text: "What is the difference between Azure AD roles and Azure RBAC roles?",
+      options: [
+        "They are the same roles used in different contexts",
+        "Azure RBAC manages Azure resources; Azure AD roles manage Azure AD objects",
+        "Azure AD roles manage Azure resources; Azure RBAC manages Azure AD objects",
+        "Azure RBAC only applies to storage accounts"
+      ],
+      correct: 1,
+      explanation: "<strong>Azure AD roles</strong> (e.g., Global Administrator, Security Administrator) manage Azure AD directory objects like users and groups. <strong>Azure RBAC roles</strong> (e.g., Owner, Contributor) manage access to Azure resources like VMs and storage. They are separate control planes."
+    },
+
+    // ── DOMAIN 2: SECURE NETWORKING ──────────────────────────────────────────
+    {
+      domain: 2,
+      text: "What is the default action of an NSG when no rules match an inbound packet?",
+      options: [
+        "Allow the traffic",
+        "Deny the traffic",
+        "Log and allow",
+        "Forward to Azure Firewall"
+      ],
+      correct: 1,
+      explanation: "<strong>NSGs have a default deny rule</strong> (priority 65500, DenyAllInBound) that blocks all inbound traffic not matched by a higher-priority allow rule. Outbound has a separate default allow rule for VNet and internet traffic."
+    },
+    {
+      domain: 2,
+      text: "Which Azure service provides centralized, stateful network traffic filtering at OSI Layer 7?",
+      options: [
+        "Network Security Groups (NSGs)",
+        "Azure Application Gateway WAF",
+        "Azure Firewall",
+        "Azure DDoS Protection"
+      ],
+      correct: 2,
+      explanation: "<strong>Azure Firewall</strong> is a managed, cloud-native, stateful network security service that filters traffic at Layer 3–7. It supports FQDN filtering, threat intelligence-based filtering, and application rules, unlike NSGs which are stateful but operate at Layer 3/4."
+    },
+    {
+      domain: 2,
+      text: "What does Azure Bastion provide when accessing VMs in Azure?",
+      options: [
+        "Faster RDP connections via ExpressRoute",
+        "Secure RDP/SSH access to VMs without public IP addresses",
+        "Load balancing for VM traffic",
+        "Encrypted VM disk storage"
+      ],
+      correct: 1,
+      explanation: "<strong>Azure Bastion</strong> provides secure, browser-based (or native client) RDP and SSH connectivity to Azure VMs over TLS, without requiring a public IP on the VM or exposing management ports (22, 3389) to the internet."
+    },
+    {
+      domain: 2,
+      text: "Which service should be deployed to protect a public-facing web application against OWASP Top-10 vulnerabilities?",
+      options: [
+        "Azure DDoS Protection Standard",
+        "Azure Firewall Premium",
+        "Azure Application Gateway with WAF",
+        "Azure Front Door (Standard/Premium) with WAF"
+      ],
+      correct: 2,
+      explanation: "<strong>Azure Application Gateway WAF</strong> (Web Application Firewall) uses OWASP Core Rule Sets (CRS) to protect web apps against common exploits like SQL injection, XSS, and command injection at OSI Layer 7."
+    },
+    {
+      domain: 2,
+      text: "What is the purpose of Service Endpoints in Azure Virtual Networks?",
+      options: [
+        "Allow VMs to connect to the internet without a public IP",
+        "Extend VNet identity to Azure PaaS services, keeping traffic on the Azure backbone",
+        "Provide private IP addresses for PaaS services inside the VNet",
+        "Create a VPN tunnel to on-premises networks"
+      ],
+      correct: 1,
+      explanation: "<strong>Service Endpoints</strong> extend VNet identity to supported Azure PaaS services and route traffic over the Microsoft backbone network. Note: the PaaS service still has a public IP. <em>Private Endpoints</em> are needed to assign a private IP within the VNet."
+    },
+    {
+      domain: 2,
+      text: "Which DDoS protection tier is automatically enabled for all Azure resources at no extra cost?",
+      options: [
+        "DDoS Infrastructure Protection (Basic)",
+        "DDoS Network Protection (Standard)",
+        "DDoS Premium",
+        "DDoS Application Protection"
+      ],
+      correct: 0,
+      explanation: "<strong>Azure DDoS Infrastructure Protection</strong> (previously called Basic) is always-on and free for all Azure services. <em>DDoS Network Protection</em> (Standard tier) is a paid enhancement with adaptive tuning, detailed telemetry, and a rapid response team."
+    },
+    {
+      domain: 2,
+      text: "Which solution provides a private, dedicated network connection (not over the internet) between on-premises and Azure with a guaranteed bandwidth SLA?",
+      options: [
+        "Azure VPN Gateway (site-to-site)",
+        "Azure ExpressRoute",
+        "Azure Virtual WAN",
+        "Azure Bastion"
+      ],
+      correct: 1,
+      explanation: "<strong>ExpressRoute</strong> provides private, dedicated connectivity to Azure through a connectivity provider, bypassing the public internet. It offers guaranteed bandwidth, lower latency, and higher reliability than internet-based VPN solutions."
+    },
+    {
+      domain: 2,
+      text: "What is the function of Azure Private Endpoint?",
+      options: [
+        "Provides a public IP for Azure PaaS services to accept internet traffic",
+        "Creates a private IP address within a VNet for an Azure PaaS service",
+        "Acts as a VPN gateway for hybrid connectivity",
+        "Filters traffic between VNets using firewall rules"
+      ],
+      correct: 1,
+      explanation: "<strong>Private Endpoint</strong> places a private IP address from your VNet into an Azure PaaS service (e.g., Storage, SQL, Key Vault), enabling fully private communication without traversing the public internet."
+    },
+    {
+      domain: 2,
+      text: "Which NSG rule property determines the order in which rules are evaluated?",
+      options: [
+        "Name",
+        "Description",
+        "Priority",
+        "Protocol"
+      ],
+      correct: 2,
+      explanation: "<strong>NSG rules are processed in ascending priority order</strong> (lower numbers evaluated first, range 100–4096). The first rule that matches the traffic is applied; subsequent rules are not evaluated for that packet."
+    },
+    {
+      domain: 2,
+      text: "Azure Firewall Premium includes which capability NOT available in Azure Firewall Standard?",
+      options: [
+        "FQDN filtering",
+        "TLS inspection (IDPS - Intrusion Detection and Prevention System)",
+        "Threat Intelligence alerts",
+        "DNAT rules"
+      ],
+      correct: 1,
+      explanation: "<strong>Azure Firewall Premium</strong> adds TLS inspection, Intrusion Detection and Prevention System (IDPS), URL filtering, and Web Categories—advanced features not available in the Standard tier."
+    },
+    {
+      domain: 2,
+      text: "Which feature of Azure Virtual Network allows inspection of all traffic between subnets via a hub firewall?",
+      options: [
+        "VNet Peering with transit routing enabled by default",
+        "User-Defined Routes (UDR) routing traffic through Azure Firewall or NVA",
+        "Network Watcher flow logs",
+        "Azure Front Door"
+      ],
+      correct: 1,
+      explanation: "<strong>User-Defined Routes (UDRs)</strong> override Azure's default routing to force traffic through a next-hop device like Azure Firewall. This hub-spoke pattern ensures all inter-subnet and east-west traffic passes through a centralized inspection point."
+    },
+    {
+      domain: 2,
+      text: "Which Azure networking component allows you to group VMs by application role and reference them in NSG rules without specifying explicit IP addresses?",
+      options: [
+        "Service Tags",
+        "Application Security Groups (ASGs)",
+        "VNet peering",
+        "Private DNS zones"
+      ],
+      correct: 1,
+      explanation: "<strong>Application Security Groups (ASGs)</strong> let you logically group Azure VMs (e.g., web servers, database servers) and define NSG rules that reference these groups, simplifying security rule management and eliminating the need to track IP addresses."
+    },
+
+    // ── DOMAIN 3: SECURE COMPUTE, STORAGE & DATABASES ────────────────────────
+    {
+      domain: 3,
+      text: "What does Just-in-Time (JIT) VM access in Microsoft Defender for Cloud do?",
+      options: [
+        "Encrypts VM disks automatically using Key Vault",
+        "Locks down management ports and grants temporary access on-demand",
+        "Scans VMs for vulnerabilities continuously",
+        "Backs up VMs on a configurable schedule"
+      ],
+      correct: 1,
+      explanation: "<strong>JIT VM Access</strong> in Defender for Cloud locks NSG management ports (22, 3389, 5985/5986) by default. When access is needed, the user requests JIT access specifying a time window and source IP, which temporarily opens the port."
+    },
+    {
+      domain: 3,
+      text: "Which type of Azure Storage SAS token is signed using Azure AD credentials and is considered the most secure?",
+      options: [
+        "Account SAS",
+        "Service SAS",
+        "User Delegation SAS",
+        "Stored access policy SAS"
+      ],
+      correct: 2,
+      explanation: "<strong>User Delegation SAS</strong> is signed with Azure AD credentials instead of storage account keys, making it the most secure SAS type. It can be used for Blob and Queue storage and requires the caller to have appropriate Azure AD permissions."
+    },
+    {
+      domain: 3,
+      text: "Which Azure Disk Encryption technology uses Azure Key Vault to store encryption keys and encrypts OS and data disks using BitLocker (Windows) or DM-Crypt (Linux)?",
+      options: [
+        "Storage Service Encryption (SSE)",
+        "Azure Disk Encryption (ADE)",
+        "Transparent Data Encryption (TDE)",
+        "Always Encrypted"
+      ],
+      correct: 1,
+      explanation: "<strong>Azure Disk Encryption (ADE)</strong> uses BitLocker on Windows and DM-Crypt on Linux to encrypt VM disks at the OS level. Encryption keys and secrets are stored in Azure Key Vault, providing customer-controlled key management."
+    },
+    {
+      domain: 3,
+      text: "Which Azure SQL feature is enabled by default and automatically encrypts data stored in SQL databases at rest?",
+      options: [
+        "Always Encrypted",
+        "Dynamic Data Masking",
+        "Transparent Data Encryption (TDE)",
+        "Row-Level Security"
+      ],
+      correct: 2,
+      explanation: "<strong>Transparent Data Encryption (TDE)</strong> encrypts Azure SQL Database, Azure SQL Managed Instance, and Azure Synapse Analytics data at rest. It is enabled by default using service-managed keys and requires no application changes."
+    },
+    {
+      domain: 3,
+      text: "Which Defender for Cloud feature reduces attack surface on VMs by allowing only approved applications to run based on learned behavior?",
+      options: [
+        "Just-in-Time VM Access",
+        "Adaptive Application Controls",
+        "File Integrity Monitoring",
+        "Vulnerability Assessment"
+      ],
+      correct: 1,
+      explanation: "<strong>Adaptive Application Controls</strong> use machine learning to identify patterns of applications running on your VMs and generate recommendations for application allowlisting rules (via AppLocker/Windows Defender Application Control or auditd), reducing the attack surface."
+    },
+    {
+      domain: 3,
+      text: "Which AKS feature restricts which Kubernetes API server resources Azure AD users can access?",
+      options: [
+        "Kubernetes network policies",
+        "Azure AD integration with AKS RBAC",
+        "Pod security policies",
+        "Namespace isolation"
+      ],
+      correct: 1,
+      explanation: "<strong>AKS supports Azure AD integration with Kubernetes RBAC</strong>, allowing you to use Azure AD groups and users for Kubernetes API authorization through RoleBinding and ClusterRoleBinding. This provides fine-grained control over who can access which API resources."
+    },
+    {
+      domain: 3,
+      text: "In Azure SQL, which feature hides sensitive data (e.g., email addresses, credit card numbers) from non-privileged users in query results without changing stored data?",
+      options: [
+        "Transparent Data Encryption",
+        "Always Encrypted",
+        "Dynamic Data Masking",
+        "Row-Level Security"
+      ],
+      correct: 2,
+      explanation: "<strong>Dynamic Data Masking (DDM)</strong> limits sensitive data exposure by masking it in query results for non-privileged users. The actual data in the database remains unchanged; only what's displayed to certain users is obfuscated."
+    },
+    {
+      domain: 3,
+      text: "What does the \"soft delete\" feature for Azure Key Vault protect against?",
+      options: [
+        "Unauthorized access to secrets by external attackers",
+        "Accidental deletion of the vault or its objects (keys, secrets, certificates)",
+        "Brute-force attacks on vault authentication",
+        "Key rotation failures"
+      ],
+      correct: 1,
+      explanation: "<strong>Soft delete</strong> retains deleted Key Vault resources for a configurable retention period (7–90 days), allowing recovery from accidental deletions. Once soft delete is enabled on a vault, it cannot be disabled."
+    },
+    {
+      domain: 3,
+      text: "You need to ensure that storage accounts only accept traffic from a specific Azure VNet subnet. Which feature should you configure?",
+      options: [
+        "Service tags in NSG rules",
+        "Storage account firewall with virtual network rules",
+        "Private DNS zones",
+        "Azure DDoS Protection"
+      ],
+      correct: 1,
+      explanation: "<strong>Azure Storage firewall rules</strong> allow you to restrict access to storage accounts by VNet subnet (using service endpoints) or by specific public IP addresses, blocking all other inbound traffic including from other Azure services unless explicitly allowed."
+    },
+    {
+      domain: 3,
+      text: "Which Microsoft Defender plan provides vulnerability scanning for container images pushed to Azure Container Registry?",
+      options: [
+        "Defender for Servers",
+        "Defender for Container Registries / Defender for Containers",
+        "Defender for Storage",
+        "Defender for SQL"
+      ],
+      correct: 1,
+      explanation: "<strong>Microsoft Defender for Containers</strong> (which superseded Defender for Container Registries) provides vulnerability assessments for container images in Azure Container Registry, identifying vulnerabilities in OS packages and application dependencies."
+    },
+    {
+      domain: 3,
+      text: "Which AKS feature controls which pods can communicate with each other and with external endpoints at the network level?",
+      options: [
+        "Kubernetes RBAC",
+        "Network policies",
+        "Pod identity",
+        "Azure Policy for AKS"
+      ],
+      correct: 1,
+      explanation: "<strong>Kubernetes Network Policies</strong> define rules for pod-to-pod and pod-to-external communication based on label selectors. In AKS, this is implemented using Azure CNI with Azure Network Policy or Calico as the network policy engine."
+    },
+    {
+      domain: 3,
+      text: "Which Azure SQL feature classifies and labels sensitive data columns to support GDPR, HIPAA, and other compliance standards?",
+      options: [
+        "Advanced Threat Protection",
+        "Vulnerability Assessment",
+        "Data Discovery and Classification",
+        "Dynamic Data Masking"
+      ],
+      correct: 2,
+      explanation: "<strong>Data Discovery and Classification</strong> scans SQL databases, identifies potentially sensitive columns (names, SSNs, credit cards), and allows labeling with sensitivity labels and information types for compliance tracking and reporting."
+    },
+
+    // ── DOMAIN 4: MANAGE SECURITY OPERATIONS ─────────────────────────────────
+    {
+      domain: 4,
+      text: "What does the Microsoft Defender for Cloud Secure Score measure?",
+      options: [
+        "Threat intelligence rating for Azure tenants",
+        "Quantified measurement of security posture based on implemented security recommendations",
+        "Compliance score for regulatory frameworks only",
+        "Performance score for Azure workloads"
+      ],
+      correct: 1,
+      explanation: "<strong>Secure Score</strong> aggregates security findings into a single percentage score. Each security control has a maximum score contribution; implementing the recommendations within a control earns points toward the maximum score for that control."
+    },
+    {
+      domain: 4,
+      text: "In Microsoft Sentinel, what are \"Analytics rules\" used for?",
+      options: [
+        "Configuring data connectors to ingest logs",
+        "Detecting threats by querying log data and generating alerts/incidents",
+        "Automating responses to incidents via Logic Apps",
+        "Visualizing security data in interactive dashboards"
+      ],
+      correct: 1,
+      explanation: "<strong>Analytics rules</strong> (scheduled, Near-Real-Time, or Fusion rules) query data in the Log Analytics workspace, detect suspicious patterns using KQL, and automatically create alerts and incidents that security analysts investigate."
+    },
+    {
+      domain: 4,
+      text: "What is a \"Playbook\" in Microsoft Sentinel?",
+      options: [
+        "A manual SOC runbook document",
+        "An Azure Logic App used to automate responses to Sentinel alerts and incidents",
+        "A KQL query saved for threat hunting",
+        "A data connector configuration template"
+      ],
+      correct: 1,
+      explanation: "<strong>Sentinel Playbooks are Azure Logic Apps</strong> that automate security responses (SOAR). They can be triggered manually by an analyst or automatically by automation rules when incidents are created or updated."
+    },
+    {
+      domain: 4,
+      text: "Which Azure Key Vault feature allows recovery of accidentally deleted vaults or vault objects within a retention period?",
+      options: [
+        "Purge protection",
+        "Soft delete",
+        "Key rotation policy",
+        "Certificate auto-renewal"
+      ],
+      correct: 1,
+      explanation: "<strong>Soft delete</strong> is a Key Vault feature that retains deleted objects for 7–90 days (configurable), allowing recovery. When combined with purge protection, objects cannot be permanently deleted during the retention period."
+    },
+    {
+      domain: 4,
+      text: "What is the primary difference between \"soft delete\" and \"purge protection\" in Azure Key Vault?",
+      options: [
+        "They are identical features with different names",
+        "Soft delete retains deleted objects for recovery; purge protection prevents permanent deletion (purging) during the retention period",
+        "Purge protection retains deleted objects; soft delete prevents purging",
+        "Soft delete applies only to keys; purge protection applies only to secrets"
+      ],
+      correct: 1,
+      explanation: "<strong>Soft delete</strong> enables recovery of deleted resources. <strong>Purge protection</strong> is an additional control that prevents someone from purging (permanently deleting) a soft-deleted resource before the retention period ends—even a Global Administrator cannot override this."
+    },
+    {
+      domain: 4,
+      text: "Which Microsoft Defender for Cloud dashboard shows an organization's compliance against CIS, PCI-DSS, HIPAA, and other regulatory frameworks?",
+      options: [
+        "Microsoft Sentinel workbooks",
+        "Azure Monitor dashboards",
+        "Regulatory compliance dashboard",
+        "Azure Advisor recommendations"
+      ],
+      correct: 2,
+      explanation: "<strong>Defender for Cloud's Regulatory Compliance dashboard</strong> maps your Azure resources' security configurations against selected regulatory standards (CIS, PCI-DSS, NIST SP 800-53, ISO 27001, etc.) and shows pass/fail status per control."
+    },
+    {
+      domain: 4,
+      text: "In Microsoft Sentinel, what is a \"Watchlist\"?",
+      options: [
+        "A list of configured SIEM data connectors",
+        "A custom lookup table used to enrich incidents and correlate with entities",
+        "A threat intelligence indicator feed",
+        "A queue of pending incidents awaiting triage"
+      ],
+      correct: 1,
+      explanation: "<strong>Watchlists</strong> are user-defined data tables in Sentinel (uploaded as CSV) used to enrich alert data, create allowlists/blocklists, or correlate events—for example, a list of privileged accounts, VIP users, or known safe IP ranges."
+    },
+    {
+      domain: 4,
+      text: "Which Microsoft Defender for Cloud server protection plan includes agentless scanning capabilities?",
+      options: [
+        "Defender for Servers Plan 1",
+        "Defender for Servers Plan 2",
+        "Defender for Storage",
+        "Defender for SQL on machines"
+      ],
+      correct: 1,
+      explanation: "<strong>Defender for Servers Plan 2</strong> includes agentless scanning for VM vulnerabilities, secrets scanning, and malware scanning, in addition to MDE integration and JIT VM access that are also available in Plan 1."
+    },
+    {
+      domain: 4,
+      text: "What query language is used in Microsoft Sentinel to search and analyze log data?",
+      options: [
+        "SQL (Structured Query Language)",
+        "PowerShell scripting language",
+        "KQL (Kusto Query Language)",
+        "OData query language"
+      ],
+      correct: 2,
+      explanation: "<strong>Microsoft Sentinel uses KQL (Kusto Query Language)</strong> for querying the underlying Log Analytics workspace. KQL is used in analytics rules, threat hunting queries, workbooks, and investigations throughout Sentinel."
+    },
+    {
+      domain: 4,
+      text: "Which Azure Policy effect automatically deploys a required resource or configuration (e.g., Log Analytics agent on a VM) if it doesn't exist?",
+      options: [
+        "Deny",
+        "Audit",
+        "AuditIfNotExists",
+        "DeployIfNotExists"
+      ],
+      correct: 3,
+      explanation: "<strong>DeployIfNotExists (DINE)</strong> triggers a remediation deployment when a resource doesn't have the required configuration. This is used for automatic provisioning of required agents, diagnostic settings, or related dependent resources."
+    },
+    {
+      domain: 4,
+      text: "Which Microsoft Sentinel feature enables security analysts to proactively search for threats not detected by automated rules?",
+      options: [
+        "Analytics rules (scheduled queries)",
+        "Threat Hunting with KQL queries",
+        "Incident management and assignment",
+        "Data connectors configuration"
+      ],
+      correct: 1,
+      explanation: "<strong>Threat Hunting</strong> in Sentinel allows analysts to proactively query data using KQL-based hunting queries (including MITRE ATT&CK-mapped queries) to discover threats that haven't triggered automated detections yet."
+    },
+    {
+      domain: 4,
+      text: "What is the Azure Security Benchmark / Microsoft Cloud Security Benchmark used for in Defender for Cloud?",
+      options: [
+        "Provides attack simulation exercises for red team testing",
+        "Provides Azure-specific security recommendations aligned to best practices (CIS, NIST)",
+        "Benchmarks VM compute performance against industry standards",
+        "Compares Azure pricing versus competitor cloud platforms"
+      ],
+      correct: 1,
+      explanation: "<strong>The Microsoft Cloud Security Benchmark (MCSB)</strong> is the default initiative in Defender for Cloud providing prescriptive best practices for securing Azure environments. It aligns with industry standards like CIS Benchmarks and NIST SP 800-53."
+    },
+    {
+      domain: 4,
+      text: "A SOC team needs automatic email notification when a high-severity Sentinel incident is created. What should be configured?",
+      options: [
+        "An Analytics rule with a built-in email action directly in the rule",
+        "An Automation rule that triggers a Playbook (Logic App) configured to send email notifications",
+        "An Azure Monitor alert rule on the Sentinel workspace",
+        "Defender for Cloud email notifications settings only"
+      ],
+      correct: 1,
+      explanation: "<strong>In Sentinel, automation rules can trigger Playbooks (Azure Logic Apps)</strong> automatically when incidents are created or updated based on conditions like severity. The Logic App is then configured with an email connector action to notify the SOC team."
+    }
+  ];
+
+  // ── Domain metadata ──────────────────────────────────────────────────────────
+  const domainInfo = {
+    1: { label: "Domain 1: Identity & Access",    cls: "d1" },
+    2: { label: "Domain 2: Secure Networking",    cls: "d2" },
+    3: { label: "Domain 3: Compute/Storage/DB",   cls: "d3" },
+    4: { label: "Domain 4: Security Operations",  cls: "d4" }
+  };
+
+  // ── State ────────────────────────────────────────────────────────────────────
+  let currentIndex  = 0;
+  let correctCount  = 0;
+  let wrongCount    = 0;
+  let answered      = false;
+  let selectedIdx   = -1;
+
+  // ── DOM refs ─────────────────────────────────────────────────────────────────
+  const progressBar      = document.getElementById("progressBar");
+  const qCurrent         = document.getElementById("qCurrent");
+  const tickerCorrect    = document.getElementById("tickerCorrect");
+  const tickerWrong      = document.getElementById("tickerWrong");
+  const tickerScore      = document.getElementById("tickerScore");
+  const qNumLabel        = document.getElementById("qNumLabel");
+  const domainBadge      = document.getElementById("domainBadge");
+  const qText            = document.getElementById("qText");
+  const optionsContainer = document.getElementById("optionsContainer");
+  const explanation      = document.getElementById("explanation");
+  const checkBtn         = document.getElementById("checkBtn");
+  const nextBtn          = document.getElementById("nextBtn");
+  const quizContainer    = document.getElementById("quizContainer");
+  const resultScreen     = document.getElementById("resultScreen");
+  const questionCard     = document.getElementById("questionCard");
+
+  // ── Render question ──────────────────────────────────────────────────────────
+  function renderQuestion() {
+    const q    = questions[currentIndex];
+    const info = domainInfo[q.domain];
+    answered   = false;
+    selectedIdx = -1;
+
+    // Meta
+    qNumLabel.textContent       = `Question ${currentIndex + 1}`;
+    domainBadge.textContent     = info.label;
+    domainBadge.className       = `domain-badge ${info.cls}`;
+    qText.textContent           = q.text;
+
+    // Progress
+    const pct = Math.round((currentIndex / questions.length) * 100);
+    progressBar.style.width     = pct + "%";
+    progressBar.setAttribute("aria-valuenow", pct);
+
+    // Ticker
+    qCurrent.textContent = currentIndex + 1;
+
+    // Options
+    optionsContainer.innerHTML = "";
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.className = "option";
+      btn.setAttribute("role", "radio");
+      btn.setAttribute("aria-checked", "false");
+      btn.innerHTML = `<span class="option-letter">${String.fromCharCode(65 + i)}</span><span>${opt}</span>`;
+      btn.addEventListener("click", () => selectOption(i));
+      optionsContainer.appendChild(btn);
+    });
+
+    // Reset explanation + buttons
+    explanation.className = "explanation";
+    explanation.innerHTML = "";
+    checkBtn.disabled     = true;
+    checkBtn.style.display = "";
+    nextBtn.style.display  = "none";
+
+    // Re-trigger card animation
+    questionCard.style.animation = "none";
+    // Force reflow
+    void questionCard.offsetWidth;
+    questionCard.style.animation = "";
+  }
+
+  // ── Select option ────────────────────────────────────────────────────────────
+  function selectOption(idx) {
+    if (answered) return;
+    selectedIdx = idx;
+
+    Array.from(optionsContainer.children).forEach((btn, i) => {
+      btn.classList.toggle("selected", i === idx);
+      btn.setAttribute("aria-checked", i === idx ? "true" : "false");
+    });
+
+    checkBtn.disabled = false;
+  }
+
+  // ── Check answer ─────────────────────────────────────────────────────────────
+  checkBtn.addEventListener("click", () => {
+    if (selectedIdx === -1 || answered) return;
+    answered = true;
+    checkBtn.disabled   = true;
+    checkBtn.style.display = "none";
+    nextBtn.style.display  = "";
+
+    const q       = questions[currentIndex];
+    const correct = q.correct;
+    const isRight = selectedIdx === correct;
+
+    if (isRight) {
+      correctCount++;
+    } else {
+      wrongCount++;
+    }
+
+    // Style options
+    Array.from(optionsContainer.children).forEach((btn, i) => {
+      btn.classList.add("disabled");
+      if (i === correct) {
+        btn.classList.add("correct");
+      } else if (i === selectedIdx && !isRight) {
+        btn.classList.add("wrong");
+      }
+    });
+
+    // Show explanation
+    explanation.innerHTML = `<strong>${isRight ? "✓ Correct!" : "✗ Incorrect."}</strong> ${q.explanation}`;
+    explanation.className = "explanation visible";
+
+    // Update ticker
+    tickerCorrect.textContent = correctCount;
+    tickerWrong.textContent   = wrongCount;
+    const answered_count      = correctCount + wrongCount;
+    tickerScore.textContent   = answered_count > 0
+      ? Math.round((correctCount / answered_count) * 100) + "%"
+      : "0%";
+  });
+
+  // ── Next question ─────────────────────────────────────────────────────────────
+  nextBtn.addEventListener("click", () => {
+    currentIndex++;
+    if (currentIndex >= questions.length) {
+      showResults();
+    } else {
+      renderQuestion();
+    }
+  });
+
+  // ── Results ───────────────────────────────────────────────────────────────────
+  function showResults() {
+    quizContainer.style.display = "none";
+    document.getElementById("scoreTicker").style.display = "none";
+    resultScreen.classList.add("visible");
+
+    progressBar.style.width = "100%";
+
+    const pct    = Math.round((correctCount / questions.length) * 100);
+    const passed = pct >= 70;
+
+    document.getElementById("resultIcon").textContent     = passed ? "🏆" : "📚";
+    document.getElementById("resultTitle").textContent    = passed ? "Congratulations!" : "Keep Studying!";
+    document.getElementById("resultSubtitle").textContent = passed
+      ? "You passed the practice exam. Great work!"
+      : "Review the domains where you struggled and try again.";
+
+    document.getElementById("finalPct").textContent    = pct + "%";
+    document.getElementById("finalCorrect").textContent = correctCount;
+    document.getElementById("finalWrong").textContent   = wrongCount;
+
+    const banner   = document.getElementById("passBanner");
+    banner.textContent  = passed ? "✓ PASS (≥70%)" : "✗ FAIL (<70%)";
+    banner.className    = "pass-banner " + (passed ? "pass" : "fail");
+
+    // Animate score circle
+    const scoreCircle = document.getElementById("scoreCircle");
+    scoreCircle.style.setProperty("--pct", pct + "%");
+  }
+
+  // ── Restart ───────────────────────────────────────────────────────────────────
+  function restartQuiz() {
+    currentIndex  = 0;
+    correctCount  = 0;
+    wrongCount    = 0;
+    answered      = false;
+    selectedIdx   = -1;
+
+    tickerCorrect.textContent = "0";
+    tickerWrong.textContent   = "0";
+    tickerScore.textContent   = "0%";
+
+    resultScreen.classList.remove("visible");
+    quizContainer.style.display = "";
+    document.getElementById("scoreTicker").style.display = "";
+
+    renderQuestion();
+  }
+
+  // Expose for inline onclick
+  window.restartQuiz = restartQuiz;
+
+  // ── Init ──────────────────────────────────────────────────────────────────────
+  renderQuestion();
+</script>
+</body>
+</html>
