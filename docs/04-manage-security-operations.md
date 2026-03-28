@@ -368,23 +368,48 @@ Action: Dismiss + comment
 
 **Q1.** Your organization needs to ensure that all Azure Key Vaults are protected from accidental permanent deletion. What two features must be enabled on each Key Vault?
 
-> **Answer:** **Soft delete** (enabled by default; cannot be disabled) and **Purge protection** (must be explicitly enabled). With both enabled, deleted vaults/objects can only be recovered during the retention period and cannot be permanently deleted until the retention period expires.
+- A) Soft delete and Key Vault Firewall
+- B) Key Vault Private Endpoint and Purge Protection
+- C) Soft delete and Purge Protection
+- D) Key Vault access policies and diagnostic logging
+
+> **Answer:** **C** — **Soft delete** (enabled by default; cannot be disabled) and **Purge protection** (must be explicitly enabled). With both enabled, deleted vaults/objects can only be recovered during the retention period and cannot be permanently deleted until the retention period expires.
 
 **Q2.** A Sentinel analytics rule fires an alert whenever 10 or more failed logins occur for a single account within 5 minutes. You want Sentinel to automatically disable the account in Azure AD when this alert fires. What should you create?
 
-> **Answer:** A **Playbook** (Azure Logic App) connected to the Sentinel alert trigger. The Logic App would call the Microsoft Graph API to disable the user account. Configure the analytics rule to run the playbook automatically via an **automation rule**.
+- A) A Sentinel analytics rule with a custom KQL query that directly updates the user object
+- B) An Azure Function triggered by a Log Analytics scheduled alert
+- C) A Playbook (Azure Logic App) connected to the Sentinel alert trigger, configured to run automatically via an automation rule
+- D) A Microsoft Entra Identity Protection risk-based Conditional Access policy
+
+> **Answer:** **C** — A **Playbook** (Azure Logic App) connected to the Sentinel alert trigger. The Logic App would call the Microsoft Graph API to disable the user account. Configure the analytics rule to run the playbook automatically via an **automation rule**.
 
 **Q3.** You need to enforce that all VMs in a subscription must have Endpoint Protection installed. If a VM is found without it, Azure should automatically deploy the extension. Which Azure Policy effect should you use?
 
-> **Answer:** **DeployIfNotExists** — this effect checks for a related resource (the Endpoint Protection extension) and deploys it if it doesn't exist.
+- A) Audit
+- B) Deny
+- C) Append
+- D) DeployIfNotExists
+
+> **Answer:** **D** — **DeployIfNotExists** — this effect checks for a related resource (the Endpoint Protection extension) and deploys it if it doesn't exist.
 
 **Q4.** Your Secure Score in Defender for Cloud is 65%. You review the recommendations and find that enabling MFA for all subscription owners would improve the score by 10 points. What does this recommendation belong to?
 
-> **Answer:** The recommendation belongs to a **Security Control** called "Enable MFA" (or similar). Secure Score is calculated at the security control level — completing all recommendations within a control awards the full control score.
+- A) A compliance initiative
+- B) A security control (e.g., "Enable MFA")
+- C) A regulatory standard assignment
+- D) A resource health alert
+
+> **Answer:** **B** — The recommendation belongs to a **Security Control** called "Enable MFA" (or similar). Secure Score is calculated at the security control level — completing all recommendations within a control awards the full control score.
 
 **Q5.** You need to collect Azure Activity Logs and send them to Microsoft Sentinel. What must you configure?
 
-> **Answer:** 
+- A) Install the Log Analytics agent on all VMs to collect subscription activity logs
+- B) Enable Microsoft Defender for Cloud standard tier on the subscription
+- C) Configure a Diagnostic Setting on the subscription to send Activity Logs to a Log Analytics workspace, connect the workspace to Sentinel, and enable the Azure Activity data connector
+- D) Create an Azure Monitor action group and link it directly to Microsoft Sentinel
+
+> **Answer:** **C** —
 > 1. Set up a **Diagnostic Setting** on the subscription to send Activity Logs to a **Log Analytics workspace**.
 > 2. Connect the Log Analytics workspace to **Microsoft Sentinel**.
 > 3. Enable the **Azure Activity** data connector in Sentinel (which queries the `AzureActivity` table).

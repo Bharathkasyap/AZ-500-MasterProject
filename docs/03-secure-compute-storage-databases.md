@@ -306,23 +306,48 @@ SQL Managed Instance is deployed **inside a VNet subnet** — it has no public e
 
 **Q1.** A developer needs to allow a third-party application to read blobs from a storage container for the next 24 hours. The storage account key must not be shared. What should the developer generate?
 
-> **Answer:** A **User Delegation SAS** or a **Service SAS** (Blob service) scoped to the container with Read permission and 24-hour expiry. User Delegation SAS is preferred as it doesn't expose the account key.
+- A) An Account SAS token with full access to the storage account
+- B) A User Delegation SAS or Service SAS scoped to the container with Read permission and a 24-hour expiry
+- C) Share the storage account access key temporarily and rotate it after 24 hours
+- D) Enable anonymous public read access on the container
+
+> **Answer:** **B** — A **User Delegation SAS** or a **Service SAS** (Blob service) scoped to the container with Read permission and 24-hour expiry. User Delegation SAS is preferred as it doesn't expose the account key.
 
 **Q2.** You need to ensure that sensitive columns in an Azure SQL Database (e.g., credit card numbers) cannot be read by database administrators in plaintext. Which feature should you enable?
 
-> **Answer:** **Always Encrypted** — encryption and decryption happen on the client side; the database engine (and DBAs) never see plaintext data.
+- A) Transparent Data Encryption (TDE)
+- B) Dynamic Data Masking
+- C) Row-Level Security
+- D) Always Encrypted
+
+> **Answer:** **D** — **Always Encrypted** — encryption and decryption happen on the client side; the database engine (and DBAs) never see plaintext data.
 
 **Q3.** A security review finds that Azure VMs in your environment are accessible via RDP from the internet (port 3389 open in NSGs). What is the recommended remediation?
 
-> **Answer:** Remove the public internet RDP NSG rule and enable **Just-in-Time (JIT) VM Access** via Microsoft Defender for Cloud, or deploy **Azure Bastion** for browser-based RDP without requiring public IP or open RDP ports.
+- A) Move all VMs to a private subnet with no internet routing
+- B) Remove the public internet RDP NSG rule and enable Just-in-Time (JIT) VM Access or deploy Azure Bastion
+- C) Change the RDP port from 3389 to a non-standard port number
+- D) Enable Azure DDoS Network Protection on the VNet
+
+> **Answer:** **B** — Remove the public internet RDP NSG rule and enable **Just-in-Time (JIT) VM Access** via Microsoft Defender for Cloud, or deploy **Azure Bastion** for browser-based RDP without requiring a public IP or open RDP ports.
 
 **Q4.** You have an AKS cluster and need to ensure that pods in the `production` namespace cannot communicate with pods in the `development` namespace. What should you implement?
 
-> **Answer:** **Kubernetes Network Policies** — configure a NetworkPolicy in each namespace to deny cross-namespace traffic. The AKS cluster must have network policies enabled (Calico or Azure NPM).
+- A) Azure Network Security Groups applied to the AKS node subnet
+- B) Azure Policy with the DeployIfNotExists effect on the AKS cluster
+- C) Kubernetes Network Policies configured to deny cross-namespace traffic (requires Calico or Azure NPM)
+- D) AKS private cluster configuration
+
+> **Answer:** **C** — **Kubernetes Network Policies** — configure a NetworkPolicy in each namespace to deny cross-namespace traffic. The AKS cluster must have network policies enabled (Calico or Azure NPM).
 
 **Q5.** Azure SQL Database TDE is enabled. An attacker gains access to the raw backup files stored in Azure Storage. Can they read the data?
 
-> **Answer:** **No** — TDE encrypts the data at rest, including backups. Without the TDE protector key (stored in Key Vault), the backup files are unreadable.
+- A) Yes — TDE only encrypts data in transit, not backup files
+- B) Yes — backups are stored unencrypted in Azure Storage regardless of TDE
+- C) No — TDE encrypts data at rest including backups; without the TDE protector key the files are unreadable
+- D) No — Azure Storage automatically re-encrypts all backups independently of TDE
+
+> **Answer:** **C** — **No** — TDE encrypts the data at rest, including backups. Without the TDE protector key (stored in Key Vault), the backup files are unreadable.
 
 ---
 
