@@ -51,9 +51,7 @@
     .explanation { display: none; margin-top: 14px; background: #F3F2F1; border-left: 4px solid #0078D4; border-radius: 4px; padding: 12px 16px; font-size: 0.88rem; color: #323130; line-height: 1.6; }
     .explanation.visible { display: block; }
     .explanation strong { color: #0078D4; }
-    .option-letter { font-weight: 700; min-width: 20px; color: #0078D4; }
-
-    /* Submit */
+    .options label { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border: 1.5px solid #E1DFDD; border-radius: 6px; cursor: pointer; font-size: 0.93rem; line-height: 1.55; transition: background 0.12s, border-color 0.12s; }
     .submit-wrap { text-align: center; margin-top: 32px; }
     .submit-btn { background: #0078D4; color: #fff; border: none; border-radius: 6px; padding: 14px 48px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: background 0.15s; box-shadow: 0 2px 8px rgba(0,120,212,0.25); }
     .submit-btn:hover { background: #005A9E; }
@@ -769,7 +767,7 @@ function submitExam() {
 
       const label = document.createElement('label');
       label.htmlFor = 'q' + i + 'o' + j;
-      label.innerHTML = '<span class="option-letter">' + letters[j] + '.</span> ' + escapeHtml(opt);
+      label.textContent = letters[j] + '. ' + opt;
 
       optionsDiv.appendChild(radio);
       optionsDiv.appendChild(label);
