@@ -58,6 +58,12 @@ AZ-500-MasterProject/
 │   ├── 02-secure-networking.md               # Domain 2 study guide
 │   ├── 03-secure-compute-storage-databases.md # Domain 3 study guide
 │   └── 04-manage-security-operations.md       # Domain 4 study guide
+├── practice-exams/
+│   ├── index.html                     # Practice exam navigation hub
+│   ├── practice-exam-1.html           # 50 Q&As — Identity & Access, Secure Networking
+│   ├── practice-exam-2.html           # 50 Q&As — Compute/Storage/Databases, Security Ops
+│   ├── practice-exam-3.html           # 50 Q&As — Mixed domains, all four areas
+│   └── practice-exam-4.html           # 50 Q&As — Advanced scenario-based, all domains
 ├── scripts/
 │   ├── identity/                      # Azure AD, RBAC, PIM, Conditional Access scripts
 │   ├── networking/                    # NSG, Azure Firewall, Private Endpoint scripts
@@ -77,9 +83,25 @@ AZ-500-MasterProject/
 1. **Start with the domain guides** in `docs/` — read them in order (Domains 1–4).
 2. **Run the scripts** in `scripts/` to practice configurations against a real Azure subscription (or a free trial).
 3. **Complete the hands-on labs** in `labs/` — each lab maps directly to exam objectives.
-4. **Review exam tips** in [STUDY_TIPS.md](STUDY_TIPS.md) before scheduling your exam.
+4. **Test your knowledge** with the [practice exams](practice-exams/index.html) — 200 questions across 4 exams covering all domains.
+5. **Review exam tips** in [STUDY_TIPS.md](STUDY_TIPS.md) before scheduling your exam.
 
 > 💡 **Tip:** Use the [Microsoft Learn AZ-500 learning path](https://learn.microsoft.com/en-us/training/courses/az-500t00) alongside this guide for free, official video and interactive content.
+
+---
+
+## 📝 Practice Exams
+
+Four interactive HTML practice exams with 50 questions each (200 total), covering all AZ-500 domains with detailed answer explanations:
+
+| Exam | Questions | Focus Areas |
+|---|---|---|
+| [Practice Exam 1](practice-exams/practice-exam-1.html) | 1–50 | Identity & Access, Secure Networking |
+| [Practice Exam 2](practice-exams/practice-exam-2.html) | 51–100 | Compute/Storage/Databases, Security Operations |
+| [Practice Exam 3](practice-exams/practice-exam-3.html) | 101–150 | Mixed — All Four Domains |
+| [Practice Exam 4](practice-exams/practice-exam-4.html) | 151–200 | Advanced Scenario-Based, All Domains |
+
+Open [practice-exams/index.html](practice-exams/index.html) in a browser to navigate all four exams.
 
 ---
 
