@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AZ-500 Practice Exam 1 - Identity and Access</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #F3F2F1; color: #323130; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    header { background: #0078D4; color: #fff; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    header h1 { font-size: 1.3rem; font-weight: 700; }
+    header p { font-size: 0.9rem; opacity: 0.88; margin-top: 2px; }
+    header a.back { color: #fff; text-decoration: none; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.4); border-radius: 5px; padding: 7px 14px; font-size: 0.88rem; font-weight: 600; white-space: nowrap; transition: background 0.15s; }
+    header a.back:hover { background: rgba(255,255,255,0.3); }
+
+    /* Progress */
+    .progress-wrap { background: #fff; padding: 14px 24px; border-bottom: 1px solid #E1DFDD; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }
+    .progress-label { font-size: 0.88rem; color: #605E5C; margin-bottom: 6px; font-weight: 600; }
+    .progress-bar-bg { background: #E1DFDD; border-radius: 999px; height: 10px; overflow: hidden; }
+    .progress-bar-fill { background: #0078D4; height: 100%; border-radius: 999px; transition: width 0.3s ease; width: 0%; }
+
+    /* Main */
+    main { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; width: 100%; flex: 1; }
+
+    /* Question card */
+    .question-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; padding: 24px 26px; border-left: 5px solid #0078D4; }
+    .question-card.reviewed { border-left-color: #F7630C; }
+    .q-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .q-num { font-size: 0.78rem; font-weight: 700; color: #0078D4; background: #EFF6FC; border: 1px solid #C7E0F4; border-radius: 4px; padding: 3px 9px; white-space: nowrap; flex-shrink: 0; }
+    .q-text { font-size: 0.98rem; line-height: 1.65; color: #201F1E; flex: 1; }
+    .options { margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
+    .options input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .options label { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border: 1.5px solid #E1DFDD; border-radius: 6px; cursor: pointer; font-size: 0.93rem; line-height: 1.55; transition: background 0.12s, border-color 0.12s; }
+    .options label:hover { background: #EFF6FC; border-color: #C7E0F4; }
+    .options input[type="radio"]:checked + label { background: #EFF6FC; border-color: #0078D4; font-weight: 600; }
+    .option-correct { background: #DFF6DD !important; border: 2px solid #107C10 !important; color: #107C10; font-weight: bold !important; }
+    .option-incorrect { background: #FDE7E9 !important; border: 2px solid #D13438 !important; color: #D13438 !important; }
+
+    /* Review checkbox */
+    .review-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.85rem; color: #605E5C; cursor: pointer; user-select: none; width: fit-content; }
+    .review-row input[type="checkbox"] { accent-color: #F7630C; width: 15px; height: 15px; cursor: pointer; }
+
+    /* Show answer button */
+    .show-btn { margin-top: 14px; background: #005A9E; color: #fff; border: none; border-radius: 5px; padding: 8px 18px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .show-btn:hover:not(:disabled) { background: #004880; }
+    .show-btn:disabled { background: #C8C6C4; color: #605E5C; cursor: default; }
+
+    /* Explanation */
+    .explanation { display: none; margin-top: 14px; background: #F3F2F1; border-left: 4px solid #0078D4; border-radius: 4px; padding: 12px 16px; font-size: 0.88rem; color: #323130; line-height: 1.6; }
+    .explanation.visible { display: block; }
+    .explanation strong { color: #0078D4; }
+
+    /* Submit */
+    .submit-wrap { text-align: center; margin-top: 32px; }
+    .submit-btn { background: #0078D4; color: #fff; border: none; border-radius: 6px; padding: 14px 48px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: background 0.15s; box-shadow: 0 2px 8px rgba(0,120,212,0.25); }
+    .submit-btn:hover { background: #005A9E; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #fff; border-radius: 12px; padding: 36px 32px; max-width: 460px; width: 100%; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.22); }
+    .modal h2 { font-size: 1.4rem; color: #0078D4; margin-bottom: 8px; }
+    .modal .score-num { font-size: 3rem; font-weight: 800; margin: 16px 0 4px; color: #323130; }
+    .modal .score-pct { font-size: 1.1rem; color: #605E5C; margin-bottom: 10px; }
+    .modal .scaled { font-size: 1rem; color: #605E5C; margin-bottom: 18px; }
+    .modal .result-badge { display: inline-block; font-size: 1.2rem; font-weight: 800; border-radius: 6px; padding: 8px 28px; margin-bottom: 22px; }
+    .result-badge.pass { background: #DFF6DD; color: #107C10; border: 2px solid #107C10; }
+    .result-badge.fail { background: #FDE7E9; color: #D13438; border: 2px solid #D13438; }
+    .modal .retake-btn { background: #0078D4; color: #fff; border: none; border-radius: 6px; padding: 11px 32px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .modal .retake-btn:hover { background: #005A9E; }
+    .modal .back-link { display: block; margin-top: 14px; color: #0078D4; font-size: 0.9rem; text-decoration: none; }
+    .modal .back-link:hover { text-decoration: underline; }
+
+    footer { background: #323130; color: #A19F9D; text-align: center; padding: 14px; font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.05rem; }
+      .question-card { padding: 18px 16px; }
+      main { padding: 20px 12px 50px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>AZ-500 Practice Exam 1</h1>
+    <p>Domain 1: Manage Identity and Access &mdash; Questions 1&ndash;50</p>
+  </div>
+  <a class="back" href="index.html">&#8592; Back to Index</a>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label" id="progressLabel">0 of 50 answered</div>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+</div>
+
+<main id="examMain"></main>
+
+<div class="modal-overlay" id="scoreModal">
+  <div class="modal">
+    <h2>Exam Results</h2>
+    <div class="score-num" id="modalScore"></div>
+    <div class="score-pct" id="modalPct"></div>
+    <div class="scaled" id="modalScaled"></div>
+    <div class="result-badge" id="modalBadge"></div>
+    <br>
+    <button class="retake-btn" onclick="location.reload()">&#8635; Retake Exam</button>
+    <a class="back-link" href="index.html">&#8592; Back to Exam Index</a>
+  </div>
+</div>
+
+<footer>AZ-500 Master Project | Practice Exams</footer>
+
+<script>
+const questions = [
+  {
+    q: "Your organization needs to ensure that users accessing Azure resources from unmanaged devices are required to use MFA. Which Azure AD feature should you configure?",
+    options: ["A. Azure AD Identity Protection", "B. Conditional Access policies", "C. Multi-Factor Authentication server", "D. Azure AD Privileged Identity Management"],
+    correct: 1,
+    explanation: "Conditional Access policies allow you to enforce MFA based on conditions such as device compliance state, location, or application."
+  },
+  {
+    q: "A developer needs to access Azure Key Vault from an Azure VM without storing credentials in code. What is the BEST solution?",
+    options: ["A. Store credentials in Azure Key Vault secrets", "B. Use a service principal with a certificate", "C. Assign a system-assigned managed identity to the VM", "D. Use shared access signatures"],
+    correct: 2,
+    explanation: "System-assigned managed identities provide an automatically managed identity in Azure AD for the VM, eliminating the need to store credentials."
+  },
+  {
+    q: "An administrator wants to limit the scope of administrative permissions to a specific subset of users in Azure AD. Which feature allows this?",
+    options: ["A. Azure RBAC roles", "B. Administrative Units", "C. Conditional Access", "D. Azure AD groups"],
+    correct: 1,
+    explanation: "Administrative Units allow you to scope Azure AD admin roles to a subset of your organization, restricting permissions to specific groups of users."
+  },
+  {
+    q: "Your company requires that global administrators use PIM to activate their roles. How long can a PIM role assignment be eligible at maximum by default?",
+    options: ["A. 24 hours", "B. 8 hours", "C. 48 hours", "D. 72 hours"],
+    correct: 1,
+    explanation: "By default, PIM eligible role activations have a maximum duration of 8 hours, though this can be configured up to 24 hours."
+  },
+  {
+    q: "Which Azure AD feature can automatically detect and remediate risky sign-ins in real time?",
+    options: ["A. Azure AD Audit Logs", "B. Microsoft Defender for Identity", "C. Azure AD Identity Protection", "D. Conditional Access"],
+    correct: 2,
+    explanation: "Azure AD Identity Protection uses machine learning to detect risky sign-ins and can automatically remediate them by requiring MFA or blocking access."
+  },
+  {
+    q: "A user's account is flagged as high risk by Identity Protection. What is the MOST secure automatic remediation action?",
+    options: ["A. Send an email notification to the admin", "B. Require password change at next sign-in", "C. Block the user account immediately", "D. Require MFA at next sign-in"],
+    correct: 1,
+    explanation: "Requiring a secure password change forces the user to prove their identity via MFA and reset their password, effectively remediating the compromised credentials risk."
+  },
+  {
+    q: "Your organization uses Azure AD B2B collaboration. Which statement about guest user permissions is correct?",
+    options: ["A. Guest users have the same permissions as member users by default", "B. Guest users cannot be assigned Azure RBAC roles", "C. Guest users have restricted directory permissions compared to member users", "D. Guest users cannot use MFA"],
+    correct: 2,
+    explanation: "Guest users in Azure AD B2B have restricted permissions by default. They can read limited directory information but cannot enumerate all users, groups, or other directory objects."
+  },
+  {
+    q: "An application needs to read user profiles from Microsoft Graph API. What should you configure in App Registration?",
+    options: ["A. Service principal credentials", "B. API permissions with User.Read scope", "C. Certificate-based authentication", "D. Managed identity"],
+    correct: 1,
+    explanation: "API permissions in App Registration define what resources and operations the application can access. User.Read permission allows the app to read user profile data from Microsoft Graph."
+  },
+  {
+    q: "What is the MINIMUM Azure AD role required to manage Conditional Access policies?",
+    options: ["A. Security Reader", "B. Global Administrator", "C. Conditional Access Administrator", "D. Security Administrator"],
+    correct: 2,
+    explanation: "The Conditional Access Administrator role has the minimum required permissions to create and manage Conditional Access policies."
+  },
+  {
+    q: "Your organization wants to enforce that users in the Finance department can only sign in from corporate IP addresses. Which Conditional Access condition should you use?",
+    options: ["A. Device compliance", "B. Named locations", "C. Sign-in risk", "D. Application filter"],
+    correct: 1,
+    explanation: "Named locations in Conditional Access allow you to define trusted IP ranges and create policies that restrict access to only those locations."
+  },
+  {
+    q: "A service principal needs to authenticate to Azure resources without using a password. What authentication method should you configure?",
+    options: ["A. Client secret", "B. Certificate-based authentication", "C. Username and password", "D. OAuth 2.0 authorization code flow"],
+    correct: 1,
+    explanation: "Certificate-based authentication for service principals is more secure than client secrets as certificates have stronger cryptographic properties and don't require secret rotation."
+  },
+  {
+    q: "Which PIM feature requires an approver to authorize role activation before access is granted?",
+    options: ["A. Just-in-time access", "B. Access reviews", "C. Approval workflow", "D. Eligible assignments"],
+    correct: 2,
+    explanation: "PIM's approval workflow feature requires designated approvers to review and approve role activation requests before the user gains the elevated privileges."
+  },
+  {
+    q: "Your Azure AD tenant has users from multiple divisions. You need to delegate user management for each division to division-specific admins without giving them tenant-wide permissions. What should you use?",
+    options: ["A. Custom RBAC roles", "B. Administrative Units with scoped admin roles", "C. Azure AD groups with owner permissions", "D. Management groups"],
+    correct: 1,
+    explanation: "Administrative Units with scoped admin roles allow division admins to manage only users in their Administrative Unit, not the entire tenant."
+  },
+  {
+    q: "An Azure function app needs to access Azure Storage without credentials in code. What identity type provides automatic lifecycle management?",
+    options: ["A. User-assigned managed identity", "B. Service principal with certificate", "C. System-assigned managed identity", "D. Application registration"],
+    correct: 2,
+    explanation: "System-assigned managed identities are tied to the resource lifecycle — they are automatically created and deleted with the resource, requiring no manual management."
+  },
+  {
+    q: "Which Azure AD feature provides self-service password reset for users?",
+    options: ["A. Identity Protection", "B. SSPR (Self-Service Password Reset)", "C. PIM", "D. Conditional Access"],
+    correct: 1,
+    explanation: "Azure AD Self-Service Password Reset (SSPR) allows users to reset their own passwords without administrator involvement, reducing helpdesk calls."
+  },
+  {
+    q: "You need to ensure that users must register for MFA before they can access any application. Which policy type should you configure?",
+    options: ["A. Sign-in risk policy", "B. User risk policy", "C. MFA registration policy", "D. Conditional Access policy"],
+    correct: 2,
+    explanation: "Identity Protection's MFA registration policy enforces that users must register for Azure AD MFA, ensuring they can use MFA-based risk remediation."
+  },
+  {
+    q: "An external partner company needs temporary access to your Azure resources. Which Azure AD feature should you use?",
+    options: ["A. Azure AD B2C", "B. Azure AD B2B", "C. Guest user with temporary access pass", "D. Service principal"],
+    correct: 1,
+    explanation: "Azure AD B2B (Business-to-Business) collaboration enables you to invite external users to access your Azure resources using their existing credentials."
+  },
+  {
+    q: "Which Azure RBAC role allows a user to read all resources but not make any changes?",
+    options: ["A. Contributor", "B. Owner", "C. Reader", "D. User Access Administrator"],
+    correct: 2,
+    explanation: "The Reader role grants read-only access to view all resources but does not allow creating, updating, or deleting any resources."
+  },
+  {
+    q: "Your organization needs to conduct quarterly reviews of who has access to sensitive Azure resources. Which Azure AD feature should you use?",
+    options: ["A. Access packages", "B. PIM access reviews", "C. Conditional Access", "D. Identity Protection risk reports"],
+    correct: 1,
+    explanation: "PIM access reviews allow you to periodically review and certify privileged role assignments, ensuring only appropriate users maintain elevated access."
+  },
+  {
+    q: "What type of MFA verification method is considered most resistant to phishing attacks?",
+    options: ["A. SMS text message", "B. Phone call verification", "C. FIDO2 security key", "D. Microsoft Authenticator notification"],
+    correct: 2,
+    explanation: "FIDO2 security keys are phishing-resistant because they cryptographically bind the authentication to the specific website, preventing credential theft through fake websites."
+  },
+  {
+    q: "A multi-tenant application needs to allow users from any Azure AD tenant to sign in. What should you configure in the App Registration?",
+    options: ["A. Single tenant with external identity support", "B. Multi-tenant supported account types", "C. B2C user flows", "D. Federation with all tenants"],
+    correct: 1,
+    explanation: "Setting the supported account types to \"Accounts in any organizational directory\" makes the application multi-tenant, allowing users from any Azure AD tenant to authenticate."
+  },
+  {
+    q: "Which Identity Protection risk detection identifies sign-ins from anonymous IP addresses (e.g., Tor browser)?",
+    options: ["A. Unfamiliar sign-in properties", "B. Anonymous IP address", "C. Atypical travel", "D. Malware linked IP address"],
+    correct: 1,
+    explanation: "The Anonymous IP address risk detection flags sign-ins from known anonymous proxies and Tor exit nodes, which are commonly used to hide true location."
+  },
+  {
+    q: "You want users to authenticate to Azure AD using their on-premises Active Directory credentials without syncing password hashes. Which authentication method should you implement?",
+    options: ["A. Password Hash Synchronization", "B. Pass-through Authentication", "C. Active Directory Federation Services", "D. Seamless SSO only"],
+    correct: 1,
+    explanation: "Pass-through Authentication validates passwords directly against on-premises Active Directory without storing password hashes in Azure AD."
+  },
+  {
+    q: "What is the scope of a user-assigned managed identity compared to a system-assigned managed identity?",
+    options: ["A. User-assigned can be shared across multiple resources; system-assigned is tied to one resource", "B. System-assigned can be shared across multiple resources; user-assigned is tied to one resource", "C. Both can be shared across multiple resources", "D. Neither can be shared across resources"],
+    correct: 0,
+    explanation: "User-assigned managed identities are standalone Azure resources that can be assigned to multiple Azure resources. System-assigned identities are bound to a single resource and deleted with it."
+  },
+  {
+    q: "Which Azure AD feature allows you to create customer-facing applications with custom authentication flows?",
+    options: ["A. Azure AD B2B", "B. Azure AD B2C", "C. Azure AD External Identities", "D. Azure AD Application Proxy"],
+    correct: 1,
+    explanation: "Azure AD B2C (Business-to-Consumer) is designed for customer-facing applications, allowing customers to sign in with social identities or custom accounts."
+  },
+  {
+    q: "An attacker has compromised a user account. Which PIM feature helps limit the damage from compromised privileged accounts?",
+    options: ["A. Eligible assignments requiring activation", "B. Permanent active assignments", "C. Access packages", "D. Administrative Units"],
+    correct: 0,
+    explanation: "Eligible assignments in PIM mean users don't have active privileges by default — they must explicitly activate the role, limiting the attack window if credentials are compromised."
+  },
+  {
+    q: "Your organization wants to allow only compliant devices to access Office 365. Which Conditional Access grant control should you configure?",
+    options: ["A. Require MFA", "B. Require approved client app", "C. Require compliant device", "D. Require hybrid Azure AD joined device"],
+    correct: 2,
+    explanation: "The \"Require device to be marked as compliant\" grant control in Conditional Access enforces that only devices meeting Intune compliance policies can access the specified applications."
+  },
+  {
+    q: "Which Azure AD role is required to create and manage Access Reviews in PIM?",
+    options: ["A. Privileged Role Administrator", "B. Global Administrator", "C. Security Administrator", "D. User Administrator"],
+    correct: 0,
+    explanation: "The Privileged Role Administrator role has permissions to manage PIM settings, including creating and managing Access Reviews for Azure AD roles."
+  },
+  {
+    q: "You need to ensure that an application can access resources in Azure without user interaction. Which OAuth 2.0 flow is appropriate?",
+    options: ["A. Authorization code flow", "B. Implicit flow", "C. Client credentials flow", "D. Device code flow"],
+    correct: 2,
+    explanation: "The client credentials flow is designed for daemon applications and services that need to access resources without user interaction, authenticating with their own credentials."
+  },
+  {
+    q: "Which Azure AD Identity Protection report shows accounts that were flagged as risky but successfully signed in?",
+    options: ["A. Risky users report", "B. Risk detections report", "C. Risky sign-ins report", "D. Audit log"],
+    correct: 2,
+    explanation: "The Risky sign-ins report in Identity Protection shows sign-ins detected as risky, including those that successfully completed, allowing admins to review and investigate."
+  },
+  {
+    q: "What is the purpose of the \"Require re-authentication\" session control in Conditional Access?",
+    options: ["A. Forces users to register MFA", "B. Forces users to sign in again after a specified period or when sign-in risk is detected", "C. Blocks all non-compliant devices", "D. Requires admin approval for each sign-in"],
+    correct: 1,
+    explanation: "The \"Require re-authentication\" session control forces users to authenticate again after a specified number of days or when a risky sign-in is detected, regardless of existing sessions."
+  },
+  {
+    q: "A security audit found that several users have standing Owner access to production subscriptions. What PIM feature should you implement?",
+    options: ["A. Convert permanent assignments to eligible assignments", "B. Enable access reviews for all subscriptions", "C. Require justification for all role assignments", "D. Enable MFA for all privileged roles"],
+    correct: 0,
+    explanation: "Converting permanent (active) Owner assignments to eligible assignments means users must activate the role when needed, reducing the standing privileged access and attack surface."
+  },
+  {
+    q: "Which feature in Azure AD allows you to bundle resource access into a package for self-service access requests?",
+    options: ["A. Access Reviews", "B. Entitlement Management Access Packages", "C. PIM eligible assignments", "D. Conditional Access policies"],
+    correct: 1,
+    explanation: "Entitlement Management Access Packages in Azure AD allow administrators to bundle multiple resource access permissions together for self-service request and approval workflows."
+  },
+  {
+    q: "What is the difference between Azure AD roles and Azure RBAC roles?",
+    options: ["A. Azure AD roles manage Azure resources; Azure RBAC manages Azure AD objects", "B. Azure AD roles manage Azure AD objects; Azure RBAC manages Azure resources", "C. Both manage the same set of resources", "D. Azure RBAC cannot be used for Azure AD management"],
+    correct: 1,
+    explanation: "Azure AD roles (like Global Admin) control permissions within Azure Active Directory. Azure RBAC roles (like Contributor) control access to Azure resources like VMs and storage."
+  },
+  {
+    q: "Your organization needs to review and remove unnecessary guest user access monthly. Which tool automates this process?",
+    options: ["A. Azure AD audit logs with alerts", "B. Access Reviews in Azure AD Identity Governance", "C. Microsoft Defender for Cloud Apps", "D. Microsoft Sentinel playbooks"],
+    correct: 1,
+    explanation: "Access Reviews in Azure AD Identity Governance can be scheduled to run monthly, automatically sending review requests to reviewers and removing access if not approved."
+  },
+  {
+    q: "Which authentication strength in Conditional Access requires phishing-resistant MFA methods only?",
+    options: ["A. MFA strength", "B. Passwordless MFA strength", "C. Phishing-resistant MFA strength", "D. Multifactor authentication"],
+    correct: 2,
+    explanation: "The \"Phishing-resistant MFA strength\" authentication strength in Conditional Access requires methods like FIDO2 keys or Windows Hello for Business that are resistant to phishing."
+  },
+  {
+    q: "An application developer registers an app that needs to read all users in the directory. What admin consent is required?",
+    options: ["A. User consent", "B. Tenant admin consent for application permissions", "C. Resource owner consent", "D. No consent required"],
+    correct: 1,
+    explanation: "Application permissions (not delegated permissions) to read all directory users require tenant admin consent because they grant broad access to the entire directory, not just the signed-in user."
+  },
+  {
+    q: "Which Azure AD Connect feature ensures that disabled on-premises accounts are also disabled in Azure AD?",
+    options: ["A. Password Hash Synchronization", "B. Attribute-based filtering", "C. User writeback", "D. Account state synchronization (part of Azure AD Connect sync)"],
+    correct: 3,
+    explanation: "Azure AD Connect synchronizes account state including enabled/disabled status from on-premises AD to Azure AD, ensuring disabled on-premises accounts are also disabled in the cloud."
+  },
+  {
+    q: "You need to prevent users from registering applications in Azure AD. Which setting controls this?",
+    options: ["A. Conditional Access policy", "B. User settings - \"Users can register applications\"", "C. App registration policy in PIM", "D. Enterprise application settings"],
+    correct: 1,
+    explanation: "The \"Users can register applications\" toggle in Azure AD User Settings controls whether non-admin users can register application registrations in the tenant."
+  },
+  {
+    q: "Which Conditional Access signal can be used to evaluate whether a user's device is Azure AD joined?",
+    options: ["A. Location condition", "B. Device platform condition", "C. Device state/filter for devices condition", "D. Client apps condition"],
+    correct: 2,
+    explanation: "The \"Filter for devices\" condition in Conditional Access allows you to evaluate device attributes including whether the device is Azure AD joined, hybrid joined, or compliant."
+  },
+  {
+    q: "What happens when a user risk policy triggers for a user with HIGH risk level?",
+    options: ["A. The user is permanently blocked", "B. The user's account is automatically deleted", "C. The user is required to perform MFA and change their password", "D. An alert is sent to the security team only"],
+    correct: 2,
+    explanation: "A user risk policy set to HIGH risk requiring password change forces the user to prove identity via MFA and then change their password, remediating the compromised credentials."
+  },
+  {
+    q: "Which type of managed identity should you use when multiple Azure resources need to share the same identity?",
+    options: ["A. System-assigned managed identity", "B. User-assigned managed identity", "C. Service principal", "D. Application registration"],
+    correct: 1,
+    explanation: "User-assigned managed identities are standalone resources that can be assigned to multiple Azure services, allowing those services to share the same identity and permissions."
+  },
+  {
+    q: "What is the maximum number of Azure AD administrative units you can create per tenant in Azure AD P1?",
+    options: ["A. 30", "B. 5,000", "C. 100", "D. Unlimited"],
+    correct: 1,
+    explanation: "Azure AD supports up to 5,000 administrative units per tenant, providing extensive flexibility for delegated administration across large organizations."
+  },
+  {
+    q: "Which protocol does Azure AD use for modern authentication with web applications?",
+    options: ["A. SAML 2.0 only", "B. Kerberos", "C. NTLM", "D. OAuth 2.0 and OpenID Connect"],
+    correct: 3,
+    explanation: "Azure AD uses OAuth 2.0 for authorization and OpenID Connect (built on OAuth 2.0) for authentication with modern web and mobile applications."
+  },
+  {
+    q: "You need to give a third-party security vendor read-only access to your Azure AD sign-in logs. What is the LEAST privileged role?",
+    options: ["A. Global Reader", "B. Security Reader", "C. Reports Reader", "D. Security Operator"],
+    correct: 1,
+    explanation: "The Security Reader role provides read-only access to security features including sign-in logs, audit logs, and identity protection reports — appropriate for third-party security vendors."
+  },
+  {
+    q: "Which Azure AD feature provides risk-based Conditional Access for workload identities (service principals)?",
+    options: ["A. Identity Protection for workload identities", "B. Conditional Access for service principals", "C. Managed Identity policies", "D. PIM for workload identities"],
+    correct: 0,
+    explanation: "Identity Protection for workload identities extends risk detection to service principals and managed identities, detecting anomalous behavior and allowing risk-based Conditional Access policies."
+  },
+  {
+    q: "A Conditional Access policy is set to block access from legacy authentication clients. Which protocol would be blocked?",
+    options: ["A. OAuth 2.0", "B. OpenID Connect", "C. SMTP AUTH", "D. SAML 2.0"],
+    correct: 2,
+    explanation: "SMTP AUTH is a legacy authentication protocol that doesn't support modern authentication or MFA. Blocking legacy authentication prevents attacks using protocols like SMTP AUTH, IMAP, and POP3."
+  },
+  {
+    q: "What is the benefit of using Azure AD Verified ID (verifiable credentials)?",
+    options: ["A. Stronger password requirements for cloud identities", "B. Decentralized identity verification without sharing personal data with issuers", "C. Automated MFA for all sign-ins", "D. Single sign-on across all Microsoft services"],
+    correct: 1,
+    explanation: "Azure AD Verified ID uses decentralized identity standards allowing users to prove claims about themselves without the verifier directly contacting the issuer, preserving privacy."
+  },
+  {
+    q: "Which PIM notification alerts you when an eligible role is activated?",
+    options: ["A. Role assignment alert", "B. Role activation notification", "C. PIM audit notification", "D. Just-in-time access email"],
+    correct: 1,
+    explanation: "PIM sends role activation notifications to configured recipients when a user activates an eligible role assignment, providing visibility into privileged access usage."
+  },
+  {
+    q: "Your organization needs to ensure users consent only to applications approved by admins. Which setting should you configure?",
+    options: ["A. Block all user consent", "B. User consent settings - allow consent for verified publishers only", "C. Conditional Access policy blocking all app sign-ins", "D. Enterprise application approval workflow"],
+    correct: 1,
+    explanation: "Configuring user consent to \"Allow user consent for apps from verified publishers, for selected permissions\" balances security with usability by restricting risky consent while allowing trusted apps."
+  }
+];
+
+let answeredCount = 0;
+const answered = new Array(questions.length).fill(false);
+
+function buildExam() {
+  const main = document.getElementById('examMain');
+  let html = '';
+  questions.forEach((q, i) => {
+    html += `
+    <div class="question-card" id="card-${i}">
+      <div class="q-header">
+        <span class="q-num">Question ${i + 1}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="options" id="options-${i}">
+        ${q.options.map((opt, j) => `
+          <div>
+            <input type="radio" name="q${i}" id="q${i}o${j}" value="${j}">
+            <label for="q${i}o${j}" id="label-${i}-${j}">${opt}</label>
+          </div>
+        `).join('')}
+      </div>
+      <label class="review-row" for="review-${i}">
+        <input type="checkbox" id="review-${i}" onchange="toggleReview(${i})"> Mark for Review
+      </label>
+      <button class="show-btn" id="showbtn-${i}" onclick="showAnswer(${i})">Show Answer</button>
+      <div class="explanation" id="exp-${i}"><strong>Explanation:</strong> ${q.explanation}</div>
+    </div>`;
+  });
+  html += `<div class="submit-wrap"><button class="submit-btn" onclick="submitExam()">&#10003; Submit Exam</button></div>`;
+  main.innerHTML = html;
+}
+
+function showAnswer(qIndex) {
+  const q = questions[qIndex];
+  const btn = document.getElementById(`showbtn-${qIndex}`);
+  if (btn.disabled) return;
+
+  q.options.forEach((_, j) => {
+    const lbl = document.getElementById(`label-${qIndex}-${j}`);
+    if (j === q.correct) {
+      lbl.classList.add('option-correct');
+    } else {
+      lbl.classList.add('option-incorrect');
+    }
+  });
+
+  // Disable all radio buttons for this question
+  q.options.forEach((_, j) => {
+    const radio = document.getElementById(`q${qIndex}o${j}`);
+    if (radio) radio.disabled = true;
+  });
+
+  btn.disabled = true;
+  btn.textContent = 'Answer Shown \u2713';
+
+  document.getElementById(`exp-${qIndex}`).classList.add('visible');
+
+  if (!answered[qIndex]) {
+    answered[qIndex] = true;
+    answeredCount++;
+    updateProgress();
+  }
+}
+
+function updateProgress() {
+  const pct = (answeredCount / questions.length) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${answeredCount} of ${questions.length} answered`;
+}
+
+function toggleReview(qIndex) {
+  const card = document.getElementById(`card-${qIndex}`);
+  const cb = document.getElementById(`review-${qIndex}`);
+  if (cb.checked) {
+    card.classList.add('reviewed');
+  } else {
+    card.classList.remove('reviewed');
+  }
+}
+
+function submitExam() {
+  let correct = 0;
+  questions.forEach((q, i) => {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    if (selected && parseInt(selected.value) === q.correct) {
+      correct++;
+    }
+  });
+
+  const total = questions.length;
+  const pct = Math.round((correct / total) * 100);
+  const scaled = pct * 10;
+  const pass = scaled >= 700;
+
+  document.getElementById('modalScore').textContent = `${correct} / ${total}`;
+  document.getElementById('modalPct').textContent = `${pct}% Correct`;
+  document.getElementById('modalScaled').textContent = `Scaled Score: ${scaled} / 1000`;
+  const badge = document.getElementById('modalBadge');
+  badge.textContent = pass ? '\u2713 PASS' : '\u2717 FAIL';
+  badge.className = 'result-badge ' + (pass ? 'pass' : 'fail');
+
+  document.getElementById('scoreModal').classList.add('active');
+}
+
+buildExam();
+updateProgress();
+</script>
+</body>
+</html>
