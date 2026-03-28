@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AZ-500 Practice Exam 1 — Identity &amp; Access + Secure Networking</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #1a237e, #0288d1); padding: 24px 40px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        header h1 { font-size: 2rem; font-weight: 700; color: #fff; }
+        header p { color: #b0bec5; margin-top: 8px; font-size: 1rem; }
+        .score-bar { background: #161b22; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #30363d; position: sticky; top: 0; z-index: 100; }
+        .score-display { font-size: 1.1rem; font-weight: 600; color: #58a6ff; }
+        .progress-text { color: #8b949e; font-size: 0.9rem; }
+        .container { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+        .question-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 28px; margin-bottom: 28px; transition: border-color 0.2s; }
+        .question-card:hover { border-color: #58a6ff; }
+        .question-number { font-size: 0.8rem; font-weight: 600; color: #58a6ff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .question-text { font-size: 1.05rem; line-height: 1.6; color: #e6edf3; margin-bottom: 20px; font-weight: 500; }
+        .options-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .option { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px; border: 1.5px solid #30363d; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: #0d1117; }
+        .option:hover:not(.disabled) { border-color: #58a6ff; background: #1c2a3a; }
+        .option-letter { font-weight: 700; color: #58a6ff; min-width: 20px; font-size: 0.95rem; flex-shrink: 0; }
+        .option-text { line-height: 1.5; color: #c9d1d9; font-size: 0.95rem; }
+        .option.correct { border-color: #3fb950; background: #0d2818; }
+        .option.correct .option-letter, .option.correct .option-text { color: #3fb950; }
+        .option.wrong { border-color: #f85149; background: #2d0d0d; }
+        .option.wrong .option-letter, .option.wrong .option-text { color: #f85149; }
+        .option.show-correct { border-color: #3fb950; background: #0d2818; }
+        .option.show-correct .option-letter, .option.show-correct .option-text { color: #3fb950; }
+        .option.disabled { cursor: default; pointer-events: none; }
+        .explanation { margin-top: 16px; padding: 14px 18px; background: #1c2a3a; border-left: 4px solid #58a6ff; border-radius: 0 8px 8px 0; display: none; }
+        .explanation.visible { display: block; }
+        .explanation p { color: #8b949e; font-size: 0.9rem; line-height: 1.6; }
+        .explanation strong { color: #58a6ff; }
+        .domain-badge { display: inline-block; background: #1c2a3a; color: #58a6ff; border: 1px solid #58a6ff; border-radius: 20px; padding: 4px 14px; font-size: 0.75rem; font-weight: 600; margin-bottom: 16px; }
+        .bottom-bar { background: #161b22; border-top: 1px solid #30363d; padding: 24px 40px; text-align: center; margin-top: 20px; }
+        .btn { padding: 14px 36px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #1a237e, #0288d1); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(2,136,209,0.4); }
+        .btn-secondary { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; margin-left: 16px; }
+        .btn-secondary:hover { background: #30363d; }
+        .result-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
+        .result-modal.show { display: flex; }
+        .result-box { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 48px; text-align: center; max-width: 480px; width: 90%; }
+        .result-score { font-size: 4rem; font-weight: 800; color: #58a6ff; }
+        .result-label { font-size: 1.2rem; color: #8b949e; margin-top: 8px; }
+        .result-grade { font-size: 1.5rem; font-weight: 700; margin: 20px 0; }
+        .pass { color: #3fb950; }
+        .fail { color: #f85149; }
+        .result-detail { color: #8b949e; margin-bottom: 28px; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>&#x1F6E1;&#xFE0F; AZ-500 Practice Exam 1</h1>
+    <p>Microsoft Azure Security Technologies &mdash; Identity &amp; Access + Secure Networking &nbsp;|&nbsp; 50 Questions &nbsp;|&nbsp; 2026 Edition</p>
+</header>
+
+<div class="score-bar">
+    <div class="score-display">Score: <span id="scoreDisplay">0</span> / <span id="answeredDisplay">0</span></div>
+    <div class="progress-text">Questions answered: <span id="progressDisplay">0</span> / 50</div>
+</div>
+
+<div class="container" id="examContainer"></div>
+
+<div class="bottom-bar">
+    <button class="btn btn-primary" onclick="submitExam()">Submit Exam</button>
+    <button class="btn btn-secondary" onclick="resetExam()">Reset</button>
+</div>
+
+<div class="result-modal" id="resultModal">
+    <div class="result-box">
+        <div style="font-size:3rem;margin-bottom:16px;">&#x1F3C6;</div>
+        <div class="result-score"><span id="finalScore">0</span>%</div>
+        <div class="result-label">Final Score: <span id="finalCorrect">0</span> / 50 correct</div>
+        <div class="result-grade" id="gradeText"></div>
+        <div class="result-detail" id="gradeDetail"></div>
+        <button class="btn btn-primary" onclick="resetExam()">Retake Exam</button>
+    </div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "What is the primary purpose of Microsoft Entra ID (formerly Azure Active Directory)?",
+    options: [
+      "Managing virtual machine configurations",
+      "Providing cloud-based identity and access management services",
+      "Monitoring network traffic in Azure",
+      "Encrypting Azure Storage accounts"
+    ],
+    correct: 1,
+    explanation: "Microsoft Entra ID (formerly Azure Active Directory) is Microsoft's cloud-based identity and access management service that helps employees sign in and access resources.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "Which Microsoft Entra ID feature allows you to require users to perform additional verification steps beyond just a password?",
+    options: [
+      "Single Sign-On (SSO)",
+      "Conditional Access",
+      "Multi-Factor Authentication (MFA)",
+      "Privileged Identity Management (PIM)"
+    ],
+    correct: 2,
+    explanation: "Multi-Factor Authentication (MFA) requires users to provide two or more verification factors to gain access, adding an extra layer of security beyond passwords.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "A company wants to ensure that users can only access corporate resources from compliant devices. Which feature should they configure?",
+    options: [
+      "Azure RBAC",
+      "Conditional Access policies",
+      "Azure Policy",
+      "Network Security Groups"
+    ],
+    correct: 1,
+    explanation: "Conditional Access policies allow administrators to define conditions (such as device compliance) that must be met before granting access to resources.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "What is Privileged Identity Management (PIM) used for in Microsoft Entra ID?",
+    options: [
+      "Managing passwords for service accounts",
+      "Providing just-in-time privileged access and reducing standing privileges",
+      "Automating user provisioning from HR systems",
+      "Configuring multi-factor authentication policies"
+    ],
+    correct: 1,
+    explanation: "PIM provides just-in-time privileged access, requires justification for role activation, enforces MFA, and provides audit history for privileged role assignments.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "An administrator needs to grant a third-party application access to Azure resources without storing credentials. What should they use?",
+    options: [
+      "Service Principal with client secret",
+      "Managed Identity",
+      "Azure Key Vault certificate",
+      "Shared Access Signature"
+    ],
+    correct: 1,
+    explanation: "Managed Identities provide an identity for Azure resources to use when connecting to services that support Entra ID authentication, eliminating the need to manage credentials.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "Which type of managed identity is automatically created and deleted with the Azure resource it is associated with?",
+    options: [
+      "User-assigned managed identity",
+      "System-assigned managed identity",
+      "Service principal",
+      "Application identity"
+    ],
+    correct: 1,
+    explanation: "A system-assigned managed identity is enabled directly on an Azure service instance, has its lifecycle tied to the resource, and is automatically deleted when the resource is deleted.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "What is the default role that provides full access to all Azure resources but does not allow you to manage access?",
+    options: [
+      "Owner",
+      "Contributor",
+      "Reader",
+      "User Access Administrator"
+    ],
+    correct: 1,
+    explanation: "The Contributor role grants full access to manage all Azure resources but does not allow you to assign roles in Azure RBAC, manage assignments in Azure Blueprints, or share image galleries.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "A security team needs to review all role assignments in an Azure subscription. Which Azure RBAC role should they be assigned?",
+    options: [
+      "Contributor",
+      "Owner",
+      "Reader",
+      "Security Reader"
+    ],
+    correct: 2,
+    explanation: "The Reader role allows users to view all resources and role assignments but not make changes. For specifically viewing security-related information, Security Reader is more appropriate, but Reader provides view access to role assignments.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "What is the maximum number of custom roles that can be created in an Azure Active Directory tenant?",
+    options: [
+      "50",
+      "100",
+      "5000",
+      "Unlimited"
+    ],
+    correct: 2,
+    explanation: "Azure supports up to 5000 custom roles per Azure AD tenant. This limit applies to all custom roles created across the tenant.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "Which feature in Microsoft Entra ID allows you to review and certify user access to applications and resources on a recurring basis?",
+    options: [
+      "Identity Protection",
+      "Access Reviews",
+      "Entitlement Management",
+      "Privileged Identity Management"
+    ],
+    correct: 1,
+    explanation: "Access Reviews in Microsoft Entra ID allow administrators to efficiently manage group memberships, access to enterprise applications, and role assignments through regular reviews.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "A user reports they are being asked for MFA every time they access an application even from their corporate device. How can you configure Conditional Access to reduce MFA prompts for compliant devices?",
+    options: [
+      "Disable MFA entirely",
+      "Create a Conditional Access policy that excludes compliant devices from MFA requirement",
+      "Add the user to the MFA exclusion list",
+      "Configure Named Locations"
+    ],
+    correct: 1,
+    explanation: "You can configure a Conditional Access policy with conditions that exclude compliant devices, so users on compliant corporate devices are not required to perform MFA on every login.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "What does Microsoft Entra Identity Protection use to detect risky sign-ins?",
+    options: [
+      "Manual review by security administrators",
+      "Machine learning and heuristics to analyze sign-in patterns",
+      "Network traffic analysis",
+      "User-reported incidents"
+    ],
+    correct: 1,
+    explanation: "Microsoft Entra Identity Protection uses machine learning algorithms and heuristics to detect suspicious sign-in behaviors such as atypical travel, anonymous IP addresses, and leaked credentials.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "Which Azure AD feature provides a workflow for users to request access to resources, including approval and review processes?",
+    options: [
+      "Access Reviews",
+      "Entitlement Management",
+      "PIM",
+      "Conditional Access"
+    ],
+    correct: 1,
+    explanation: "Entitlement Management is an identity governance feature that enables organizations to manage identity and access lifecycle at scale by automating access request workflows, access assignments, reviews, and expiration.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "What is the purpose of Emergency Access accounts (break-glass accounts) in Microsoft Entra ID?",
+    options: [
+      "To provide access to users who forgot their passwords",
+      "To ensure administrative access to the tenant in emergency scenarios when normal admin accounts are unavailable",
+      "To test Conditional Access policies",
+      "To provide temporary access to contractors"
+    ],
+    correct: 1,
+    explanation: "Emergency access accounts are highly privileged accounts used in emergency or break-glass scenarios when normal administrative accounts cannot be used, ensuring you always have access to your Azure AD tenant.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "An organization wants to federate their on-premises Active Directory with Microsoft Entra ID. Which service should they deploy?",
+    options: [
+      "Azure AD Connect Cloud Sync only",
+      "Azure AD Connect or Azure AD Connect Cloud Sync",
+      "Active Directory Federation Services (AD FS) only",
+      "Azure AD Application Proxy"
+    ],
+    correct: 1,
+    explanation: "Azure AD Connect and Azure AD Connect Cloud Sync are both tools for synchronizing on-premises Active Directory with Microsoft Entra ID. Azure AD Connect is the traditional tool while Cloud Sync is the newer, lighter-weight option.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "Which Azure AD license is required to use Privileged Identity Management (PIM)?",
+    options: [
+      "Azure AD Free",
+      "Azure AD P1",
+      "Azure AD P2",
+      "Microsoft 365 Business Basic"
+    ],
+    correct: 2,
+    explanation: "Microsoft Entra ID P2 (formerly Azure AD P2) is required to use Privileged Identity Management. PIM is a premium feature that requires a P2 license for users who are managed by PIM.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "A Network Security Group (NSG) rule with a lower priority number is evaluated:",
+    options: [
+      "After rules with higher priority numbers",
+      "Before rules with higher priority numbers",
+      "At the same time as other rules",
+      "Only for inbound traffic"
+    ],
+    correct: 1,
+    explanation: "NSG rules are processed in priority order, with lower numbers processed first. When a matching rule is found, processing stops. Priority values range from 100 to 4096.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is the default action when no NSG rule matches traffic in Azure?",
+    options: [
+      "Allow all traffic",
+      "Deny all traffic",
+      "Log and allow traffic",
+      "Forward to Azure Firewall"
+    ],
+    correct: 1,
+    explanation: "NSGs have default deny rules (65500 DenyAllInBound and 65500 DenyAllOutBound) that are processed last. If no rule matches, the traffic is denied.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "Which Azure service provides a stateful, centralized network firewall as a service?",
+    options: [
+      "Network Security Groups (NSG)",
+      "Azure Firewall",
+      "Web Application Firewall (WAF)",
+      "Azure DDoS Protection"
+    ],
+    correct: 1,
+    explanation: "Azure Firewall is a managed, cloud-based network security service that provides stateful firewall capabilities, FQDN filtering, threat intelligence, and centralized policy management.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is the purpose of Azure DDoS Protection Standard?",
+    options: [
+      "Encrypting network traffic between Azure services",
+      "Providing adaptive tuning and mitigation against distributed denial-of-service attacks",
+      "Filtering web application traffic",
+      "Monitoring network performance"
+    ],
+    correct: 1,
+    explanation: "Azure DDoS Protection Standard provides enhanced DDoS mitigation capabilities tuned specifically to Azure Virtual Network resources, including adaptive tuning, attack analytics, and rapid response support.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "Which Azure networking feature allows you to connect two Azure Virtual Networks so resources in both networks can communicate?",
+    options: [
+      "Azure VPN Gateway",
+      "Virtual Network Peering",
+      "ExpressRoute",
+      "Azure Bastion"
+    ],
+    correct: 1,
+    explanation: "Virtual Network Peering allows you to seamlessly connect Azure virtual networks. Once peered, the virtual networks appear as one network for connectivity purposes, with traffic routed through Microsoft's backbone infrastructure.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is Azure Private Endpoint used for?",
+    options: [
+      "Providing public internet access to Azure services",
+      "Connecting Azure services to your virtual network using a private IP address",
+      "Encrypting data at rest in Azure Storage",
+      "Managing DNS for Azure resources"
+    ],
+    correct: 1,
+    explanation: "Azure Private Endpoint provides private connectivity to Azure services by bringing the service into your virtual network using a network interface with a private IP address from your VNet.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "Which service provides a fully managed reverse proxy service to secure, publish, and manage web applications?",
+    options: [
+      "Azure Firewall",
+      "Azure Application Gateway with WAF",
+      "Azure Front Door",
+      "Both B and C"
+    ],
+    correct: 3,
+    explanation: "Both Azure Application Gateway with WAF and Azure Front Door provide WAF capabilities. Application Gateway is for regional deployments while Front Door is a global service. Both provide reverse proxy functionality with WAF.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is the primary purpose of Azure Bastion?",
+    options: [
+      "Connecting on-premises networks to Azure",
+      "Providing secure RDP/SSH access to VMs without exposing them to the public internet",
+      "Monitoring network traffic",
+      "Encrypting VM disks"
+    ],
+    correct: 1,
+    explanation: "Azure Bastion is a fully managed service that provides secure and seamless RDP and SSH access to virtual machines directly through the Azure portal over TLS, without requiring a public IP on the VM.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "Which feature of Azure Firewall Premium provides deep packet inspection of encrypted HTTPS traffic?",
+    options: [
+      "FQDN filtering",
+      "TLS inspection",
+      "Threat intelligence filtering",
+      "IDPS"
+    ],
+    correct: 1,
+    explanation: "Azure Firewall Premium's TLS inspection feature decrypts HTTPS traffic, applies security rules, and re-encrypts it, allowing deep packet inspection of encrypted traffic.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is a Service Endpoint in Azure networking?",
+    options: [
+      "A private IP address for accessing Azure services",
+      "An extension of the virtual network identity to Azure service resources over an optimized route",
+      "A DNS record for Azure services",
+      "An external load balancer configuration"
+    ],
+    correct: 1,
+    explanation: "Service Endpoints extend the virtual network identity to Azure services, allowing secure access to Azure service resources from a virtual network over an optimized route, while keeping traffic on the Microsoft backbone.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "How does Azure Route Server simplify network integration?",
+    options: [
+      "By providing automatic DNS resolution",
+      "By enabling dynamic routing between network virtual appliances (NVAs) and Azure virtual networks",
+      "By encrypting all network traffic",
+      "By managing NSG rules automatically"
+    ],
+    correct: 1,
+    explanation: "Azure Route Server enables dynamic routing between network virtual appliances (NVAs) and Azure virtual networks using BGP, eliminating the need for manual route table configuration.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "Which VPN type in Azure supports active-active configurations for high availability?",
+    options: [
+      "Policy-based VPN",
+      "Route-based VPN",
+      "Point-to-site VPN",
+      "Both A and B"
+    ],
+    correct: 1,
+    explanation: "Route-based VPN gateways support active-active configurations, which provide higher availability and redundancy. Policy-based gateways only support active-standby configurations.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is the purpose of User-Defined Routes (UDRs) in Azure?",
+    options: [
+      "Automatically assigning IP addresses to VMs",
+      "Overriding Azure's default routing behavior to direct traffic through specific appliances",
+      "Defining DNS resolution rules",
+      "Configuring load balancer rules"
+    ],
+    correct: 1,
+    explanation: "User-Defined Routes allow you to override Azure's default system routes by creating custom routes that direct traffic through specific network appliances like Azure Firewall or NVAs.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "Which Azure service provides centralized DNS management and includes security features like DNSSEC?",
+    options: [
+      "Azure Traffic Manager",
+      "Azure DNS",
+      "Azure Private DNS",
+      "Azure Firewall DNS Proxy"
+    ],
+    correct: 1,
+    explanation: "Azure DNS is a hosting service for DNS domains that provides name resolution using Microsoft Azure infrastructure. It supports features like alias records, private zones, and DNS-based traffic routing.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is the recommended approach to protect against SSRF (Server-Side Request Forgery) attacks in Azure?",
+    options: [
+      "Enable DDoS Protection",
+      "Use Azure Firewall with application rules to restrict outbound traffic",
+      "Enable NSG flow logs",
+      "Use Azure VPN Gateway"
+    ],
+    correct: 1,
+    explanation: "Azure Firewall with application rules can restrict outbound traffic from Azure resources to specific FQDNs and URLs, helping mitigate SSRF attacks by preventing unauthorized outbound connections.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "Which Azure feature allows you to connect to Azure VMs using SSH or RDP directly from the Azure portal without needing a public IP address?",
+    options: [
+      "Azure VPN Gateway",
+      "Azure Bastion",
+      "Just-in-Time VM Access",
+      "Azure Serial Console"
+    ],
+    correct: 1,
+    explanation: "Azure Bastion provides browser-based SSH and RDP connectivity to Azure VMs directly from the Azure portal without requiring a public IP on the VM or installing any client software.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is the key benefit of using ExpressRoute over VPN Gateway for connecting on-premises to Azure?",
+    options: [
+      "Lower cost",
+      "Dedicated private connectivity with higher bandwidth, lower latency, and SLA guarantees",
+      "Easier setup",
+      "Better encryption"
+    ],
+    correct: 1,
+    explanation: "ExpressRoute provides dedicated, private connectivity between on-premises networks and Azure through a connectivity provider, offering higher bandwidth (up to 100Gbps), lower latency, and enterprise-grade SLAs not available with VPN connections.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "Which Conditional Access Grant control ensures that a device is enrolled in Intune before access is granted?",
+    options: [
+      "Require MFA",
+      "Require compliant device",
+      "Require hybrid Azure AD joined device",
+      "Require approved client app"
+    ],
+    correct: 1,
+    explanation: "The 'Require compliant device' grant control in Conditional Access requires that the device accessing the resource is marked as compliant in Microsoft Intune, which checks device compliance policies.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "What is the purpose of Named Locations in Conditional Access?",
+    options: [
+      "Naming Azure resources for identification",
+      "Defining trusted IP ranges or countries that can be referenced in Conditional Access policies",
+      "Setting up multi-region deployments",
+      "Managing DNS records"
+    ],
+    correct: 1,
+    explanation: "Named Locations in Conditional Access allow administrators to define trusted IP address ranges (e.g., corporate network ranges) or countries/regions that can then be used as conditions in Conditional Access policies.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "Which Microsoft Entra ID feature allows you to control which legacy authentication protocols can be used by users?",
+    options: [
+      "Conditional Access - Block Legacy Authentication",
+      "Authentication Methods Policy",
+      "Security Defaults",
+      "Both A and C"
+    ],
+    correct: 3,
+    explanation: "Both Conditional Access policies (to block legacy authentication) and Security Defaults (which automatically block legacy authentication protocols) can be used to prevent the use of legacy authentication protocols that don't support MFA.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "An NSG has the following inbound rules: Priority 100 - Allow Port 443, Priority 200 - Deny All. A request comes in on port 443. What happens?",
+    options: [
+      "The traffic is denied because both rules apply",
+      "The traffic is allowed because priority 100 is processed first",
+      "The traffic is logged and then denied",
+      "Both rules are evaluated and the more specific rule wins"
+    ],
+    correct: 1,
+    explanation: "NSG rules are evaluated in priority order (lower numbers first). The Allow Port 443 rule at priority 100 is evaluated first and matches the traffic, allowing it through. Processing stops once a matching rule is found.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is the difference between Azure Firewall Standard and Azure Firewall Premium?",
+    options: [
+      "Standard supports VNET integration while Premium does not",
+      "Premium adds TLS inspection, IDPS, URL filtering, and web categories compared to Standard",
+      "Standard costs more than Premium",
+      "Premium only supports hub-spoke topologies"
+    ],
+    correct: 1,
+    explanation: "Azure Firewall Premium extends Standard capabilities with TLS inspection (for HTTPS traffic), a signature-based IDPS, URL filtering, and web category filtering for more advanced threat protection.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "Which port must be open in an NSG to allow Azure Bastion to connect to VMs?",
+    options: [
+      "Port 3389 (RDP) and 22 (SSH) from internet",
+      "Port 3389 and 22 from the AzureBastionSubnet",
+      "Port 443 from the internet to AzureBastionSubnet",
+      "Both B and C"
+    ],
+    correct: 3,
+    explanation: "For Azure Bastion to work, you need port 443 inbound from the internet to the AzureBastionSubnet (for user access), and ports 3389/22 open from AzureBastionSubnet to the target VM subnet.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is Azure Virtual WAN primarily used for?",
+    options: [
+      "Connecting individual VMs to the internet",
+      "Providing a unified, Microsoft-managed hub-and-spoke networking service for branch connectivity and security",
+      "Managing DNS for Azure services",
+      "Providing DDoS protection"
+    ],
+    correct: 1,
+    explanation: "Azure Virtual WAN is a networking service that brings together many networking, security, and routing functionalities to provide a single operational interface, ideal for large-scale branch office connectivity.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "Which feature allows administrators to require approval before a user can activate a privileged role in PIM?",
+    options: [
+      "Access Reviews",
+      "Role settings with approval requirement",
+      "Conditional Access",
+      "Just-in-Time access"
+    ],
+    correct: 1,
+    explanation: "In PIM role settings, administrators can configure whether role activation requires approval. When enabled, the user must request activation and a designated approver must approve it before the role becomes active.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "What is the purpose of Microsoft Entra External Identities?",
+    options: [
+      "Managing internal employee identities",
+      "Enabling collaboration with external users (B2B) and providing identity solutions for customer-facing apps (B2C)",
+      "Federating multiple Azure AD tenants",
+      "Managing device identities"
+    ],
+    correct: 1,
+    explanation: "Microsoft Entra External Identities encompasses B2B (business-to-business) collaboration for external partners and B2C (business-to-customer) identity management for customer-facing applications.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "Which Azure AD group type allows dynamic membership based on user attributes?",
+    options: [
+      "Security groups with assigned membership",
+      "Security groups with dynamic membership",
+      "Microsoft 365 groups",
+      "Distribution groups"
+    ],
+    correct: 1,
+    explanation: "Dynamic membership groups in Azure AD automatically add or remove members based on attribute rules (e.g., department = 'Sales'), eliminating the need for manual group management.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "What is the recommended method to manage credentials for an application running in Azure that needs to access Azure Key Vault?",
+    options: [
+      "Store credentials in application configuration files",
+      "Use a managed identity to authenticate to Key Vault",
+      "Use a service principal with a certificate stored in the application",
+      "Use the Key Vault admin account credentials"
+    ],
+    correct: 1,
+    explanation: "Using a managed identity is the recommended approach because it eliminates the need to manage credentials. The application's identity is automatically managed by Azure and can be granted access to Key Vault directly.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "Which Conditional Access policy signal can be used to block access from specific countries?",
+    options: [
+      "Device compliance",
+      "Named Locations (countries)",
+      "User risk level",
+      "Sign-in risk level"
+    ],
+    correct: 1,
+    explanation: "Conditional Access Named Locations can be configured to represent specific countries/regions. Policies can then use these locations as conditions to allow or block access from specific geographic areas.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "What is Cross-Tenant Access Settings in Microsoft Entra ID used for?",
+    options: [
+      "Managing access between Azure subscriptions in the same tenant",
+      "Controlling inbound and outbound B2B collaboration and B2B direct connect with other Azure AD tenants",
+      "Federating on-premises AD with Azure AD",
+      "Managing guest user lifecycle"
+    ],
+    correct: 1,
+    explanation: "Cross-Tenant Access Settings allow organizations to configure trust relationships with other Azure AD tenants, controlling which users from other tenants can access their resources (inbound) and which of their users can access other tenants (outbound).",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "Which protocol does Azure AD use for modern authentication token issuance?",
+    options: [
+      "SAML 2.0 only",
+      "OAuth 2.0 and OpenID Connect",
+      "Kerberos",
+      "LDAP"
+    ],
+    correct: 1,
+    explanation: "Azure AD primarily uses OAuth 2.0 for authorization and OpenID Connect (which extends OAuth 2.0) for authentication. These are the modern protocols used for issuing tokens to applications.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "What is the purpose of Azure AD Password Protection?",
+    options: [
+      "Encrypting stored passwords in Azure AD",
+      "Preventing users from using common or organization-specific banned passwords",
+      "Requiring passwords to be changed every 90 days",
+      "Enabling self-service password reset"
+    ],
+    correct: 1,
+    explanation: "Azure AD Password Protection detects and blocks known weak passwords and their variants, and also allows organizations to define their own custom banned passwords, both in the cloud and on-premises.",
+    domain: "Domain 1: Manage Identity and Access"
+  },
+  {
+    q: "Which type of Azure VPN Gateway supports connecting multiple on-premises sites simultaneously?",
+    options: [
+      "Basic SKU",
+      "VpnGw1 or higher with route-based configuration",
+      "Policy-based gateway",
+      "Point-to-site gateway"
+    ],
+    correct: 1,
+    explanation: "Route-based VPN gateways (VpnGw1 and higher) support multiple site-to-site connections, allowing simultaneous connections to multiple on-premises locations. Policy-based gateways only support a single site-to-site connection.",
+    domain: "Domain 2: Secure Networking"
+  },
+  {
+    q: "What is the key difference between Azure AD B2B and B2C?",
+    options: [
+      "B2B is for consumers while B2C is for business partners",
+      "B2B is for collaborating with external business partners while B2C is for managing customer identities in consumer-facing applications",
+      "B2B requires Entra ID P2 while B2C is free",
+      "B2B uses federation while B2C uses password authentication only"
+    ],
+    correct: 1,
+    explanation: "Azure AD B2B (Business-to-Business) is designed for collaboration with external partner organizations, while B2C (Business-to-Consumer) is designed to provide identity management for consumer-facing applications with support for social and local accounts.",
+    domain: "Domain 1: Manage Identity and Access"
+  }
+];
+
+const letters = ['A', 'B', 'C', 'D'];
+let answered = new Array(questions.length).fill(null); // null = unanswered, true = correct, false = wrong
+let score = 0;
+
+function buildExam() {
+  const container = document.getElementById('examContainer');
+  container.innerHTML = '';
+  answered = new Array(questions.length).fill(null);
+  score = 0;
+  updateScoreBar();
+
+  questions.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'card-' + qi;
+
+    const badge = document.createElement('div');
+    badge.className = 'domain-badge';
+    badge.textContent = q.domain;
+
+    const num = document.createElement('div');
+    num.className = 'question-number';
+    num.textContent = 'Question ' + (qi + 1) + ' of 50';
+
+    const qtext = document.createElement('div');
+    qtext.className = 'question-text';
+    qtext.textContent = q.q;
+
+    const ol = document.createElement('ul');
+    ol.className = 'options-list';
+    ol.id = 'options-' + qi;
+
+    q.options.forEach((opt, oi) => {
+      const li = document.createElement('li');
+      li.className = 'option';
+      li.id = 'opt-' + qi + '-' + oi;
+      li.setAttribute('data-q', qi);
+      li.setAttribute('data-o', oi);
+      li.addEventListener('click', handleOptionClick);
+
+      const letter = document.createElement('span');
+      letter.className = 'option-letter';
+      letter.textContent = letters[oi];
+
+      const text = document.createElement('span');
+      text.className = 'option-text';
+      text.textContent = opt;
+
+      li.appendChild(letter);
+      li.appendChild(text);
+      ol.appendChild(li);
+    });
+
+    const expl = document.createElement('div');
+    expl.className = 'explanation';
+    expl.id = 'expl-' + qi;
+    expl.innerHTML = '<p><strong>Explanation:</strong> ' + escapeHtml(q.explanation) + '</p>';
+
+    card.appendChild(badge);
+    card.appendChild(num);
+    card.appendChild(qtext);
+    card.appendChild(ol);
+    card.appendChild(expl);
+    container.appendChild(card);
+  });
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function handleOptionClick(e) {
+  const li = e.currentTarget;
+  const qi = parseInt(li.getAttribute('data-q'));
+  const oi = parseInt(li.getAttribute('data-o'));
+
+  if (answered[qi] !== null) return;
+
+  const correct = questions[qi].correct;
+  const isCorrect = oi === correct;
+
+  answered[qi] = isCorrect;
+  if (isCorrect) score++;
+
+  // Disable all options for this question
+  const allOpts = document.querySelectorAll('[data-q="' + qi + '"]');
+  allOpts.forEach(opt => opt.classList.add('disabled'));
+
+  // Style chosen option
+  li.classList.add(isCorrect ? 'correct' : 'wrong');
+
+  // Always reveal correct answer if wrong
+  if (!isCorrect) {
+    document.getElementById('opt-' + qi + '-' + correct).classList.add('show-correct');
+  }
+
+  // Show explanation
+  document.getElementById('expl-' + qi).classList.add('visible');
+
+  updateScoreBar();
+}
+
+function updateScoreBar() {
+  const answeredCount = answered.filter(a => a !== null).length;
+  document.getElementById('scoreDisplay').textContent = score;
+  document.getElementById('answeredDisplay').textContent = answeredCount;
+  document.getElementById('progressDisplay').textContent = answeredCount;
+}
+
+function submitExam() {
+  const answeredCount = answered.filter(a => a !== null).length;
+  const pct = Math.round((score / 50) * 100);
+
+  document.getElementById('finalScore').textContent = pct;
+  document.getElementById('finalCorrect').textContent = score;
+
+  let grade, detail, gradeClass;
+  if (pct >= 70) {
+    grade = '✅ PASS';
+    gradeClass = 'pass';
+    if (pct >= 90) detail = 'Outstanding! Excellent command of Azure security concepts.';
+    else if (pct >= 80) detail = 'Great work! Strong grasp of identity and networking security.';
+    else detail = 'Good job! You\'ve met the passing threshold. Review missed questions for exam readiness.';
+  } else {
+    grade = '❌ FAIL';
+    gradeClass = 'fail';
+    detail = 'Keep studying! Focus on the areas where you missed questions. The passing score for AZ-500 is approximately 700/1000 (~70%).';
+  }
+
+  if (answeredCount < 50) {
+    detail = '(' + (50 - answeredCount) + ' question(s) unanswered — counted as incorrect) ' + detail;
+  }
+
+  const gradeEl = document.getElementById('gradeText');
+  gradeEl.textContent = grade;
+  gradeEl.className = 'result-grade ' + gradeClass;
+  document.getElementById('gradeDetail').textContent = detail;
+
+  document.getElementById('resultModal').classList.add('show');
+}
+
+function resetExam() {
+  document.getElementById('resultModal').classList.remove('show');
+  buildExam();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Close modal when clicking backdrop
+document.getElementById('resultModal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('show');
+});
+
+buildExam();
+</script>
+</body>
+</html>
