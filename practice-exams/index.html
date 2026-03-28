@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AZ-500 Practice Exams — 2026 Edition | Microsoft Azure Security Technologies</title>
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --azure:       #0078d4;
+      --azure-dark:  #005a9e;
+      --azure-light: #deecf9;
+      --azure-bg:    #f0f6fb;
+      --text:        #323130;
+      --text-light:  #605e5c;
+      --border:      #d2d0ce;
+      --white:       #ffffff;
+      --radius:      8px;
+      --shadow:      0 2px 8px rgba(0,0,0,.12);
+      --shadow-lg:   0 4px 20px rgba(0,0,0,.15);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--azure-bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ───────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, var(--azure-dark) 0%, var(--azure) 60%, #00b4d8 100%);
+      color: var(--white);
+      padding: 0;
+    }
+
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 36px 24px 32px;
+      text-align: center;
+    }
+
+    .breadcrumb {
+      font-size: .8rem;
+      opacity: .85;
+      margin-bottom: 18px;
+    }
+
+    .breadcrumb a {
+      color: var(--azure-light);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .hero-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      display: block;
+    }
+
+    .header-inner h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .header-inner .subtitle {
+      font-size: 1rem;
+      opacity: .88;
+      margin-bottom: 20px;
+    }
+
+    /* ── Total badge ──────────────────────────────────────────── */
+    .total-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 30px;
+      padding: 8px 20px;
+      font-size: .88rem;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
+
+    .total-badge span {
+      opacity: .75;
+      font-weight: 400;
+    }
+
+    /* ── Main ─────────────────────────────────────────────────── */
+    main {
+      flex: 1;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 36px 16px 56px;
+    }
+
+    /* ── Section heading ──────────────────────────────────────── */
+    .section-heading {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-heading::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Exam cards grid ──────────────────────────────────────── */
+    .exam-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 20px;
+      margin-bottom: 44px;
+    }
+
+    .exam-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 2px solid transparent;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: border-color .18s, box-shadow .18s, transform .15s;
+      overflow: hidden;
+    }
+
+    .exam-card:hover {
+      border-color: var(--azure);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-3px);
+    }
+
+    .exam-card-header {
+      background: linear-gradient(90deg, var(--azure-dark), var(--azure));
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .exam-number-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      border: 2px solid rgba(255,255,255,.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+
+    .exam-card-title {
+      color: var(--white);
+    }
+
+    .exam-card-title h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .exam-card-title p {
+      font-size: .8rem;
+      opacity: .85;
+      margin-top: 2px;
+    }
+
+    .exam-card-body {
+      padding: 18px 20px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .exam-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--azure-light);
+      color: var(--azure-dark);
+    }
+
+    .meta-pill.green  { background: #e8f5e9; color: #1b5e20; }
+    .meta-pill.orange { background: #fff3e0; color: #b24000; }
+    .meta-pill.purple { background: #f3e5f5; color: #6a1b9a; }
+
+    .domain-mini {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .domain-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .8rem;
+      color: var(--text-light);
+    }
+
+    .domain-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-d1 { background: #0078d4; }
+    .dot-d2 { background: #107c10; }
+    .dot-d3 { background: #e06c00; }
+    .dot-d4 { background: #7719aa; }
+
+    .start-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: auto;
+      padding: 11px 20px;
+      background: var(--azure);
+      color: var(--white);
+      border-radius: var(--radius);
+      font-size: .92rem;
+      font-weight: 700;
+      transition: background .15s;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .start-btn:hover { background: var(--azure-dark); }
+
+    /* ── Info panels ──────────────────────────────────────────── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 44px;
+    }
+
+    .info-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 24px;
+    }
+
+    .info-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--azure);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .info-card li {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: .88rem;
+      line-height: 1.55;
+      color: var(--text-light);
+    }
+
+    .info-card li .bullet {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--azure-light);
+      color: var(--azure);
+      font-size: .7rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Domain coverage table ────────────────────────────────── */
+    .coverage-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 24px;
+      margin-bottom: 44px;
+    }
+
+    .coverage-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--azure);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .coverage-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .coverage-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: .88rem;
+    }
+
+    .cov-label {
+      width: 220px;
+      flex-shrink: 0;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .cov-bar-track {
+      flex: 1;
+      height: 10px;
+      background: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .cov-bar {
+      height: 100%;
+      border-radius: 10px;
+    }
+
+    .bar-d1 { background: #0078d4; width: 27%; }
+    .bar-d2 { background: #107c10; width: 23%; }
+    .bar-d3 { background: #e06c00; width: 22%; }
+    .bar-d4 { background: #7719aa; width: 28%; }
+
+    .cov-pct {
+      width: 70px;
+      text-align: right;
+      color: var(--text-light);
+      font-size: .82rem;
+    }
+
+    /* ── Stats strip ──────────────────────────────────────────── */
+    .stats-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 44px;
+    }
+
+    .stat-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 28px;
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .stat-box .val {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--azure);
+      line-height: 1;
+    }
+
+    .stat-box .lbl {
+      font-size: .78rem;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    footer {
+      background: #1b1b1b;
+      color: #c8c6c4;
+      font-size: .82rem;
+      padding: 20px 24px;
+      text-align: center;
+    }
+
+    footer a { color: var(--azure-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    footer .footer-links {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    /* ── Responsive ───────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .exam-grid { grid-template-columns: 1fr; }
+      .header-inner h1 { font-size: 1.5rem; }
+      .cov-label { width: 150px; font-size: .8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════ HEADER ══════════════════════════════════ -->
+<header>
+  <div class="header-inner">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="../README.md">← AZ-500 Master Project</a>
+    </nav>
+
+    <!-- Azure shield icon -->
+    <svg class="hero-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M32 5L8 16v18c0 13.6 10.1 26.3 24 29.3C45.9 60.3 56 47.6 56 34V16L32 5z"
+            fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+      <path d="M22 32l7 7 13-14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+
+    <h1>AZ-500 Practice Exams</h1>
+    <p class="subtitle">Microsoft Azure Security Technologies · 2026 Edition</p>
+
+    <div class="total-badge">
+      🎯 200 Unique Questions
+      <span>·</span>
+      4 Practice Exams
+      <span>·</span>
+      2026 Updated
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════ MAIN ════════════════════════════════════ -->
+<main>
+
+  <!-- ── Stats ── -->
+  <div class="stats-strip" role="list" aria-label="Exam statistics">
+    <div class="stat-box" role="listitem">
+      <div class="val">200</div>
+      <div class="lbl">Unique Questions</div>
+    </div>
+    <div class="stat-box" role="listitem">
+      <div class="val">4</div>
+      <div class="lbl">Practice Exams</div>
+    </div>
+    <div class="stat-box" role="listitem">
+      <div class="val">4</div>
+      <div class="lbl">Exam Domains</div>
+    </div>
+    <div class="stat-box" role="listitem">
+      <div class="val">70%</div>
+      <div class="lbl">Passing Threshold</div>
+    </div>
+  </div>
+
+  <!-- ── Exam cards ── -->
+  <div class="section-heading">📋 Practice Exams</div>
+  <div class="exam-grid">
+
+    <!-- Exam 1 -->
+    <a href="practice-exam-1.html" class="exam-card" aria-label="Start Practice Exam 1">
+      <div class="exam-card-header">
+        <div class="exam-number-badge">1</div>
+        <div class="exam-card-title">
+          <h2>Practice Exam 1</h2>
+          <p>50 Questions · All Domains · Unique Questions 1–50</p>
+        </div>
+      </div>
+      <div class="exam-card-body">
+        <div class="exam-meta-row">
+          <span class="meta-pill">50 Questions</span>
+          <span class="meta-pill green">All 4 Domains</span>
+          <span class="meta-pill orange">Q1–Q50</span>
+        </div>
+        <div class="domain-mini" aria-label="Domain coverage">
+          <div class="domain-row"><span class="domain-dot dot-d1"></span>Domain 1: Identity &amp; Access</div>
+          <div class="domain-row"><span class="domain-dot dot-d2"></span>Domain 2: Secure Networking</div>
+          <div class="domain-row"><span class="domain-dot dot-d3"></span>Domain 3: Compute / Storage / DB</div>
+          <div class="domain-row"><span class="domain-dot dot-d4"></span>Domain 4: Security Operations</div>
+        </div>
+        <span class="start-btn">Start Exam 1 →</span>
+      </div>
+    </a>
+
+    <!-- Exam 2 -->
+    <a href="practice-exam-2.html" class="exam-card" aria-label="Start Practice Exam 2">
+      <div class="exam-card-header">
+        <div class="exam-number-badge">2</div>
+        <div class="exam-card-title">
+          <h2>Practice Exam 2</h2>
+          <p>50 Questions · All Domains · Unique Questions 51–100</p>
+        </div>
+      </div>
+      <div class="exam-card-body">
+        <div class="exam-meta-row">
+          <span class="meta-pill">50 Questions</span>
+          <span class="meta-pill green">All 4 Domains</span>
+          <span class="meta-pill orange">Q51–Q100</span>
+        </div>
+        <div class="domain-mini" aria-label="Domain coverage">
+          <div class="domain-row"><span class="domain-dot dot-d1"></span>Domain 1: Identity &amp; Access</div>
+          <div class="domain-row"><span class="domain-dot dot-d2"></span>Domain 2: Secure Networking</div>
+          <div class="domain-row"><span class="domain-dot dot-d3"></span>Domain 3: Compute / Storage / DB</div>
+          <div class="domain-row"><span class="domain-dot dot-d4"></span>Domain 4: Security Operations</div>
+        </div>
+        <span class="start-btn">Start Exam 2 →</span>
+      </div>
+    </a>
+
+    <!-- Exam 3 -->
+    <a href="practice-exam-3.html" class="exam-card" aria-label="Start Practice Exam 3">
+      <div class="exam-card-header">
+        <div class="exam-number-badge">3</div>
+        <div class="exam-card-title">
+          <h2>Practice Exam 3</h2>
+          <p>50 Questions · All Domains · Unique Questions 101–150</p>
+        </div>
+      </div>
+      <div class="exam-card-body">
+        <div class="exam-meta-row">
+          <span class="meta-pill">50 Questions</span>
+          <span class="meta-pill green">All 4 Domains</span>
+          <span class="meta-pill orange">Q101–Q150</span>
+        </div>
+        <div class="domain-mini" aria-label="Domain coverage">
+          <div class="domain-row"><span class="domain-dot dot-d1"></span>Domain 1: Identity &amp; Access</div>
+          <div class="domain-row"><span class="domain-dot dot-d2"></span>Domain 2: Secure Networking</div>
+          <div class="domain-row"><span class="domain-dot dot-d3"></span>Domain 3: Compute / Storage / DB</div>
+          <div class="domain-row"><span class="domain-dot dot-d4"></span>Domain 4: Security Operations</div>
+        </div>
+        <span class="start-btn">Start Exam 3 →</span>
+      </div>
+    </a>
+
+    <!-- Exam 4 -->
+    <a href="practice-exam-4.html" class="exam-card" aria-label="Start Practice Exam 4">
+      <div class="exam-card-header">
+        <div class="exam-number-badge">4</div>
+        <div class="exam-card-title">
+          <h2>Practice Exam 4</h2>
+          <p>50 Questions · All Domains · Unique Questions 151–200</p>
+        </div>
+      </div>
+      <div class="exam-card-body">
+        <div class="exam-meta-row">
+          <span class="meta-pill">50 Questions</span>
+          <span class="meta-pill green">All 4 Domains</span>
+          <span class="meta-pill orange">Q151–Q200</span>
+        </div>
+        <div class="domain-mini" aria-label="Domain coverage">
+          <div class="domain-row"><span class="domain-dot dot-d1"></span>Domain 1: Identity &amp; Access</div>
+          <div class="domain-row"><span class="domain-dot dot-d2"></span>Domain 2: Secure Networking</div>
+          <div class="domain-row"><span class="domain-dot dot-d3"></span>Domain 3: Compute / Storage / DB</div>
+          <div class="domain-row"><span class="domain-dot dot-d4"></span>Domain 4: Security Operations</div>
+        </div>
+        <span class="start-btn">Start Exam 4 →</span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ── Domain coverage ── -->
+  <div class="section-heading">📊 Domain Coverage (per exam)</div>
+  <div class="coverage-card">
+    <h3>🎯 AZ-500 Exam Domain Weighting</h3>
+    <div class="coverage-rows">
+      <div class="coverage-row">
+        <div class="cov-label">D1: Manage Identity &amp; Access</div>
+        <div class="cov-bar-track"><div class="cov-bar bar-d1"></div></div>
+        <div class="cov-pct">25–30%</div>
+      </div>
+      <div class="coverage-row">
+        <div class="cov-label">D2: Secure Networking</div>
+        <div class="cov-bar-track"><div class="cov-bar bar-d2"></div></div>
+        <div class="cov-pct">20–25%</div>
+      </div>
+      <div class="coverage-row">
+        <div class="cov-label">D3: Compute / Storage / Databases</div>
+        <div class="cov-bar-track"><div class="cov-bar bar-d3"></div></div>
+        <div class="cov-pct">20–25%</div>
+      </div>
+      <div class="coverage-row">
+        <div class="cov-label">D4: Manage Security Operations</div>
+        <div class="cov-bar-track"><div class="cov-bar bar-d4"></div></div>
+        <div class="cov-pct">25–30%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── How to use ── -->
+  <div class="section-heading">💡 How to Use These Exams</div>
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>📖 Study Strategy</h3>
+      <ul>
+        <li>
+          <span class="bullet">1</span>
+          Take Exam 1 first as a diagnostic to identify weak areas.
+        </li>
+        <li>
+          <span class="bullet">2</span>
+          Review the domain where you scored lowest, then retake.
+        </li>
+        <li>
+          <span class="bullet">3</span>
+          Attempt Exams 2, 3, and 4 progressively to build breadth.
+        </li>
+        <li>
+          <span class="bullet">4</span>
+          Aim for ≥70% consistently across all four exams before scheduling.
+        </li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>⚙️ Interactive Features</h3>
+      <ul>
+        <li>
+          <span class="bullet">✓</span>
+          Select an answer and click <strong>Check Answer</strong> for instant feedback.
+        </li>
+        <li>
+          <span class="bullet">✓</span>
+          Detailed explanations appear after every question.
+        </li>
+        <li>
+          <span class="bullet">✓</span>
+          Live score tracker and progress bar throughout the exam.
+        </li>
+        <li>
+          <span class="bullet">✓</span>
+          Final score screen with pass/fail result—restart any time.
+        </li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>🏆 Passing Tips</h3>
+      <ul>
+        <li>
+          <span class="bullet">★</span>
+          Read each explanation carefully—even for correct answers.
+        </li>
+        <li>
+          <span class="bullet">★</span>
+          Focus on <em>why</em> wrong options are incorrect, not just the right answer.
+        </li>
+        <li>
+          <span class="bullet">★</span>
+          The real AZ-500 requires 700/1000 to pass (~70%). Target ≥75% here for confidence.
+        </li>
+        <li>
+          <span class="bullet">★</span>
+          All 200 questions are unique—no repeats across the four exams.
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════════════════════ FOOTER ══════════════════════════════════ -->
+<footer>
+  <div>AZ-500 Master Project · Microsoft Azure Security Technologies Practice Exams · 2026 Edition</div>
+  <div class="footer-links">
+    <a href="../README.md">← Project README</a>
+    <a href="practice-exam-1.html">Exam 1</a>
+    <a href="practice-exam-2.html">Exam 2</a>
+    <a href="practice-exam-3.html">Exam 3</a>
+    <a href="practice-exam-4.html">Exam 4</a>
+    <a href="../STUDY_TIPS.md">Study Tips</a>
+  </div>
+</footer>
+
+</body>
+</html>
