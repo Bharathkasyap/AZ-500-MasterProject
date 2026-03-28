@@ -53,6 +53,10 @@ The exam covers four skill domains (as of the latest update):
 AZ-500-MasterProject/
 ├── README.md                          # This file — project overview & certification details
 ├── STUDY_TIPS.md                      # Exam tips, time management, and practice strategies
+├── practice-exam-1.html               # Practice exam: Identity & Access + Networking (50 Qs)
+├── practice-exam-2.html               # Practice exam: Compute, Storage & Operations (50 Qs)
+├── practice-exam-3.html               # Practice exam: Advanced Mixed Domains (50 Qs)
+├── practice-exam-4.html               # Practice exam: Scenario-Based Questions (50 Qs)
 ├── docs/
 │   ├── 01-manage-identity-access.md          # Domain 1 study guide
 │   ├── 02-secure-networking.md               # Domain 2 study guide
@@ -72,12 +76,28 @@ AZ-500-MasterProject/
 
 ---
 
+## 🎓 Practice Exams (2026 Edition)
+
+Four interactive HTML practice exams — open in any browser, no internet required.
+
+| Exam | Focus | Questions |
+|---|---|---|
+| [Practice Exam 1](practice-exam-1.html) | Identity & Access + Secure Networking (Domains 1 & 2) | 50 |
+| [Practice Exam 2](practice-exam-2.html) | Secure Compute, Storage & Security Operations (Domains 3 & 4) | 50 |
+| [Practice Exam 3](practice-exam-3.html) | Advanced Mixed Domains (all 4 domains) | 50 |
+| [Practice Exam 4](practice-exam-4.html) | Scenario-Based Questions (all 4 domains) | 50 |
+
+**Total: 200 unique questions.** Passing threshold: 70% (35/50 per exam).
+
+---
+
 ## 🚀 How to Use This Repository
 
 1. **Start with the domain guides** in `docs/` — read them in order (Domains 1–4).
 2. **Run the scripts** in `scripts/` to practice configurations against a real Azure subscription (or a free trial).
 3. **Complete the hands-on labs** in `labs/` — each lab maps directly to exam objectives.
-4. **Review exam tips** in [STUDY_TIPS.md](STUDY_TIPS.md) before scheduling your exam.
+4. **Take the practice exams** — open any `practice-exam-*.html` file in your browser and test your knowledge.
+5. **Review exam tips** in [STUDY_TIPS.md](STUDY_TIPS.md) before scheduling your exam.
 
 > 💡 **Tip:** Use the [Microsoft Learn AZ-500 learning path](https://learn.microsoft.com/en-us/training/courses/az-500t00) alongside this guide for free, official video and interactive content.
 
