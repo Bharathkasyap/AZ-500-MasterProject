@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AZ-500 Practice Exam 1 — 50 Questions</title>
+<style>
+  :root {
+    --azure-blue: #0078d4;
+    --azure-dark: #003f8f;
+    --azure-light: #e6f3fb;
+    --correct: #107c10;
+    --correct-bg: #dff6dd;
+    --wrong: #a80000;
+    --wrong-bg: #fde7e9;
+    --neutral: #605e5c;
+    --card-bg: #ffffff;
+    --page-bg: #f3f2f1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--page-bg); color: #323130; }
+
+  header {
+    background: linear-gradient(135deg, var(--azure-dark), var(--azure-blue));
+    color: #fff;
+    padding: 24px 32px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+  header p  { font-size: 0.92rem; opacity: 0.9; }
+
+  #progress-wrap {
+    background: #fff;
+    padding: 12px 32px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  #progress-label { font-size: 0.9rem; font-weight: 600; white-space: nowrap; color: var(--azure-dark); min-width: 140px; }
+  #progress-bar-bg { flex: 1; background: #e1dfdd; border-radius: 8px; height: 10px; overflow: hidden; }
+  #progress-bar    { height: 100%; background: var(--azure-blue); border-radius: 8px; transition: width 0.4s ease; width: 0%; }
+
+  #exam-area { max-width: 820px; margin: 40px auto; padding: 0 16px 80px; }
+
+  .question-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
+
+  .domain-badge {
+    display: inline-block;
+    background: var(--azure-light);
+    color: var(--azure-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .question-text { font-size: 1.05rem; font-weight: 600; line-height: 1.6; margin-bottom: 24px; }
+
+  .options-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+  .option-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 2px solid #e1dfdd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    user-select: none;
+  }
+  .option-item:hover:not(.locked) { border-color: var(--azure-blue); background: var(--azure-light); }
+  .option-item input[type="radio"] { accent-color: var(--azure-blue); margin-top: 3px; flex-shrink: 0; cursor: pointer; }
+  .option-letter { font-weight: 700; color: var(--azure-blue); min-width: 20px; flex-shrink: 0; }
+  .option-text   { font-size: 0.96rem; line-height: 1.5; }
+
+  .option-item.selected  { border-color: var(--azure-blue); background: var(--azure-light); }
+  .option-item.correct   { border-color: var(--correct); background: var(--correct-bg); }
+  .option-item.wrong     { border-color: var(--wrong);   background: var(--wrong-bg); }
+  .option-item.locked    { cursor: default; }
+
+  .result-icon { margin-left: auto; font-size: 1.2rem; flex-shrink: 0; }
+
+  .explanation-box {
+    margin-top: 20px;
+    padding: 16px;
+    background: #fffbe6;
+    border-left: 4px solid #ffb900;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.93rem;
+    line-height: 1.6;
+    display: none;
+  }
+  .explanation-box strong { color: #7a5c00; }
+
+  .btn-row { margin-top: 28px; display: flex; gap: 12px; justify-content: flex-end; }
+
+  .btn {
+    padding: 11px 28px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary  { background: var(--azure-blue); color: #fff; }
+  .btn-primary:hover  { opacity: 0.9; }
+  .btn-primary:disabled { background: #a19f9d; cursor: not-allowed; opacity: 1; }
+  .btn-success  { background: var(--correct); color: #fff; }
+  .btn-success:hover  { opacity: 0.9; }
+  .btn-outline  { background: #fff; color: var(--azure-blue); border: 2px solid var(--azure-blue); }
+  .btn-outline:hover  { background: var(--azure-light); }
+
+  /* Results Page */
+  #results-page { display: none; max-width: 820px; margin: 40px auto; padding: 0 16px 80px; }
+
+  .results-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 40px 36px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  .results-card h2 { font-size: 2rem; margin-bottom: 8px; }
+  .score-circle {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 24px auto;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .score-circle span { font-size: 0.9rem; font-weight: 400; }
+  .pass { background: var(--correct); }
+  .fail { background: var(--wrong); }
+
+  .score-summary { font-size: 1.1rem; margin-bottom: 8px; }
+  .verdict { font-size: 1.3rem; font-weight: 700; margin-bottom: 28px; }
+  .verdict.pass-text { color: var(--correct); }
+  .verdict.fail-text { color: var(--wrong); }
+
+  .breakdown-table { width: 100%; border-collapse: collapse; margin-top: 28px; text-align: left; }
+  .breakdown-table th { background: var(--azure-blue); color: #fff; padding: 10px 14px; font-size: 0.9rem; }
+  .breakdown-table td { padding: 8px 14px; border-bottom: 1px solid #e1dfdd; font-size: 0.88rem; }
+  .breakdown-table tr:hover td { background: var(--azure-light); }
+  .tag-correct { color: var(--correct); font-weight: 700; }
+  .tag-wrong   { color: var(--wrong);   font-weight: 700; }
+
+  .retake-btn-wrap { margin-top: 32px; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.2rem; }
+    .question-card { padding: 20px 16px; }
+    .btn { padding: 10px 18px; }
+    .results-card { padding: 28px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AZ-500 Practice Exam 1</h1>
+  <p>Microsoft Azure Security Technologies &nbsp;|&nbsp; 50 Questions &nbsp;|&nbsp; Passing Score: 70%</p>
+</header>
+
+<div id="progress-wrap">
+  <div id="progress-label">Question 1 of 50</div>
+  <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+</div>
+
+<div id="exam-area">
+  <div class="question-card" id="question-card">
+    <div class="domain-badge" id="q-domain"></div>
+    <div class="question-text" id="q-text"></div>
+    <ul class="options-list" id="q-options"></ul>
+    <div class="explanation-box" id="q-explanation"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-submit" onclick="submitAnswer()" disabled>Submit Answer</button>
+    </div>
+  </div>
+</div>
+
+<div id="results-page">
+  <div class="results-card">
+    <h2>🎓 Exam Complete!</h2>
+    <div class="score-circle" id="score-circle">
+      <div id="score-pct">--</div>
+      <span id="score-fraction">-- / 50</span>
+    </div>
+    <div class="score-summary" id="score-summary"></div>
+    <div class="verdict" id="score-verdict"></div>
+    <div class="retake-btn-wrap">
+      <button class="btn btn-outline" onclick="retakeExam()">🔄 Retake Exam</button>
+    </div>
+    <table class="breakdown-table">
+      <thead>
+        <tr><th>#</th><th>Domain</th><th>Question (snippet)</th><th>Result</th></tr>
+      </thead>
+      <tbody id="breakdown-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // ── DOMAIN 1 — MANAGE IDENTITY AND ACCESS (Q1–Q15) ──
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "A company requires that Global Administrators activate their role for no more than 4 hours and must receive manager approval before activation. Which Azure feature should be configured?",
+    options: [
+      "Azure AD Conditional Access policies",
+      "Azure AD Privileged Identity Management (PIM)",
+      "Azure AD Identity Protection risk policies",
+      "Microsoft Entra Access Reviews"
+    ],
+    correct: 1,
+    explanation: "PIM provides just-in-time privileged access with configurable maximum activation duration, mandatory approval workflows, MFA requirements, and full audit history — exactly what is needed here."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "What is the MINIMUM Microsoft Entra ID license required to use Privileged Identity Management (PIM)?",
+    options: [
+      "Microsoft Entra ID Free",
+      "Microsoft Entra ID P1",
+      "Microsoft Entra ID P2",
+      "Microsoft 365 Business Basic"
+    ],
+    correct: 2,
+    explanation: "PIM requires Microsoft Entra ID Premium P2. It is not available in the Free or P1 tiers. Identity Protection also requires P2."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "An Azure VM running a web application needs to access Azure Key Vault secrets without storing any credentials in code or configuration files. What is the recommended solution?",
+    options: [
+      "Create an app registration and embed the client secret in an environment variable on the VM",
+      "Enable a system-assigned managed identity on the VM and grant it the Key Vault Secrets User role",
+      "Store the Key Vault access key in an Azure Storage account config file",
+      "Generate a SAS token for Key Vault and store it in the VM's local disk"
+    ],
+    correct: 1,
+    explanation: "System-assigned managed identities are automatically managed by Azure, require no credential storage, and can be granted Key Vault RBAC roles. The application retrieves a token from the local IMDS endpoint."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Which Conditional Access condition allows you to require MFA only when users sign in from outside the corporate network IP ranges?",
+    options: [
+      "Device compliance condition",
+      "User risk condition",
+      "Named locations condition",
+      "Application condition"
+    ],
+    correct: 2,
+    explanation: "Named locations allow you to define trusted IP ranges. A CA policy targeting sign-ins from 'not a trusted named location' enforces MFA only for external sign-ins."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "You configured a Conditional Access policy that blocks all access, and you are now locked out of the Azure portal. Which account should you use to regain access?",
+    options: [
+      "A secondary user account in the same tenant",
+      "An emergency access (break-glass) account excluded from all Conditional Access policies",
+      "The default 'onmicrosoft.com' directory admin created during tenant setup",
+      "A Microsoft Support engineer's federated account"
+    ],
+    correct: 1,
+    explanation: "Emergency access (break-glass) accounts are cloud-only, permanent accounts that must be excluded from all Conditional Access policies to prevent administrator lockout. They are only used in emergencies."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Which Microsoft Entra ID feature uses machine learning to detect risk events such as impossible travel, sign-ins from anonymous IP addresses, and leaked credentials?",
+    options: [
+      "Conditional Access",
+      "Privileged Identity Management",
+      "Microsoft Entra ID Identity Protection",
+      "Microsoft Entra Permissions Management"
+    ],
+    correct: 2,
+    explanation: "Identity Protection detects sign-in risk (per sign-in anomalies) and user risk (per-account compromise indicators) using ML-based risk detection. It requires Entra ID P2."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "You need to synchronize on-premises Active Directory password hashes to Microsoft Entra ID so users authenticate using their on-premises passwords. Which synchronization method should you configure?",
+    options: [
+      "Pass-through Authentication (PTA)",
+      "Password Hash Synchronization (PHS)",
+      "Active Directory Federation Services (AD FS) with claims",
+      "Seamless SSO without any sync"
+    ],
+    correct: 1,
+    explanation: "PHS synchronizes a double-hashed version of on-premises password hashes to Entra ID, enabling cloud-native authentication. PTA validates passwords against on-premises AD in real time. AD FS requires on-premises federation infrastructure."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "An organization is building a consumer-facing application where external users create their own accounts using Gmail or Facebook. Which Microsoft Entra feature supports this scenario?",
+    options: [
+      "Microsoft Entra B2B collaboration (guest invitations)",
+      "Microsoft Entra External Identities with B2C user flows",
+      "Microsoft Entra Domain Services",
+      "Conditional Access with social identity providers"
+    ],
+    correct: 1,
+    explanation: "Microsoft Entra External Identities B2C (Azure AD B2C) is designed for customer-facing apps where consumers register and sign in with social or local identities. B2B is for partner/vendor collaboration."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Which role is specifically required to manage PIM role assignments for Azure AD (directory) roles?",
+    options: [
+      "Global Administrator only",
+      "Security Administrator",
+      "Privileged Role Administrator",
+      "User Access Administrator"
+    ],
+    correct: 2,
+    explanation: "The Privileged Role Administrator role manages PIM for Azure AD directory roles. User Access Administrator manages PIM for Azure resource roles. Global Admin can manage both but is overly privileged."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "A user is assigned the 'Contributor' role at the subscription scope and the 'Reader' role on a specific VM within that subscription. What is the user's effective permission on the VM?",
+    options: [
+      "Reader — the more restrictive role always wins",
+      "Contributor — Azure RBAC is additive and the most permissive applies",
+      "No access — conflicting assignments deny all",
+      "Custom role must be created to resolve the conflict"
+    ],
+    correct: 1,
+    explanation: "Azure RBAC uses additive permissions — all role assignments for a principal are combined and the most permissive level applies. There is no 'deny overrides allow' in standard RBAC (only explicit Deny assignments override)."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Which Microsoft Entra ID feature allows delegating administrative control over a specific subset of users to a department IT admin without granting tenant-wide admin rights?",
+    options: [
+      "PIM eligible assignments scoped to a resource group",
+      "Administrative Units",
+      "Conditional Access scoped policies",
+      "Entitlement Management access packages"
+    ],
+    correct: 1,
+    explanation: "Administrative Units let you scope admin roles (e.g., User Administrator, Password Administrator) to a specific set of users, groups, or devices — enabling delegated administration without full tenant scope."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "You need to verify that all members of the 'Finance' group still need their Azure resource access every 90 days. Which Microsoft Entra feature automates this?",
+    options: [
+      "Microsoft Entra Identity Protection user risk policy",
+      "PIM time-bound role assignment",
+      "Microsoft Entra Access Reviews",
+      "Conditional Access compliance policy"
+    ],
+    correct: 2,
+    explanation: "Access Reviews (part of Microsoft Entra ID Governance) allow scheduled, recurring reviews of group memberships, application assignments, and role assignments to certify that access is still needed."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "Which authentication method provides the STRONGEST phishing resistance for passwordless sign-in to Microsoft Entra ID?",
+    options: [
+      "SMS one-time passcode",
+      "Microsoft Authenticator push notification",
+      "OATH hardware token (TOTP)",
+      "FIDO2 security key"
+    ],
+    correct: 3,
+    explanation: "FIDO2 security keys use hardware-bound, site-specific cryptographic keys, making phishing impossible — the key only responds to the legitimate relying party domain. SMS and push notifications are susceptible to phishing or SIM-swap."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "You need to allow an external partner organization's users to access a shared SharePoint site using their own organization's credentials. Which Microsoft Entra capability should you use?",
+    options: [
+      "Azure AD Domain Services (AADDS) trust",
+      "Microsoft Entra B2B collaboration (guest user invitation)",
+      "Azure AD Application Proxy",
+      "Microsoft Entra B2C consumer identity"
+    ],
+    correct: 1,
+    explanation: "Microsoft Entra B2B collaboration allows you to invite external users as guests. They authenticate with their own identity provider and access your resources — no password management needed on your side."
+  },
+  {
+    domain: "Domain 1 — Manage Identity & Access",
+    question: "When configuring a custom Azure RBAC role, which property specifies the management groups, subscriptions, or resource groups where the role can be assigned?",
+    options: [
+      "Actions array",
+      "NotActions array",
+      "AssignableScopes array",
+      "DataActions array"
+    ],
+    correct: 2,
+    explanation: "AssignableScopes defines the scopes (management groups, subscriptions, resource groups, or resources) where the custom role definition can be assigned. Actions and NotActions define the allowed and excluded control-plane operations."
+  },
+
+  // ── DOMAIN 2 — SECURE NETWORKING (Q16–Q27) ──
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "Which Azure service provides a fully stateful, managed network firewall with FQDN filtering, threat intelligence-based filtering, and a Premium tier that adds TLS inspection and IDPS?",
+    options: [
+      "Network Security Group (NSG)",
+      "Azure Application Gateway with WAF",
+      "Azure Firewall",
+      "Azure Front Door Standard"
+    ],
+    correct: 2,
+    explanation: "Azure Firewall is a managed, cloud-native network security service. Standard supports FQDN filtering and threat intelligence. Premium adds TLS inspection, Intrusion Detection and Prevention System (IDPS), and URL filtering."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "What is the KEY difference between Azure DDoS Basic (infrastructure protection) and Azure DDoS Network Protection?",
+    options: [
+      "DDoS Basic is applied manually; Network Protection is automatic",
+      "DDoS Basic is automatic and free for all Azure resources; Network Protection adds per-resource telemetry, SLA guarantees, rapid response support, and cost protection",
+      "Network Protection is only for web applications using Application Gateway",
+      "DDoS Basic only protects VMs; Network Protection covers PaaS services"
+    ],
+    correct: 1,
+    explanation: "DDoS Basic is always-on and free, protecting Azure infrastructure. DDoS Network Protection (per virtual network) adds attack telemetry, diagnostics, multi-layer protection, DDoS Rapid Response team access, and cost protection credit."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "A company requires that all traffic from Azure VMs to Azure Blob Storage remains on the Azure backbone network and never traverses the public internet. What should you configure?",
+    options: [
+      "Create an Azure Private Endpoint for every storage account",
+      "Enable the Microsoft.Storage service endpoint on the VNet subnet",
+      "Configure an NSG outbound rule allowing only RFC1918 addresses",
+      "Add an Azure Firewall application rule for *.blob.core.windows.net"
+    ],
+    correct: 1,
+    explanation: "Service endpoints route traffic from VNet subnets to Azure PaaS services (like Storage) over the Azure backbone, eliminating public internet traversal. The storage account still has a public endpoint but traffic routes privately."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "Which Azure service enables browser-based RDP and SSH access to Azure VMs through the Azure portal without requiring public IP addresses or exposing management ports?",
+    options: [
+      "Azure VPN Gateway point-to-site",
+      "Azure Bastion",
+      "Just-in-time VM access in Defender for Cloud",
+      "Azure AD Application Proxy"
+    ],
+    correct: 1,
+    explanation: "Azure Bastion is a PaaS service that provides secure RDP/SSH connectivity via an HTML5 browser session within the Azure portal, with no public IP on the VM and no management port exposure."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "You need to route all traffic from a subnet through a network virtual appliance (NVA) for deep packet inspection before reaching the internet. What must you configure?",
+    options: [
+      "An NSG on the subnet blocking direct internet access",
+      "A User-Defined Route (UDR) on the subnet with next hop set to the NVA's private IP",
+      "Azure Firewall DNAT rule on the gateway subnet",
+      "VNet peering with forwarded traffic allowed"
+    ],
+    correct: 1,
+    explanation: "User-Defined Routes override Azure system routes. Setting the next hop to the NVA's private IP (Virtual Appliance) forces subnet traffic through the NVA for inspection. The NSG alone cannot redirect traffic."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "An NSG has two inbound rules: Priority 100 allowing TCP port 443, and Priority 200 denying TCP port 443 from the same source. What is the effective result for port 443 traffic?",
+    options: [
+      "Deny wins because deny rules always override allow rules in NSGs",
+      "Allow wins because Priority 100 is evaluated before Priority 200",
+      "Both rules conflict and traffic is dropped by the default deny rule",
+      "The rules are merged and traffic is subjected to rate limiting"
+    ],
+    correct: 1,
+    explanation: "NSG rules are processed in priority order from the lowest number (highest priority). Priority 100 (Allow 443) is evaluated first. If it matches, processing stops — Priority 200 (Deny 443) is never reached."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "Which Azure Firewall rule type filters outbound HTTP/HTTPS traffic based on fully qualified domain names (FQDNs) such as *.microsoft.com?",
+    options: [
+      "Network rule (Layer 4 IP/port-based)",
+      "NAT/DNAT rule",
+      "Application rule (Layer 7 FQDN-based)",
+      "IP Groups rule"
+    ],
+    correct: 2,
+    explanation: "Azure Firewall Application rules provide Layer 7 FQDN-based filtering for HTTP, HTTPS, and MSSQL protocols. Network rules are Layer 4 (IP/port only). Application rules can also use FQDN tags (like WindowsUpdate)."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "You need to analyze network traffic patterns across Azure VMs and identify top talkers, bandwidth usage, and malicious IPs. Which solution should you use?",
+    options: [
+      "Azure Monitor metric alerts on VM network interfaces",
+      "NSG flow logs sent to Log Analytics with Traffic Analytics enabled",
+      "Azure Network Watcher connection monitor",
+      "Microsoft Sentinel network connector"
+    ],
+    correct: 1,
+    explanation: "NSG flow logs capture allowed/denied traffic at the NSG level. When combined with Traffic Analytics (Log Analytics workspace), they provide visual dashboards of traffic patterns, top talkers, and malicious IP detection."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "Which Azure Web Application Firewall (WAF) mode actively blocks requests matching OWASP CRS rules and returns HTTP 403 to the caller?",
+    options: [
+      "Detection mode — logs and alerts only",
+      "Prevention mode — detects and blocks",
+      "Monitor mode — passive analysis only",
+      "Learning mode — builds baseline before blocking"
+    ],
+    correct: 1,
+    explanation: "WAF Prevention mode actively blocks requests that match managed rule sets (e.g., OWASP CRS 3.x). Detection mode logs matched requests but does not block them. Prevention mode is recommended for production workloads."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "You want to ensure that a specific subnet can only communicate with Azure SQL Database (no other internet destinations). What is the MOST efficient approach?",
+    options: [
+      "Deploy Azure Firewall and create an application rule for *.database.windows.net",
+      "Enable a Microsoft.Sql service endpoint on the subnet and configure SQL Server VNet rules",
+      "Create an NSG with outbound rules allowing only TCP 1433 to Azure SQL IP ranges",
+      "Deploy a Private Endpoint for every SQL server"
+    ],
+    correct: 1,
+    explanation: "Service endpoints for Microsoft.Sql route traffic to SQL over the Azure backbone. Combined with SQL Server VNet rules (allowing only that specific subnet), this restricts access efficiently without needing an NVA or firewall."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "Which Azure Network Watcher feature tests whether a specific NSG rule is allowing or denying traffic between two endpoints for a given IP/port/protocol?",
+    options: [
+      "Connection Monitor — end-to-end latency",
+      "NSG flow logs — historical traffic records",
+      "IP flow verify — instant NSG rule check",
+      "Packet capture — full payload analysis"
+    ],
+    correct: 2,
+    explanation: "IP flow verify checks which NSG rule would be applied for a specific 5-tuple (source IP, dest IP, source port, dest port, protocol) and tells you if traffic is allowed or denied, and which rule matched."
+  },
+  {
+    domain: "Domain 2 — Secure Networking",
+    question: "Which Azure VPN Gateway SKU supports active-active configuration and BGP for site-to-site VPN connections to on-premises networks?",
+    options: [
+      "Basic SKU",
+      "VpnGw1 or higher (Generation 1 or 2)",
+      "Standard SKU",
+      "UltraPerformance SKU only"
+    ],
+    correct: 1,
+    explanation: "Active-active VPN Gateway configuration and BGP are supported on VpnGw1 and higher SKUs (not Basic or Standard legacy SKUs). BGP enables dynamic routing between Azure and on-premises VPN devices."
+  },
+
+  // ── DOMAIN 3 — SECURE COMPUTE, STORAGE & DATABASES (Q28–Q38) ──
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which Azure disk encryption feature uses BitLocker on Windows VMs and dm-crypt on Linux VMs to encrypt OS and data disks, with keys stored in Azure Key Vault?",
+    options: [
+      "Azure Storage Service Encryption (SSE) at rest",
+      "Azure Disk Encryption (ADE)",
+      "Host-based encryption (encryption at host)",
+      "Ephemeral OS disk encryption"
+    ],
+    correct: 1,
+    explanation: "Azure Disk Encryption (ADE) encrypts VM OS and data disks using BitLocker (Windows) or dm-crypt (Linux). Encryption keys and secrets are controlled via Azure Key Vault, providing customer control."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "A security compliance requirement mandates that encryption keys for Azure SQL Database must be stored in hardware security modules (HSMs). Which configuration satisfies this requirement?",
+    options: [
+      "Azure SQL TDE with service-managed keys",
+      "Azure SQL TDE with customer-managed keys stored in Azure Key Vault Premium (HSM-protected keys)",
+      "Azure SQL Always Encrypted with a certificate stored locally",
+      "Azure SQL Dynamic Data Masking with a Key Vault reference"
+    ],
+    correct: 1,
+    explanation: "TDE with customer-managed keys (CMK) using Key Vault Premium stores the TDE protector key as an HSM-protected key (RSA-HSM), satisfying FIPS 140-2 Level 2+ hardware protection requirements."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "An external partner needs temporary read-only access to a specific Azure blob for exactly 2 hours. Which method provides the MOST granular, time-limited access?",
+    options: [
+      "Set the blob container's public access level to 'Blob'",
+      "Assign the Storage Blob Data Reader role to a guest user account",
+      "Generate a service SAS token scoped to the specific blob with a 2-hour expiry",
+      "Share the storage account connection string with the partner"
+    ],
+    correct: 2,
+    explanation: "A Service SAS token can be scoped to a specific container or blob, with granular permissions (read-only), a precise start/expiry time, and optionally restricted to specific IP ranges — all without sharing account keys."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which Azure SQL feature encrypts sensitive column data (e.g., credit card numbers) client-side so the database server NEVER sees plaintext values?",
+    options: [
+      "Transparent Data Encryption (TDE)",
+      "Dynamic Data Masking",
+      "Always Encrypted",
+      "Row-Level Security"
+    ],
+    correct: 2,
+    explanation: "Always Encrypted performs encryption and decryption exclusively in the client application driver. SQL Server stores and processes only ciphertext — even DBAs and privileged users cannot access plaintext column data."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which AKS security feature restricts network communication between pods at the IP address and port level within a Kubernetes cluster?",
+    options: [
+      "Pod Security Admission (PSA) controller",
+      "Kubernetes Network Policies",
+      "Azure Firewall integration with AKS",
+      "Managed identity pod assignment (AAD Pod Identity)"
+    ],
+    correct: 1,
+    explanation: "Kubernetes Network Policies define rules that control ingress and egress traffic at the pod level based on labels, namespaces, IP blocks, and ports. They require a CNI plugin that supports network policies (e.g., Azure CNI + Calico)."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which Microsoft Defender for Cloud feature controls which applications are permitted to run on Azure VMs by using ML-generated allowlisting recommendations?",
+    options: [
+      "Just-in-time VM access",
+      "Adaptive application controls",
+      "File integrity monitoring (FIM)",
+      "Endpoint protection assessment"
+    ],
+    correct: 1,
+    explanation: "Adaptive application controls analyze running processes on VMs using ML and recommend allowlisting rules. When configured, alerts are generated when unauthorized software executes, reducing the attack surface."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "A storage account contains critical business data. You need to ensure that even if an operator accidentally deletes blobs, the data is recoverable for 30 days. Which feature should you enable?",
+    options: [
+      "Geo-redundant storage (GRS) replication",
+      "Blob soft delete with a 30-day retention period",
+      "Blob versioning with lifecycle management",
+      "Immutable (WORM) storage policy"
+    ],
+    correct: 1,
+    explanation: "Blob soft delete retains deleted blobs in a 'deleted' state for the configured retention period (1–365 days). During this period, deleted blobs can be undeleted by an authorized operator."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which Azure SQL feature allows different rows in the same table to be visible to different users based on their database user identity or role memberships?",
+    options: [
+      "Dynamic Data Masking",
+      "Always Encrypted with deterministic encryption",
+      "Transparent Data Encryption",
+      "Row-Level Security (RLS)"
+    ],
+    correct: 3,
+    explanation: "Row-Level Security (RLS) uses filter predicates defined in security policies to restrict which rows each user can query or modify, enabling multi-tenant data isolation without application-layer changes."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which Microsoft Defender plan detects threats against Azure Kubernetes Service workloads, including runtime anomalies, crypto-mining, and privilege escalations in containers?",
+    options: [
+      "Microsoft Defender for Servers",
+      "Microsoft Defender for Containers",
+      "Microsoft Defender for App Service",
+      "Microsoft Defender for Resource Manager"
+    ],
+    correct: 1,
+    explanation: "Defender for Containers protects AKS clusters by scanning container images for vulnerabilities, detecting runtime threats (via audit log analysis and sensor), and enforcing Kubernetes security hardening."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "Which Azure Key Vault feature prevents permanent deletion of a key vault or its objects during the configured retention period, even by users with 'Key Vault Contributor' permissions?",
+    options: [
+      "Soft delete (enables recovery after deletion)",
+      "Purge protection (blocks permanent deletion during retention)",
+      "Key rotation policy with auto-rotation",
+      "RBAC authorization model instead of access policies"
+    ],
+    correct: 1,
+    explanation: "Purge protection, once enabled, prevents anyone (including owners and contributors) from permanently deleting (purging) Key Vault resources during the soft-delete retention period — critical for regulatory compliance."
+  },
+  {
+    domain: "Domain 3 — Secure Compute, Storage & Databases",
+    question: "You need to enforce that all Azure Storage account connections must use HTTPS and deny HTTP access. Which storage account security setting should you enable?",
+    options: [
+      "Enable blob soft delete",
+      "Enable blob versioning",
+      "Enable 'Secure transfer required' (HTTPS only)",
+      "Enable infrastructure encryption"
+    ],
+    correct: 2,
+    explanation: "'Secure transfer required' enforces that all API calls to the storage account must use HTTPS. HTTP connections are rejected with HTTP 400, protecting data in transit from eavesdropping."
+  },
+
+  // ── DOMAIN 4 — MANAGE SECURITY OPERATIONS (Q39–Q50) ──
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Which Microsoft Defender for Cloud metric measures your overall adherence to security recommendations across your Azure resources and increases as you implement recommendations?",
+    options: [
+      "Regulatory compliance score",
+      "Coverage score (Defender plan coverage %)",
+      "Secure score",
+      "Risk score"
+    ],
+    correct: 2,
+    explanation: "Secure Score (0–100%) quantifies your security posture. Each security recommendation carries points. Implementing recommendations increases your score. It is the primary KPI for security posture management in Defender for Cloud."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "You need to automatically block a malicious IP in Azure Firewall whenever a high-severity alert fires in Microsoft Sentinel. Which combination of Sentinel features should you use?",
+    options: [
+      "Analytics rule + Workbook visualization",
+      "Automation rule triggering a Playbook (Logic App)",
+      "Hunting query + Bookmarks",
+      "Fusion detection + UEBA"
+    ],
+    correct: 1,
+    explanation: "Sentinel Automation rules evaluate alert/incident conditions and trigger Playbooks (Azure Logic Apps). The Logic App workflow can then call the Azure Firewall API to block the malicious IP — this is the SOAR automation pattern."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "A company needs a cloud-native SIEM/SOAR platform to collect security logs from Azure, Microsoft 365, on-premises servers, and third-party tools in a single workspace. Which service should they deploy?",
+    options: [
+      "Azure Monitor workbooks",
+      "Microsoft Defender for Cloud",
+      "Microsoft Sentinel",
+      "Azure Log Analytics workspace alone"
+    ],
+    correct: 2,
+    explanation: "Microsoft Sentinel is Azure's cloud-native SIEM/SOAR solution. It ingests data from hundreds of sources via built-in data connectors, provides AI-powered detection, investigation with entity mapping, and SOAR automation."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Which Microsoft Sentinel detection type uses advanced ML to correlate low-fidelity signals from multiple data sources over time to detect multi-stage attacks like lateral movement followed by data exfiltration?",
+    options: [
+      "Scheduled analytics rule (KQL query on a schedule)",
+      "NRT (Near Real-Time) analytics rule",
+      "Fusion detection (advanced multi-stage attack detection)",
+      "Anomaly detection rule (UEBA-based)"
+    ],
+    correct: 2,
+    explanation: "Fusion uses a proprietary ML model that correlates thousands of low-fidelity signals across multiple data sources and alert types to detect known multi-stage attack scenarios with high fidelity and low false positive rates."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "You need to ensure Azure Key Vault secrets are automatically rotated every 90 days and that dependent applications are notified to retrieve the new version. Which feature should you configure?",
+    options: [
+      "Key Vault access policies with expiry date on secrets",
+      "Key Vault rotation policy with auto-rotation and Event Grid notifications",
+      "Managed HSM with scheduled backup rotation",
+      "Azure Automation runbook with Key Vault PowerShell cmdlets"
+    ],
+    correct: 1,
+    explanation: "Key Vault rotation policies can automatically rotate keys on a time-based schedule. Event Grid integration publishes a 'SecretNearExpiry' or 'SecretExpired' event so downstream apps can retrieve the new secret version."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Which Azure Policy effect evaluates resources against a policy rule and logs non-compliant resources in the compliance dashboard WITHOUT blocking creation or modifying any resource?",
+    options: [
+      "Deny — prevents non-compliant resource creation",
+      "Append — adds fields to resources at creation",
+      "Audit — logs non-compliance without any action",
+      "Modify — adds/changes tags on resources"
+    ],
+    correct: 2,
+    explanation: "The Audit effect evaluates resources and marks them as non-compliant in the Compliance dashboard but takes no action. It is commonly used to assess the impact of a policy before switching to Deny or Modify."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "A security analyst wants to proactively search historical Sentinel logs for indicators of compromise using KQL queries, without waiting for automated alerts to trigger. Which Sentinel feature supports this?",
+    options: [
+      "Analytics rules — automated scheduled detection",
+      "Fusion detection — ML correlation",
+      "Hunting queries — proactive threat investigation",
+      "Workbooks — operational dashboards"
+    ],
+    correct: 2,
+    explanation: "Sentinel Hunting provides an interactive KQL query environment where security analysts can proactively search across all ingested data for hidden threats, suspicious patterns, and IOCs that haven't triggered automated rules."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "You need to investigate when a specific Azure Key Vault secret was last accessed and by which service principal. Which log source should you query?",
+    options: [
+      "Azure Activity Log (ARM operations only)",
+      "Key Vault AuditEvent diagnostic log in Log Analytics",
+      "Microsoft Entra ID sign-in logs",
+      "Azure Monitor platform metrics"
+    ],
+    correct: 1,
+    explanation: "Key Vault diagnostic logs (AuditEvent category) record every data-plane operation (get/set/delete secret, key, certificate) with the caller's identity, IP address, and timestamp. These must be sent to Log Analytics or a storage account."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Which Microsoft Defender for Cloud feature provides Just-in-Time (JIT) VM access to lock down inbound VM management ports and open them only on-demand for approved time windows?",
+    options: [
+      "Microsoft Sentinel SOAR playbooks",
+      "Azure Bastion managed service",
+      "Defender for Servers — Just-in-Time VM access",
+      "Azure Firewall DNAT rule with time-based policy"
+    ],
+    correct: 2,
+    explanation: "JIT VM Access (part of Defender for Servers) creates NSG rules that block management ports (22, 3389, 5985, 5986) by default. When a user requests access, Defender for Cloud temporarily opens the port for the specified duration and IP."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "You need to use Azure Policy to automatically add the tag 'Environment=Production' to existing non-compliant resources AND to new resources at creation time, using a remediation task. Which policy effect should you use?",
+    options: [
+      "Audit — detects missing tags",
+      "Deny — blocks resources without the tag",
+      "Append — adds fields at creation only",
+      "Modify — adds/changes tags and supports remediation tasks"
+    ],
+    correct: 3,
+    explanation: "The Modify effect can add, change, or remove resource tags at creation and supports remediation tasks for existing non-compliant resources. Append only adds fields at creation. Modify is the recommended effect for tag governance."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "A security analyst notices a Sentinel incident where an Azure VM is communicating with a known command-and-control IP. Which Sentinel feature provides a visual graph showing entities (VMs, IPs, accounts) and their relationships for investigation?",
+    options: [
+      "Workbooks — operational metric dashboards",
+      "Analytics rules — detection configuration",
+      "Incident investigation graph (entity relationship map)",
+      "Hunting queries — KQL search"
+    ],
+    correct: 2,
+    explanation: "The Sentinel incident investigation graph visually maps entities (hosts, IPs, accounts, URLs) extracted from alerts and shows their relationships, enabling analysts to quickly understand the scope and blast radius of an incident."
+  },
+  {
+    domain: "Domain 4 — Manage Security Operations",
+    question: "Which Microsoft Defender for Cloud feature maps your Azure resources' security configurations against industry frameworks such as NIST SP 800-53, CIS Benchmarks, and PCI-DSS?",
+    options: [
+      "Secure Score recommendations",
+      "Security alerts dashboard",
+      "Regulatory compliance dashboard",
+      "Asset inventory map"
+    ],
+    correct: 2,
+    explanation: "The Regulatory Compliance dashboard in Defender for Cloud shows your compliance posture against assigned standards (NIST, CIS, PCI-DSS, ISO 27001, etc.) by mapping security assessments to specific controls in each framework."
+  }
+];
+
+let current = 0;
+let score = 0;
+let userAnswers = [];
+let answered = false;
+
+function renderQuestion() {
+  const q = questions[current];
+  answered = false;
+
+  document.getElementById('q-domain').textContent = q.domain;
+  document.getElementById('q-text').textContent = `Q${current + 1}. ${q.question}`;
+
+  const ol = document.getElementById('q-options');
+  ol.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.options.forEach((opt, i) => {
+    const li = document.createElement('li');
+    li.className = 'option-item';
+    li.id = `opt-${i}`;
+    li.innerHTML = `
+      <input type="radio" name="option" id="radio-${i}" value="${i}" onchange="selectOption(${i})">
+      <label for="radio-${i}" style="display:flex;gap:12px;cursor:pointer;width:100%;align-items:flex-start;">
+        <span class="option-letter">${letters[i]}</span>
+        <span class="option-text">${opt}</span>
+      </label>`;
+    li.addEventListener('click', () => {
+      if (!answered) {
+        document.getElementById(`radio-${i}`).checked = true;
+        selectOption(i);
+      }
+    });
+    ol.appendChild(li);
+  });
+
+  document.getElementById('q-explanation').style.display = 'none';
+  document.getElementById('q-explanation').innerHTML = '';
+
+  const btnRow = document.querySelector('.btn-row');
+  btnRow.innerHTML = `<button class="btn btn-primary" id="btn-submit" onclick="submitAnswer()" disabled>Submit Answer</button>`;
+
+  // Progress
+  const pct = ((current) / questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Question ${current + 1} of ${questions.length}`;
+}
+
+function selectOption(i) {
+  if (answered) return;
+  document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
+  document.getElementById(`opt-${i}`).classList.add('selected');
+  document.getElementById('btn-submit').disabled = false;
+}
+
+function submitAnswer() {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const selected = parseInt(document.querySelector('input[name="option"]:checked')?.value ?? -1);
+  if (selected === -1) return;
+
+  userAnswers.push({ selected, correct: q.correct });
+
+  const letters = ['A', 'B', 'C', 'D'];
+  document.querySelectorAll('.option-item').forEach((el, i) => {
+    el.classList.add('locked');
+    el.classList.remove('selected');
+    if (i === q.correct) {
+      el.classList.add('correct');
+      el.innerHTML += `<span class="result-icon">✔</span>`;
+    } else if (i === selected && selected !== q.correct) {
+      el.classList.add('wrong');
+      el.innerHTML += `<span class="result-icon">✘</span>`;
+    }
+  });
+
+  if (selected === q.correct) score++;
+
+  const expl = document.getElementById('q-explanation');
+  expl.innerHTML = `<strong>💡 Explanation:</strong> ${q.explanation}`;
+  expl.style.display = 'block';
+
+  const btnRow = document.querySelector('.btn-row');
+  if (current < questions.length - 1) {
+    btnRow.innerHTML = `<button class="btn btn-success" onclick="nextQuestion()">Next Question →</button>`;
+  } else {
+    btnRow.innerHTML = `<button class="btn btn-success" onclick="showResults()">View Results 🏁</button>`;
+  }
+
+  // update progress bar to include current answered
+  const pct = ((current + 1) / questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function nextQuestion() {
+  current++;
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showResults() {
+  document.getElementById('exam-area').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('results-page').style.display = 'block';
+
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+  const pass = pct >= 70;
+
+  const circle = document.getElementById('score-circle');
+  circle.className = 'score-circle ' + (pass ? 'pass' : 'fail');
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-fraction').textContent = `${score} / ${total}`;
+  document.getElementById('score-summary').textContent = `You answered ${score} out of ${total} questions correctly.`;
+
+  const verdict = document.getElementById('score-verdict');
+  if (pass) {
+    verdict.textContent = '✅ PASS — Great work! You met the 70% threshold.';
+    verdict.className = 'verdict pass-text';
+  } else {
+    verdict.textContent = '❌ FAIL — Keep studying! You need 70% to pass.';
+    verdict.className = 'verdict fail-text';
+  }
+
+  const tbody = document.getElementById('breakdown-body');
+  tbody.innerHTML = '';
+  userAnswers.forEach((a, idx) => {
+    const q = questions[idx];
+    const correct = a.selected === a.correct;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${idx + 1}</td>
+      <td>${q.domain.replace('Domain ', 'D').split('—')[0].trim()}</td>
+      <td>${q.question.substring(0, 70)}…</td>
+      <td class="${correct ? 'tag-correct' : 'tag-wrong'}">${correct ? '✔ Correct' : '✘ Wrong'}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function retakeExam() {
+  current = 0; score = 0; userAnswers = [];
+  document.getElementById('results-page').style.display = 'none';
+  document.getElementById('exam-area').style.display = 'block';
+  document.getElementById('progress-wrap').style.display = 'flex';
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Init
+renderQuestion();
+</script>
+</body>
+</html>
