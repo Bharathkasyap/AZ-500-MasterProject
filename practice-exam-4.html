@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AZ-500 Practice Exam 4 — Scenario-Based Questions</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #1a237e, #0288d1); padding: 24px 40px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        header h1 { font-size: 2rem; font-weight: 700; color: #fff; }
+        header p { color: #b0bec5; margin-top: 8px; font-size: 1rem; }
+        .score-bar { background: #161b22; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #30363d; position: sticky; top: 0; z-index: 100; }
+        .score-display { font-size: 1.1rem; font-weight: 600; color: #58a6ff; }
+        .progress-text { color: #8b949e; font-size: 0.9rem; }
+        .container { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+        .question-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 28px; margin-bottom: 28px; transition: border-color 0.2s; }
+        .question-card:hover { border-color: #58a6ff; }
+        .question-number { font-size: 0.8rem; font-weight: 600; color: #58a6ff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .question-text { font-size: 1.05rem; line-height: 1.6; color: #e6edf3; margin-bottom: 20px; font-weight: 500; }
+        .options-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .option { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px; border: 1.5px solid #30363d; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: #0d1117; }
+        .option:hover:not(.disabled) { border-color: #58a6ff; background: #1c2a3a; }
+        .option-letter { font-weight: 700; color: #58a6ff; min-width: 20px; font-size: 0.95rem; flex-shrink: 0; }
+        .option-text { line-height: 1.5; color: #c9d1d9; font-size: 0.95rem; }
+        .option.correct { border-color: #3fb950; background: #0d2818; }
+        .option.correct .option-letter, .option.correct .option-text { color: #3fb950; }
+        .option.wrong { border-color: #f85149; background: #2d0d0d; }
+        .option.wrong .option-letter, .option.wrong .option-text { color: #f85149; }
+        .option.show-correct { border-color: #3fb950; background: #0d2818; }
+        .option.show-correct .option-letter, .option.show-correct .option-text { color: #3fb950; }
+        .option.disabled { cursor: default; pointer-events: none; }
+        .explanation { margin-top: 16px; padding: 14px 18px; background: #1c2a3a; border-left: 4px solid #58a6ff; border-radius: 0 8px 8px 0; display: none; }
+        .explanation.visible { display: block; }
+        .explanation p { color: #8b949e; font-size: 0.9rem; line-height: 1.6; }
+        .explanation strong { color: #58a6ff; }
+        .domain-badge { display: inline-block; background: #1c2a3a; color: #58a6ff; border: 1px solid #58a6ff; border-radius: 20px; padding: 4px 14px; font-size: 0.75rem; font-weight: 600; margin-bottom: 16px; }
+        .bottom-bar { background: #161b22; border-top: 1px solid #30363d; padding: 24px 40px; text-align: center; margin-top: 20px; }
+        .btn { padding: 14px 36px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #1a237e, #0288d1); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(2,136,209,0.4); }
+        .btn-secondary { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; margin-left: 16px; }
+        .btn-secondary:hover { background: #30363d; }
+        .result-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
+        .result-modal.show { display: flex; }
+        .result-box { background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 48px; text-align: center; max-width: 480px; width: 90%; }
+        .result-score { font-size: 4rem; font-weight: 800; color: #58a6ff; }
+        .result-label { font-size: 1.2rem; color: #8b949e; margin-top: 8px; }
+        .result-grade { font-size: 1.5rem; font-weight: 700; margin: 20px 0; }
+        .pass { color: #3fb950; }
+        .fail { color: #f85149; }
+        .result-detail { color: #8b949e; margin-bottom: 28px; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>&#x1F6E1;&#xFE0F; AZ-500 Practice Exam 4</h1>
+    <p>Microsoft Azure Security Technologies &mdash; Scenario-Based Questions &nbsp;|&nbsp; 50 Questions &nbsp;|&nbsp; 2026 Edition</p>
+</header>
+
+<div class="score-bar">
+    <div class="score-display">Score: <span id="scoreDisplay">0</span> / <span id="answeredDisplay">0</span></div>
+    <div class="progress-text">Questions answered: <span id="progressDisplay">0</span> / 50</div>
+</div>
+
+<div class="container" id="examContainer"></div>
+
+<div class="bottom-bar">
+    <button class="btn btn-primary" onclick="submitExam()">Submit Exam</button>
+    <button class="btn btn-secondary" onclick="resetExam()">Reset</button>
+</div>
+
+<div class="result-modal" id="resultModal">
+    <div class="result-box">
+        <div style="font-size:3rem;margin-bottom:16px;">&#x1F3C6;</div>
+        <div class="result-score"><span id="finalScore">0</span>%</div>
+        <div class="result-label">Final Score: <span id="finalCorrect">0</span> / 50 correct</div>
+        <div class="result-grade" id="gradeText"></div>
+        <div class="result-detail" id="gradeDetail"></div>
+        <button class="btn btn-primary" onclick="resetExam()">Retake Exam</button>
+    </div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "Contoso wants to allow external partner employees from Fabrikam to access their SharePoint Online. The partner employees should use their own Fabrikam credentials. What should Contoso configure?",
+    options: [
+      "Create new user accounts in Contoso's Azure AD for all Fabrikam users",
+      "Configure Azure AD B2B collaboration and invite Fabrikam users as guests",
+      "Set up ADFS federation between Contoso and Fabrikam",
+      "Use Azure AD B2C for partner access"
+    ],
+    correct: 1,
+    explanation: "Azure AD B2B (Business-to-Business) collaboration allows Contoso to invite external partner users as guest users in their directory. Fabrikam users authenticate with their own credentials (Fabrikam Azure AD) and access Contoso resources.",
+    domain: "Domain 1: Identity & Access Scenarios"
+  },
+  {
+    q: "A company discovers that a Global Administrator account was used to access Azure resources from an unusual location at 3 AM. Which Microsoft Entra ID feature would have alerted the security team to this suspicious activity?",
+    options: [
+      "Azure Monitor alerts",
+      "Microsoft Entra Identity Protection risky sign-in detection",
+      "Azure AD audit logs",
+      "Conditional Access named locations"
+    ],
+    correct: 1,
+    explanation: "Identity Protection detects risky sign-ins using machine learning signals including atypical travel, anonymous IP usage, and unfamiliar sign-in properties. It would generate a \u201cAtypical travel\u201d or \u201cUnfamiliar sign-in properties\u201d risk event for unusual location access.",
+    domain: "Domain 1: Identity & Access Scenarios"
+  },
+  {
+    q: "An organization wants to ensure that only users connecting from their corporate network can access the Azure portal with just their password, while users outside the corporate network must use MFA. What should they configure?",
+    options: [
+      "Enable Security Defaults",
+      "Create a Conditional Access policy that requires MFA when location is not a named corporate network location",
+      "Enable per-user MFA for all users",
+      "Configure password complexity requirements"
+    ],
+    correct: 1,
+    explanation: "Configure Named Locations for the corporate IP ranges, then create a Conditional Access policy that applies when users are NOT in the named location, requiring MFA. This allows corporate network users to use password-only while requiring MFA externally.",
+    domain: "Domain 1: Identity & Access Scenarios"
+  },
+  {
+    q: "A development team has a containerized application deployed in AKS that needs to access Azure SQL Database. The app should not use connection strings with passwords. What is the best solution?",
+    options: [
+      "Store the connection string in a Kubernetes secret",
+      "Use Azure AD workload identity for AKS with a managed identity to authenticate to Azure SQL using Azure AD authentication",
+      "Use service principal credentials stored in Azure Key Vault",
+      "Hardcode the credentials in the container image"
+    ],
+    correct: 1,
+    explanation: "AKS Workload Identity allows pods to use a managed identity (via federated identity credential) to authenticate to Azure AD-integrated services like Azure SQL Database without any passwords or secrets. This is the recommended passwordless authentication approach.",
+    domain: "Domain 3: Secure Compute (AKS)"
+  },
+  {
+    q: "A company's Security Operations Center (SOC) wants to automatically create a ServiceNow ticket when a high-severity security alert is generated in Microsoft Sentinel. What Sentinel feature enables this?",
+    options: [
+      "Analytics rules",
+      "Playbooks (Azure Logic Apps) triggered by automation rules",
+      "Workbooks",
+      "Data connectors"
+    ],
+    correct: 1,
+    explanation: "A Sentinel Playbook (Azure Logic App) with the ServiceNow connector can be triggered by a Sentinel automation rule when a high-severity incident is created. The playbook creates a ServiceNow ticket with the incident details automatically.",
+    domain: "Domain 4: Security Operations (Sentinel)"
+  },
+  {
+    q: "An attacker has gained access to an Azure VM and is trying to access the Azure IMDS (Instance Metadata Service) to steal a managed identity token. What mitigates this risk at the network level?",
+    options: [
+      "Enabling Azure Firewall",
+      "Using user-assigned managed identity instead of system-assigned",
+      "The risk can only be mitigated by application-level controls, but network segmentation and monitoring of IMDS access attempts helps",
+      "Disabling the managed identity"
+    ],
+    correct: 2,
+    explanation: "IMDS (169.254.169.254) is only accessible from within the VM itself by design. The key mitigations are: minimize permissions on the managed identity, monitor for suspicious IMDS queries in logs, implement Zero Trust principles, and use Just-in-Time access to reduce VM compromise risk.",
+    domain: "Domain 1 & 3: Identity & Compute Security"
+  },
+  {
+    q: "A financial services company needs to ensure that all Azure SQL databases encrypt sensitive customer data such that even Microsoft cannot access the plaintext. What should they implement?",
+    options: [
+      "Transparent Data Encryption with service-managed keys",
+      "Always Encrypted with customer-managed keys stored in an on-premises HSM or Azure Key Vault Managed HSM",
+      "Dynamic Data Masking",
+      "TDE with customer-managed keys in Key Vault"
+    ],
+    correct: 1,
+    explanation: "Always Encrypted ensures encryption happens client-side, so plaintext never reaches the database engine (or Microsoft). Using customer-managed keys in an on-premises HSM or Azure Key Vault Managed HSM gives the customer complete control over the encryption keys.",
+    domain: "Domain 3: Database Security Scenario"
+  },
+  {
+    q: "A company wants to prevent data exfiltration from Azure Storage accounts to unauthorized external storage accounts. Which feature helps prevent this?",
+    options: [
+      "Storage account firewall rules",
+      "Azure Storage Service Endpoint Policies",
+      "Private Endpoints",
+      "NSG rules on the subnet"
+    ],
+    correct: 1,
+    explanation: "Service Endpoint Policies for Azure Storage allow you to restrict access from a virtual network to specific storage accounts only. This prevents malicious insiders from exfiltrating data to personal or unauthorized storage accounts while allowing the subnet to access approved storage accounts.",
+    domain: "Domain 2 & 3: Network + Storage Security"
+  },
+  {
+    q: "An organization needs to comply with a regulation requiring all Azure Key Vault operations to be logged and retained for 3 years. What should they configure?",
+    options: [
+      "Enable Key Vault soft-delete",
+      "Enable Key Vault diagnostic settings to send AuditEvent logs to a Log Analytics workspace or Storage account with 3-year retention",
+      "Enable Key Vault purge protection",
+      "Configure Key Vault access policies"
+    ],
+    correct: 1,
+    explanation: "Enabling diagnostic logging for Key Vault (specifically the AuditEvent log category) captures all operations on keys, secrets, and certificates. Sending logs to Log Analytics or Storage with a 3-year retention policy satisfies the compliance requirement.",
+    domain: "Domain 3: Key Vault Compliance"
+  },
+  {
+    q: "A security team suspects a VM was compromised. They need to investigate what processes were running and what network connections were made on the VM. Which tool provides this forensic capability?",
+    options: [
+      "Azure Monitor metrics",
+      "Microsoft Defender for Endpoint timeline and investigation features (via Defender for Servers)",
+      "NSG flow logs",
+      "Azure Activity Log"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for Endpoint (integrated with Defender for Servers) provides a detailed machine timeline showing all process executions, network connections, file modifications, and registry changes. This forensic timeline is essential for VM compromise investigation.",
+    domain: "Domain 4: Incident Response"
+  },
+  {
+    q: "A company deploys VMs across multiple Azure regions and wants to enforce that ALL VMs must have an endpoint protection solution installed. Which approach is most scalable?",
+    options: [
+      "Manually install endpoint protection on each VM",
+      "Use Azure Policy with DeployIfNotExists effect to automatically deploy Microsoft Defender for Endpoint to all VMs",
+      "Create a startup script in each VM image",
+      "Use Azure Update Manager"
+    ],
+    correct: 1,
+    explanation: "Azure Policy with the DeployIfNotExists effect can automatically deploy Microsoft Defender for Endpoint (via the Log Analytics agent/AMA) to existing and new VMs across all regions and subscriptions within management group scope.",
+    domain: "Domain 3 & 4: Compute + Operations"
+  },
+  {
+    q: "During a penetration test, testers discovered that an Azure Function App was exposing environment variables (including connection strings) through its diagnostic endpoint. What immediate remediation is needed?",
+    options: [
+      "Disable diagnostic endpoints",
+      "Move all sensitive configuration values to Azure Key Vault references and use managed identity for access",
+      "Rotate all connection strings",
+      "Enable HTTPS only"
+    ],
+    correct: 1,
+    explanation: "Sensitive values should be stored in Azure Key Vault and referenced using Key Vault references in App Service/Function App configuration. The app uses its managed identity to access Key Vault, so no credentials are stored in environment variables. Also rotate any exposed secrets immediately.",
+    domain: "Domain 3: Secure Compute (App Security)"
+  },
+  {
+    q: "An organization needs to implement network segmentation in AKS to ensure that frontend pods can only communicate with backend pods, not directly with the database pods. What should they implement?",
+    options: [
+      "Azure Firewall between pod subnets",
+      "Kubernetes Network Policies restricting pod communication based on pod labels and namespaces",
+      "NSGs on the AKS node subnet",
+      "Azure Private Endpoint for the database"
+    ],
+    correct: 1,
+    explanation: "Kubernetes Network Policies provide pod-level network segmentation. You can create policies that allow frontend pods to communicate with backend pods (label: tier=backend) but deny direct communication with database pods (label: tier=database), implementing micro-segmentation.",
+    domain: "Domain 3: Secure Compute (AKS)"
+  },
+  {
+    q: "A company experiences a sudden spike in failed authentication attempts against their Azure AD tenant from multiple countries simultaneously. What is the best first response?",
+    options: [
+      "Reset all user passwords",
+      "Enable Identity Protection risky sign-in policy to block or require MFA for medium/high risk sign-ins, and investigate using Identity Protection risk detection reports",
+      "Disable all external access",
+      "Enable Security Defaults"
+    ],
+    correct: 1,
+    explanation: "First, enable (or verify) risk-based Conditional Access policies to automatically block or step-up authentication for risky sign-ins. Then investigate the Identity Protection risky sign-in report to identify which accounts are targeted and whether any sign-ins succeeded.",
+    domain: "Domain 1: Identity Attack Response"
+  },
+  {
+    q: "A developer accidentally committed an Azure storage account key to a public GitHub repository. What actions should the security team take?",
+    options: [
+      "Delete the GitHub repository",
+      "Immediately rotate both storage account access keys, then review audit logs for unauthorized access, and implement proper secrets management going forward",
+      "Only rotate the one key that was exposed",
+      "Change the storage account name"
+    ],
+    correct: 1,
+    explanation: "Rotate both keys immediately (even if only one was exposed, attackers may have already used it and are monitoring), review storage audit logs for suspicious access during the exposure window, scan all repository history, and implement Azure Key Vault or managed identity going forward.",
+    domain: "All Domains: Incident Response"
+  },
+  {
+    q: "An organization wants to isolate their production Azure resources from development resources while using the same Azure AD tenant. What is the recommended approach?",
+    options: [
+      "Use separate Resource Groups for prod and dev",
+      "Use separate Azure subscriptions with Management Groups to apply governance policies",
+      "Use separate VNets with peering",
+      "Use Azure Tags to separate resources"
+    ],
+    correct: 1,
+    explanation: "Separate subscriptions provide the strongest isolation boundary in Azure. Management Groups allow applying consistent policies and RBAC across subscriptions. This approach provides billing separation, independent resource limits, and policy isolation between environments.",
+    domain: "All Domains: Governance & Isolation"
+  },
+  {
+    q: "A company needs to ensure that all traffic from their on-premises network to Azure Storage accounts travels over the Microsoft backbone network and never over the public internet. What should they implement?",
+    options: [
+      "Azure VPN Gateway with IPSec",
+      "ExpressRoute with Private Peering and Private Endpoints for Storage",
+      "Azure Firewall with FQDN rules",
+      "NSG rules blocking internet routes"
+    ],
+    correct: 1,
+    explanation: "ExpressRoute Private Peering provides dedicated private connectivity that doesn't traverse the internet. Combined with Private Endpoints for Storage (which assign private IPs from your VNet to storage accounts), all traffic to Azure Storage stays on the Microsoft backbone.",
+    domain: "Domain 2: Secure Networking Scenario"
+  },
+  {
+    q: "A web application in Azure needs to receive webhooks from a third-party service. The application currently accepts all inbound HTTPS traffic. How should you secure this endpoint?",
+    options: [
+      "Enable HTTPS only",
+      "Use Azure API Management with IP filtering, authentication (API key or JWT), and rate limiting in front of the webhook endpoint",
+      "Add a WAF policy",
+      "Use NSG to restrict to the third-party IP ranges"
+    ],
+    correct: 1,
+    explanation: "The best approach layers multiple controls: use API Management to enforce authentication (API key or shared secret validation), rate limiting (to prevent abuse), IP filtering (to restrict to known third-party IPs), and Azure WAF for additional protection against web attacks.",
+    domain: "Domain 2: API Security Scenario"
+  },
+  {
+    q: "A Sentinel analytics rule is generating too many false positive alerts for normal administrative activity. How should you tune it?",
+    options: [
+      "Disable the analytics rule",
+      "Add exceptions or exclusions to the rule logic using KQL to filter out known benign activity, or adjust the threshold",
+      "Create a separate rule for legitimate activities",
+      "Increase the alert severity threshold"
+    ],
+    correct: 1,
+    explanation: "Tune analytics rules by modifying the KQL query to exclude known benign patterns (e.g., excluding specific user accounts, service accounts, or IP ranges from admin activity alerts). You can also adjust frequency, lookback period, and grouping settings to reduce noise while maintaining detection capability.",
+    domain: "Domain 4: Sentinel Tuning Scenario"
+  },
+  {
+    q: "An organization needs to provide third-party auditors with read-only access to review Azure resource configurations, but the auditors should NOT be able to see any data within those resources (e.g., storage account contents). What role should be assigned?",
+    options: [
+      "Reader role at subscription scope",
+      "Specific read-only roles on individual resource types (e.g., Reader for infrastructure, but not data plane access roles like Storage Blob Data Reader)",
+      "Contributor role",
+      "Owner role"
+    ],
+    correct: 1,
+    explanation: "Azure RBAC separates management plane (resource configuration) from data plane (data access). The Reader role provides control plane read access. To ensure auditors can see resource configurations but not data, avoid assigning data plane roles like Storage Blob Data Reader or Key Vault Secrets User.",
+    domain: "Domain 1: RBAC Scenarios"
+  },
+  {
+    q: "A company's Conditional Access policy blocks access from non-compliant devices. A remote employee with a compliant device suddenly can't access resources after their device compliance status changed. What's the likely cause and solution?",
+    options: [
+      "The Conditional Access policy is misconfigured",
+      "The device's Intune compliance status changed (e.g., missed a compliance check-in or failed a compliance policy). The user should ensure their device meets compliance requirements and sync with Intune.",
+      "The user needs to re-register for MFA",
+      "The Azure AD token expired"
+    ],
+    correct: 1,
+    explanation: "Intune device compliance status changes when devices fail compliance policies (e.g., missing updates, disabled encryption, or connectivity issues with Intune). The device needs to check in with Intune, meet all compliance requirements, and the compliance status will be updated for Conditional Access evaluation.",
+    domain: "Domain 1: Conditional Access Scenario"
+  },
+  {
+    q: "During a security audit, it's found that a storage account with sensitive data has no private endpoint and is accessible from the internet with Shared Key authentication enabled. What security improvements should be made in priority order?",
+    options: [
+      "Only add a private endpoint",
+      "1) Disable Shared Key access and use Azure AD authentication; 2) Add a private endpoint or service endpoint with VNet rules; 3) Enable Defender for Storage; 4) Enable soft delete",
+      "Only enable Defender for Storage",
+      "Only configure storage firewall rules"
+    ],
+    correct: 1,
+    explanation: "The priority order addresses the most critical risks first: Shared Key authentication (if stolen, provides full access) should be replaced with Azure AD. Then restrict network access via private endpoints. Add threat detection with Defender for Storage. Finally, add data protection with soft delete.",
+    domain: "Domain 3: Storage Security Scenario"
+  },
+  {
+    q: "A company wants to detect when an Azure VM is used for lateral movement within their Azure environment. Which Sentinel detection would be most useful?",
+    options: [
+      "Alert on all RDP connections",
+      "Analytics rule correlating successful RDP/SSH logins to multiple VMs from the same source within a short time window",
+      "Monitor NSG flow logs for all traffic",
+      "Alert on all VM starts"
+    ],
+    correct: 1,
+    explanation: "Lateral movement typically involves an attacker using compromised credentials to RDP/SSH into multiple machines in quick succession. A Sentinel analytics rule that detects the same source account or IP logging into multiple VMs within a short timeframe (e.g., 5 VMs in 1 hour) would indicate potential lateral movement.",
+    domain: "Domain 4: Threat Detection Scenario"
+  },
+  {
+    q: "An organization uses Azure Kubernetes Service and wants to ensure that container images deployed to production have been scanned for vulnerabilities and are from approved registries only. How should they implement this?",
+    options: [
+      "Manually review all image deployments",
+      "Use Azure Policy with 'Kubernetes cluster containers should only use allowed images' and integrate Defender for Containers for registry scanning",
+      "Use Kubernetes admission webhooks only",
+      "Review Azure Container Registry logs"
+    ],
+    correct: 1,
+    explanation: "Azure Policy for Kubernetes (using the Gatekeeper OPA admission controller) enforces that only images from approved registries are deployed. Combine with Defender for Containers vulnerability scanning to ensure images are scanned before deployment.",
+    domain: "Domain 3: AKS Security Scenario"
+  },
+  {
+    q: "A security team needs to investigate all changes made to Azure resources in a subscription over the past 30 days. Where is this information stored?",
+    options: [
+      "Azure Monitor metrics",
+      "Azure Activity Log (accessible via Azure Monitor or Log Analytics with AzureActivity table)",
+      "Azure Diagnostics",
+      "Microsoft Sentinel"
+    ],
+    correct: 1,
+    explanation: "The Azure Activity Log records all subscription-level operations (create, update, delete, action) for the past 90 days (by default). In Log Analytics, these are in the AzureActivity table. This provides a complete audit trail of who changed what and when.",
+    domain: "Domain 4: Audit & Investigation"
+  },
+  {
+    q: "A company is migrating to Azure and needs to design a network architecture where spoke VNets can communicate with each other and on-premises, but all traffic must be inspected by a firewall. What design pattern should they use?",
+    options: [
+      "VNet peering between all VNets",
+      "Hub-spoke topology with Azure Firewall in the hub VNet and User-Defined Routes forcing all traffic through the firewall",
+      "Virtual WAN with no central firewall",
+      "Point-to-site VPN for each spoke"
+    ],
+    correct: 1,
+    explanation: "Hub-spoke is the recommended Azure network architecture for enterprise scenarios. Azure Firewall in the hub inspects all traffic between spokes and to on-premises. UDRs in each spoke force 0.0.0.0/0 traffic to the Firewall's private IP, ensuring all traffic is inspected.",
+    domain: "Domain 2: Network Architecture Scenario"
+  },
+  {
+    q: "A company needs to implement Zero Trust network access for their Azure-hosted web applications. Users are remote and should only access applications after being verified, not based on network location. What is the recommended solution?",
+    options: [
+      "Azure VPN Gateway for all remote users",
+      "Azure AD App Proxy or Microsoft Entra Private Access for per-application access control with identity verification",
+      "Allow all HTTPS traffic through Azure Firewall",
+      "Create NSG rules allowing user IP addresses"
+    ],
+    correct: 1,
+    explanation: "Azure AD Application Proxy (and the newer Microsoft Entra Private Access) provides Zero Trust, identity-based access to internal web applications without requiring a VPN. Users authenticate via Azure AD (with MFA and Conditional Access), and access is granted per-application rather than per-network.",
+    domain: "Domain 2: Zero Trust Networking"
+  },
+  {
+    q: "A Sentinel incident shows a user account performing a large data download from SharePoint shortly after authenticating from an anonymous IP address. What should the SOC analyst do first?",
+    options: [
+      "Immediately delete the user account",
+      "Contain the threat: disable the user account, revoke all active sessions, initiate incident response, then investigate what data was accessed",
+      "Send the user an email asking if this was legitimate",
+      "Wait to gather more evidence before taking action"
+    ],
+    correct: 1,
+    explanation: "For an active suspected data exfiltration: immediately contain by disabling the account and revoking tokens (via Azure AD revoke sign-in sessions). This stops ongoing exfiltration. Then investigate what data was accessed, preserve evidence, and follow the incident response plan. Speed is critical in data breach scenarios.",
+    domain: "Domain 4: SOC Response Scenario"
+  },
+  {
+    q: "An organization's Azure environment has multiple subscriptions. A policy needs to be applied to all subscriptions to ensure all VMs have a specific tag. Where should the policy assignment be placed?",
+    options: [
+      "Each subscription individually",
+      "The Management Group containing all the subscriptions",
+      "Each resource group individually",
+      "Each VM individually"
+    ],
+    correct: 1,
+    explanation: "Assigning Azure Policy at the Management Group level ensures the policy applies to all subscriptions within the management group hierarchy, including new subscriptions added in the future. This is more scalable and consistent than assigning policies to each subscription individually.",
+    domain: "All Domains: Governance at Scale"
+  },
+  {
+    q: "A company needs to provide contractors with temporary access to a specific Azure resource for 30 days. What is the best practice?",
+    options: [
+      "Create a permanent account and delete it after 30 days",
+      "Use Azure AD guest accounts with time-limited access packages in Entitlement Management, set to expire after 30 days",
+      "Share admin credentials",
+      "Create a temporary service principal"
+    ],
+    correct: 1,
+    explanation: "Entitlement Management access packages allow defining time-limited access with automatic expiration. Contractors get an access package request they can fulfill, which grants access to specific resources for the defined period and automatically removes access when it expires.",
+    domain: "Domain 1: Access Management Scenario"
+  },
+  {
+    q: "An AKS cluster is running workloads in a multi-tenant environment where different teams share the same cluster. How should you isolate teams' workloads?",
+    options: [
+      "Use separate node pools only",
+      "Use Kubernetes namespaces with Resource Quotas, RBAC, and Network Policies per team, combined with Azure AD integration for identity-based access control",
+      "Deploy separate AKS clusters for each team",
+      "Use pod labels only for isolation"
+    ],
+    correct: 1,
+    explanation: "Namespaces provide logical isolation with ResourceQuotas (resource limits), RBAC (access control), and NetworkPolicies (network isolation). Azure AD integration lets each team's members have appropriate kubectl access using their Azure AD identities. This is more cost-effective than separate clusters.",
+    domain: "Domain 3: AKS Multi-tenancy"
+  },
+  {
+    q: "During a red team exercise, the team discovered they could enumerate Azure AD users using the UserEnumeration technique via the login endpoint. What mitigates this?",
+    options: [
+      "There is no mitigation as this is a fundamental Azure AD feature",
+      "Enable Identity Protection, monitor sign-in logs for enumeration patterns, and consider blocking access from suspicious IPs using Conditional Access with Named Locations",
+      "Disable self-service password reset",
+      "Enable MFA for all users"
+    ],
+    correct: 1,
+    explanation: "While Azure AD doesn't expose user existence in error messages for modern authentication, monitoring and alerting on enumeration patterns (many failed sign-in attempts across many usernames from the same IP) using Identity Protection and sign-in logs helps detect and respond to enumeration attempts. Conditional Access can block suspicious sources.",
+    domain: "Domain 1: Identity Attack Mitigation"
+  },
+  {
+    q: "A company needs to ensure that SQL database backups are encrypted with their own keys (BYOK). What feature supports this?",
+    options: [
+      "TDE with service-managed keys",
+      "TDE with customer-managed keys (TDE Protector stored in Azure Key Vault)",
+      "Always Encrypted",
+      "Dynamic Data Masking"
+    ],
+    correct: 1,
+    explanation: "TDE with customer-managed keys (Bring Your Own Key/BYOK) allows you to store the TDE Protector (the key used to encrypt the database encryption key) in Azure Key Vault with your own keys. This extends to all backups and log files encrypted by TDE.",
+    domain: "Domain 3: Database Security Scenario"
+  },
+  {
+    q: "A company uses Azure API Management to expose APIs publicly. They discover bots are making thousands of requests per minute to their APIs. What APIM feature helps mitigate this?",
+    options: [
+      "Enable HTTPS",
+      "Configure rate limiting policies and subscribe to Azure API Management with IP filtering and bot protection via Azure WAF",
+      "Use NSG to block traffic",
+      "Enable Azure DDoS Protection"
+    ],
+    correct: 1,
+    explanation: "Azure APIM's rate limiting policies (rate-limit and rate-limit-by-key) restrict request rates per subscription or IP. Combining with Azure WAF (via Application Gateway or Front Door) provides bot detection and protection, while APIM subscription keys enforce consumer authentication.",
+    domain: "Domain 2: API Security Scenario"
+  },
+  {
+    q: "An organization wants to ensure that developers cannot accidentally make Azure Storage containers publicly accessible. What is the most effective preventive control?",
+    options: [
+      "Training developers on security",
+      "Azure Policy with 'Storage accounts should prevent shared key access' and 'Storage account public access should be disallowed' policies at the Management Group level with Deny effect",
+      "Regular security reviews of storage configurations",
+      "Alerts when public access is enabled"
+    ],
+    correct: 1,
+    explanation: "Preventive controls are more effective than detective controls. Azure Policy with Deny effect at the Management Group level prevents any new storage accounts from being configured with public access, regardless of developer intent or mistakes.",
+    domain: "All Domains: Preventive Controls"
+  },
+  {
+    q: "A company needs to implement a 'canary trap' to detect if their Azure Storage account data is leaked by comparing watermarked data. This is an example of what security concept?",
+    options: [
+      "Data Loss Prevention",
+      "Honeytokens/deception technology - specific watermarked or unique data used to detect unauthorized data exfiltration",
+      "Data classification",
+      "Threat intelligence"
+    ],
+    correct: 1,
+    explanation: "Honeytokens are fake credentials or unique watermarked data objects. If these specific pieces of data appear externally, it confirms data exfiltration. Microsoft Defender for Cloud and Sentinel can be combined with custom analytics to detect when honeytoken data is accessed or appears in threats feeds.",
+    domain: "Domain 4: Threat Detection"
+  },
+  {
+    q: "A security engineer notices that a Conditional Access policy is blocking legitimate users from accessing a critical application. How should they safely test a policy change before applying it broadly?",
+    options: [
+      "Apply the change and wait for user complaints",
+      "Use Conditional Access What-If tool to simulate the impact, or deploy the updated policy in Report-Only mode first",
+      "Disable the policy temporarily",
+      "Create a test Azure AD tenant"
+    ],
+    correct: 1,
+    explanation: "The Conditional Access What-If tool lets you simulate what policies would apply to a specific user, application, and conditions without affecting live users. Report-Only mode allows deploying a new or modified policy without enforcing it, showing what would happen in sign-in logs before full enforcement.",
+    domain: "Domain 1: Conditional Access Management"
+  },
+  {
+    q: "An organization's Microsoft Sentinel costs have increased significantly due to high data ingestion volumes. What strategies can reduce costs while maintaining security coverage?",
+    options: [
+      "Reduce alert severity thresholds",
+      "Optimize data collection by using Basic Logs tier for verbose/low-value logs, filtering ingestion with transformation rules, and using Microsoft Sentinel's free data sources (Azure AD, Activity logs)",
+      "Disable some data connectors completely",
+      "Only keep 30 days of log retention"
+    ],
+    correct: 1,
+    explanation: "Sentinel cost optimization strategies: use Workspace Transformation Rules to filter logs before ingestion, use Basic Logs tier (lower cost) for verbose logs with infrequent query needs, leverage free data sources (Azure AD sign-in/audit logs, Activity logs), and use data collection rules to filter noisy telemetry.",
+    domain: "Domain 4: Sentinel Cost Optimization"
+  },
+  {
+    q: "A company has deployed an application that is vulnerable to SQL injection. As an immediate compensating control while developers fix the code, what Azure service provides virtual patching?",
+    options: [
+      "Azure Firewall",
+      "Azure WAF (Web Application Firewall) with managed rule sets that detect and block SQL injection attempts",
+      "NSG rules",
+      "Azure DDoS Protection"
+    ],
+    correct: 1,
+    explanation: "Azure WAF provides a 'virtual patch' by detecting and blocking SQL injection attempts at the network layer before they reach the vulnerable application. Enable the OWASP Core Rule Set which includes SQL injection detection rules. This is an immediate compensating control while the code is fixed.",
+    domain: "Domain 2: WAF as Compensating Control"
+  },
+  {
+    q: "An AKS cluster workload needs to read secrets from Azure Key Vault. The security team wants zero code changes in the application. What approach supports this?",
+    options: [
+      "Mount secrets as environment variables",
+      "Use the Azure Key Vault Secrets Store CSI Driver to mount secrets directly as files or environment variables at pod startup",
+      "Use init containers to fetch secrets",
+      "Use Kubernetes native secrets"
+    ],
+    correct: 1,
+    explanation: "The Secrets Store CSI Driver for Azure Key Vault mounts secrets from Key Vault as files or environment variables into pods at startup, with zero application code changes required. Combined with pod identity/workload identity for authentication, it provides a secure, code-change-free secrets injection.",
+    domain: "Domain 3: AKS Secrets Management"
+  },
+  {
+    q: "A company is implementing a Zero Trust security model for their Azure environment. Which set of principles best describes Zero Trust?",
+    options: [
+      "Trust all internal traffic, verify external traffic",
+      "Verify explicitly, use least privilege access, and assume breach",
+      "Allow access based on network location (inside vs. outside perimeter)",
+      "Trust users but verify applications"
+    ],
+    correct: 1,
+    explanation: "The three Zero Trust principles are: Verify explicitly (always authenticate and authorize using all available data points), Use least privilege access (limit access with Just-In-Time and Just-Enough-Access), and Assume breach (minimize blast radius, segment access, verify end-to-end encryption, use analytics to get visibility).",
+    domain: "All Domains: Zero Trust Principles"
+  },
+  {
+    q: "During a security assessment, an auditor finds that several Azure VMs have public IPs and management ports (RDP/SSH) open to 0.0.0.0/0. What is the recommended remediation?",
+    options: [
+      "Change default passwords",
+      "Remove public IPs, close management ports in NSGs, and implement Azure Bastion for secure management access, or use JIT VM access as a temporary measure",
+      "Enable Azure Defender for VMs",
+      "Enable disk encryption"
+    ],
+    correct: 1,
+    explanation: "The recommended approach is defense-in-depth: remove public IPs from management VMs, close RDP/SSH ports in NSGs, and use Azure Bastion (which provides secure browser-based RDP/SSH through the Azure portal without public IPs). JIT VM access can be used if public IPs must remain temporarily.",
+    domain: "Domain 2 & 3: VM Security Hardening"
+  },
+  {
+    q: "A SOC team receives a Microsoft Sentinel incident indicating that multiple users' accounts were accessed from the same IP address in quick succession within 5 minutes. What type of attack does this likely indicate?",
+    options: [
+      "Brute force attack",
+      "Password spray attack",
+      "Credential stuffing from a single IP",
+      "Both B and C are possible"
+    ],
+    correct: 3,
+    explanation: "Multiple accounts from a single IP in quick succession could be credential stuffing (trying known username/password pairs) or password spray (trying a single common password against many accounts). Both are distinct from brute force (many passwords against one account). The SOC should investigate the specific usernames and whether the passwords used are known leaked credentials.",
+    domain: "Domain 4: Attack Pattern Recognition"
+  },
+  {
+    q: "An organization wants to prevent Azure resource deployments that don't comply with security standards. They want to block non-compliant resources at deployment time. Which tool combination is most effective?",
+    options: [
+      "Azure Advisor + monitoring",
+      "Azure Policy (Deny effect) + Azure Blueprints or Deployment Stacks for governed deployments",
+      "ARM template testing only",
+      "Manual approval processes"
+    ],
+    correct: 1,
+    explanation: "Azure Policy with Deny effect blocks non-compliant resources at deployment time (preventive control). Azure Blueprints or Deployment Stacks package policies, RBAC, and resources together as governed, version-controlled deployment units, ensuring all deployments automatically comply with organizational standards.",
+    domain: "All Domains: Preventive Governance"
+  },
+  {
+    q: "A company's compliance team requires evidence that all Azure administrative actions are logged and non-repudiable. Which Azure capability provides this?",
+    options: [
+      "Azure Monitor Metrics",
+      "Azure Activity Log (audit log) which captures all control plane operations with user identity, action, timestamp, and cannot be modified or deleted by subscription administrators",
+      "Azure Diagnostics",
+      "Azure Advisor"
+    ],
+    correct: 1,
+    explanation: "The Azure Activity Log provides an immutable (read-only, cannot be modified) audit trail of all ARM operations. It captures who performed the action, what action was taken, when, and the result. This satisfies non-repudiation requirements. Routing to an immutable storage account provides long-term, tamper-proof retention.",
+    domain: "Domain 4: Compliance & Audit"
+  },
+  {
+    q: "A company runs a microservices application in AKS with Service Mesh (Istio). How does mTLS in a service mesh improve security compared to relying only on Kubernetes Network Policies?",
+    options: [
+      "mTLS is slower and doesn't add security value",
+      "mTLS provides both encryption of service-to-service traffic AND mutual authentication (each service verifies the other's identity), while Network Policies only restrict which pods can communicate but don't encrypt or authenticate the traffic",
+      "mTLS replaces the need for Network Policies",
+      "They provide exactly the same security"
+    ],
+    correct: 1,
+    explanation: "Network Policies operate at the IP/port layer (Layer 3/4) and control which pods can communicate but provide no encryption or identity verification. mTLS provides encryption (all traffic encrypted) plus mutual authentication (both sides verify each other using X.509 certificates managed by the service mesh), providing confidentiality and integrity for service communication.",
+    domain: "Domain 3: Service Mesh Security"
+  },
+  {
+    q: "A developer's Azure subscription has been compromised and the attacker is using it for crypto mining. How can the security team detect this using Defender for Cloud?",
+    options: [
+      "Azure Advisor recommendations",
+      "Microsoft Defender for Servers alert: 'Digital currency mining activity' or Defender for Cloud anomaly detecting high CPU usage pattern",
+      "Azure Monitor CPU metrics alert",
+      "Reviewing billing anomalies only"
+    ],
+    correct: 1,
+    explanation: "Defender for Servers detects crypto mining through behavioral analytics (process signatures, suspicious outbound connections to mining pools, unusual CPU patterns). Defender for Cloud also has the Defender for Cloud security alert 'Digital currency mining activity' which specifically flags known mining tool executions and connections to cryptocurrency mining pools.",
+    domain: "Domain 4: Threat Detection Scenario"
+  },
+  {
+    q: "An organization discovers their Azure environment has been configured with overly permissive 'Owner' role assignments at subscription level for many service accounts. What remediation approach follows least privilege principles?",
+    options: [
+      "Remove all role assignments and start fresh",
+      "Audit existing assignments, replace Owner with specific built-in roles that grant only needed permissions, use custom roles for fine-grained control, and implement PIM for privileged roles",
+      "Move service accounts to lower environments",
+      "Enable MFA for service accounts"
+    ],
+    correct: 1,
+    explanation: "Least privilege remediation: 1) Audit what permissions are actually needed for each service account; 2) Replace Owner with specific roles (Contributor, specific data roles); 3) Create custom roles if built-in roles are too broad; 4) Use PIM for any remaining privileged roles to require justification and time-limit access; 5) Regular access reviews.",
+    domain: "Domain 1: Least Privilege Remediation"
+  },
+  {
+    q: "A company's web application in Azure needs to securely store and use TLS certificates for custom domain HTTPS. What is the recommended approach?",
+    options: [
+      "Store certificate files in Azure Blob Storage",
+      "Store certificates in Azure Key Vault and integrate with App Service using Key Vault certificate references or import to App Service from Key Vault",
+      "Embed certificates in container images",
+      "Use self-signed certificates"
+    ],
+    correct: 1,
+    explanation: "Azure Key Vault is the recommended secret store for TLS certificates. App Service, Application Gateway, API Management, and other Azure services can directly reference certificates from Key Vault. Key Vault also supports automatic certificate renewal through integration with DigiCert and GlobalSign CAs.",
+    domain: "Domain 3: Certificate Management"
+  },
+  {
+    q: "A security architect is designing an Azure environment for a regulated financial institution. Which combination of Azure services best implements defense-in-depth for internet-facing applications?",
+    options: [
+      "Just NSGs and HTTPS",
+      "Azure DDoS Protection Standard + Azure Front Door with WAF + Application Gateway with WAF + Azure Firewall + NSGs + Private Endpoints + Microsoft Defender for App Service",
+      "Only Azure Firewall",
+      "Azure Firewall + NSGs only"
+    ],
+    correct: 1,
+    explanation: "Defense-in-depth layers multiple security controls: DDoS Protection (volumetric attacks) \u2192 Front Door with WAF (global edge, WAF, bot protection) \u2192 Application Gateway with WAF (regional, SSL termination) \u2192 NSGs (network segmentation) \u2192 Azure Firewall (east-west inspection) \u2192 Private Endpoints (no public IPs on backend) \u2192 Defender for App Service (runtime protection). Each layer provides independent protection.",
+    domain: "All Domains: Defense-in-Depth Architecture"
+  }
+];
+
+let score = 0;
+let answered = 0;
+const userAnswers = new Array(questions.length).fill(null);
+
+function buildExam() {
+  const container = document.getElementById('examContainer');
+  container.innerHTML = '';
+  questions.forEach((q, idx) => {
+    const letters = ['A', 'B', 'C', 'D'];
+    const optionsHTML = q.options.map((opt, i) => `
+      <li class="option" id="opt-${idx}-${i}" onclick="selectAnswer(${idx}, ${i})">
+        <span class="option-letter">${letters[i]}</span>
+        <span class="option-text">${opt}</span>
+      </li>
+    `).join('');
+
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `card-${idx}`;
+    card.innerHTML = `
+      <div class="question-number">Question ${idx + 1} of ${questions.length}</div>
+      <div class="domain-badge">${q.domain}</div>
+      <div class="question-text">${q.q}</div>
+      <ul class="options-list">${optionsHTML}</ul>
+      <div class="explanation" id="exp-${idx}">
+        <p><strong>Explanation:</strong> ${q.explanation}</p>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  updateScoreBar();
+}
+
+function selectAnswer(qIdx, optIdx) {
+  if (userAnswers[qIdx] !== null) return;
+  userAnswers[qIdx] = optIdx;
+  answered++;
+
+  const correct = questions[qIdx].correct;
+  const letters = ['A', 'B', 'C', 'D'];
+  const allOpts = questions[qIdx].options.map((_, i) => document.getElementById(`opt-${qIdx}-${i}`));
+
+  allOpts.forEach(el => el.classList.add('disabled'));
+
+  if (optIdx === correct) {
+    score++;
+    allOpts[optIdx].classList.add('correct');
+  } else {
+    allOpts[optIdx].classList.add('wrong');
+    allOpts[correct].classList.add('show-correct');
+  }
+
+  document.getElementById(`exp-${qIdx}`).classList.add('visible');
+  updateScoreBar();
+}
+
+function updateScoreBar() {
+  document.getElementById('scoreDisplay').textContent = score;
+  document.getElementById('answeredDisplay').textContent = answered;
+  document.getElementById('progressDisplay').textContent = answered;
+}
+
+function submitExam() {
+  const pct = Math.round((score / questions.length) * 100);
+  const pass = pct >= 70;
+  document.getElementById('finalScore').textContent = pct;
+  document.getElementById('finalCorrect').textContent = score;
+  const gradeText = document.getElementById('gradeText');
+  const gradeDetail = document.getElementById('gradeDetail');
+  if (pass) {
+    gradeText.textContent = '✅ PASSED';
+    gradeText.className = 'result-grade pass';
+    gradeDetail.textContent = `Congratulations! You scored ${pct}% and passed the AZ-500 Practice Exam 4. You demonstrate strong scenario-based Azure security knowledge.`;
+  } else {
+    gradeText.textContent = '❌ FAILED';
+    gradeText.className = 'result-grade fail';
+    gradeDetail.textContent = `You scored ${pct}% (passing is 70%). Review the explanations for missed questions and focus on the scenario-based problem-solving areas.`;
+  }
+  document.getElementById('resultModal').classList.add('show');
+}
+
+function resetExam() {
+  score = 0;
+  answered = 0;
+  userAnswers.fill(null);
+  document.getElementById('resultModal').classList.remove('show');
+  buildExam();
+}
+
+buildExam();
+</script>
+</body>
+</html>

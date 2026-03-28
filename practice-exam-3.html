@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AZ-500 Practice Exam 3 &mdash; Advanced Mixed Domains</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Sticky score bar ── */
+    #score-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    #score-bar .label { font-size: 13px; color: #8b949e; }
+    #score-bar .value { font-size: 15px; font-weight: 700; color: #58a6ff; }
+    #score-bar .correct-val { color: #3fb950; }
+    #score-bar .wrong-val  { color: #f85149; }
+    #score-bar .spacer { flex: 1; }
+    #score-bar button {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 6px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+    #score-bar button:hover { background: #30363d; }
+    #submit-btn {
+      background: #1f6feb !important;
+      border-color: #388bfd !important;
+      color: #fff !important;
+      font-weight: 600;
+    }
+    #submit-btn:hover { background: #388bfd !important; }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1a237e, #0288d1);
+      padding: 40px 24px 32px;
+      text-align: center;
+    }
+    header h1 { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    header p  { font-size: 14px; color: rgba(255,255,255,0.82); }
+    .header-meta {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .header-meta span {
+      background: rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: #e3f2fd;
+    }
+
+    /* ── Main layout ── */
+    main { max-width: 860px; margin: 32px auto; padding: 0 16px 80px; }
+
+    /* ── Question card ── */
+    .question-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: border-color 0.3s;
+    }
+    .question-card.answered-correct { border-color: #3fb950; }
+    .question-card.answered-wrong   { border-color: #f85149; }
+
+    .question-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .q-number {
+      background: #1f6feb;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 5px;
+      padding: 2px 8px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+    .domain-badge {
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 20px;
+      padding: 2px 10px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+    .d1 { background: #0d2f6e; color: #79c0ff; }
+    .d2 { background: #0d3b2e; color: #56d364; }
+    .d3 { background: #2d1f07; color: #e3b341; }
+    .d4 { background: #2d0f1a; color: #ff7b72; }
+    .da { background: #1d1d40; color: #d2a8ff; }
+
+    .question-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #e6edf3;
+    }
+
+    /* ── Options ── */
+    .options { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .option:hover:not(.disabled) { background: #21262d; border-color: #58a6ff; }
+    .option.disabled { cursor: default; }
+    .option.correct  { background: #0d2b1c; border-color: #3fb950; }
+    .option.wrong    { background: #2b0d0d; border-color: #f85149; }
+    .option.reveal   { background: #0d2b1c; border-color: #3fb950; }
+
+    .option-letter {
+      font-weight: 700;
+      font-size: 13px;
+      color: #8b949e;
+      min-width: 20px;
+    }
+    .option.correct .option-letter { color: #3fb950; }
+    .option.wrong   .option-letter { color: #f85149; }
+    .option.reveal  .option-letter { color: #3fb950; }
+
+    /* ── Explanation ── */
+    .explanation {
+      display: none;
+      margin-top: 14px;
+      background: #0d1117;
+      border-left: 3px solid #58a6ff;
+      border-radius: 0 6px 6px 0;
+      padding: 12px 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #8b949e;
+    }
+    .explanation.show { display: block; }
+    .explanation strong { color: #58a6ff; }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+    #modal-overlay.show { display: flex; }
+    #modal-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 36px 40px;
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+    }
+    #modal-box h2 { font-size: 28px; margin-bottom: 10px; }
+    #modal-box .pass  { color: #3fb950; }
+    #modal-box .fail  { color: #f85149; }
+    #modal-box p  { color: #8b949e; font-size: 14px; margin-bottom: 8px; }
+    #modal-box .score-big {
+      font-size: 52px;
+      font-weight: 700;
+      margin: 16px 0;
+    }
+    #modal-box .details { margin: 16px 0; }
+    #modal-close {
+      margin-top: 20px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 10px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #modal-close:hover { background: #30363d; }
+
+    /* ── Progress bar ── */
+    #progress-wrap { background: #21262d; border-radius: 4px; height: 6px; margin-top: 4px; width: 180px; }
+    #progress-fill { height: 6px; border-radius: 4px; background: #58a6ff; width: 0%; transition: width 0.3s; }
+  </style>
+</head>
+<body>
+
+<!-- Sticky score bar -->
+<div id="score-bar">
+  <span class="label">Score:</span>
+  <span class="value" id="sb-score">0 / 50</span>
+  <span class="label">Correct:</span>
+  <span class="value correct-val" id="sb-correct">0</span>
+  <span class="label">Wrong:</span>
+  <span class="value wrong-val" id="sb-wrong">0</span>
+  <span class="label">Answered:</span>
+  <span class="value" id="sb-answered">0</span>
+  <div>
+    <div id="progress-wrap"><div id="progress-fill"></div></div>
+  </div>
+  <div class="spacer"></div>
+  <button id="submit-btn" onclick="submitExam()">Submit Exam</button>
+  <button onclick="resetExam()">Reset</button>
+</div>
+
+<!-- Header -->
+<header>
+  <h1>AZ-500 Practice Exam 3 &mdash; Advanced Mixed Domains</h1>
+  <p>Microsoft Azure Security Technologies &nbsp;|&nbsp; Exam 3 of 4</p>
+  <div class="header-meta">
+    <span>&#128203; 50 Questions</span>
+    <span>&#9201; No Time Limit</span>
+    <span>&#127919; Pass: 70% (35/50)</span>
+    <span>&#127381; Advanced &amp; Mixed Difficulty</span>
+  </div>
+</header>
+
+<!-- Questions -->
+<main id="quiz-container"></main>
+
+<!-- Modal -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <h2 id="modal-title"></h2>
+    <div class="score-big" id="modal-pct"></div>
+    <p id="modal-msg"></p>
+    <div class="details">
+      <p>&#9989; Correct: <strong id="modal-correct"></strong></p>
+      <p>&#10060; Wrong: <strong id="modal-wrong"></strong></p>
+      <p>&#11093; Unanswered: <strong id="modal-unanswered"></strong></p>
+    </div>
+    <button id="modal-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    id: 1,
+    domain: "d1",
+    domainLabel: "Domain 1: Identity &amp; Access",
+    text: "What Azure AD feature allows you to configure which authentication methods (FIDO2, phone sign-in, authenticator app) are available to users?",
+    options: [
+      "Conditional Access policies",
+      "Authentication Methods policy",
+      "Security Defaults",
+      "MFA registration policy"
+    ],
+    correct: 1,
+    explanation: "The Authentication Methods policy in Microsoft Entra ID allows administrators to granularly control which authentication methods (like FIDO2 security keys, Microsoft Authenticator, SMS) are enabled for all users or specific groups."
+  },
+  {
+    id: 2,
+    domain: "d1",
+    domainLabel: "Domain 1: Identity &amp; Access",
+    text: "An attacker has compromised a service principal's client secret. What immediate action should the security team take?",
+    options: [
+      "Reset the user's password",
+      "Immediately rotate/regenerate the client secret and update all consuming applications",
+      "Disable the subscription",
+      "Enable MFA for the service principal"
+    ],
+    correct: 1,
+    explanation: "When a service principal's client secret is compromised, you must immediately regenerate it to invalidate the compromised secret. All applications using the old secret must be updated with the new value. Also review audit logs for unauthorized usage."
+  },
+  {
+    id: 3,
+    domain: "d1",
+    domainLabel: "Domain 1: Identity &amp; Access",
+    text: "Which PIM feature sends notifications when eligible role assignments are about to expire?",
+    options: [
+      "Access Reviews",
+      "Alerts and notifications in PIM",
+      "Conditional Access",
+      "Identity Protection risk policies"
+    ],
+    correct: 1,
+    explanation: "PIM generates alerts and email notifications for events like role activation, role expiration, and pending access reviews, helping administrators stay informed about privileged access activities."
+  },
+  {
+    id: 4,
+    domain: "d1",
+    domainLabel: "Domain 1: Identity &amp; Access",
+    text: "What is the purpose of the \"Require password change\" control in Identity Protection risk policies?",
+    options: [
+      "Forcing all users to change passwords periodically",
+      "Requiring users with high user risk (indicating potential credential compromise) to change their password",
+      "Enforcing password complexity requirements",
+      "Resetting MFA registration"
+    ],
+    correct: 1,
+    explanation: "When Identity Protection detects a high user risk (e.g., leaked credentials detected on dark web), the risk policy can require the user to perform a secure password change as remediation to lower their risk level."
+  },
+  {
+    id: 5,
+    domain: "d1",
+    domainLabel: "Domain 1: Identity &amp; Access",
+    text: "Which Azure AD feature allows an application to act on behalf of a user across multiple organizations?",
+    options: [
+      "Multi-tenant application registration",
+      "Service principal in the home tenant only",
+      "Managed Identity",
+      "Enterprise application"
+    ],
+    correct: 0,
+    explanation: "A multi-tenant application registration in Azure AD allows the app to be used by users from multiple Azure AD organizations. The app is registered in one tenant but can authenticate users from any Azure AD tenant."
+  },
+  {
+    id: 6,
+    domain: "d1",
+    domainLabel: "Domain 1: Identity &amp; Access",
+    text: "What is the difference between delegated permissions and application permissions in Azure AD?",
+    options: [
+      "Delegated permissions are for applications, application permissions are for users",
+      "Delegated permissions allow an app to act on behalf of a signed-in user; application permissions allow an app to act as itself without a signed-in user",
+      "Delegated permissions require admin consent; application permissions don't",
+      "There is no difference"
+    ],
+    correct: 1,
+    explanation: "Delegated permissions (user-scoped) allow an application to perform actions within the context of the signed-in user. Application permissions (app-only) allow the application to access resources without user context, typically used in background services or daemons."
+  },
+  {
+    id: 7,
+    domain: "d2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "Which Azure networking feature allows you to inspect and filter traffic between spoke VNets in a hub-spoke topology?",
+    options: [
+      "NSG on the hub VNet",
+      "Azure Firewall deployed in the hub VNet",
+      "Service Endpoints",
+      "VNet Peering"
+    ],
+    correct: 1,
+    explanation: "In a hub-spoke topology, Azure Firewall (or an NVA) deployed in the hub VNet acts as the central security inspection point. Traffic between spokes is routed through the hub firewall using UDRs (User Defined Routes)."
+  },
+  {
+    id: 8,
+    domain: "d2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "What is Azure Firewall Manager used for?",
+    options: [
+      "Managing individual Azure Firewall instances",
+      "Centrally managing security policies and route management across multiple Azure Firewalls in hub-spoke and Virtual WAN deployments",
+      "Configuring NSG rules",
+      "Managing WAF policies"
+    ],
+    correct: 1,
+    explanation: "Azure Firewall Manager provides centralized security policy and route management for cloud-based security perimeters. It manages Firewall policies across multiple Firewall instances and secured virtual hubs (Virtual WAN)."
+  },
+  {
+    id: 9,
+    domain: "d2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "Which type of NSG rule allows you to reference an Azure service tag instead of specific IP addresses?",
+    options: [
+      "Application security group rules",
+      "Service tag rules",
+      "FQDN-based rules",
+      "Default rules"
+    ],
+    correct: 1,
+    explanation: "Service tags represent groups of IP address prefixes from Azure services (like AzureMonitor, Storage, SQL). Using service tags in NSG rules eliminates the need to manually manage IP address lists that change when services update."
+  },
+  {
+    id: 10,
+    domain: "d2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "What is an Application Security Group (ASG) in Azure networking?",
+    options: [
+      "A security group for Azure Active Directory applications",
+      "A logical grouping of VMs that enables defining network security policies based on application structure rather than explicit IPs",
+      "A firewall rule group",
+      "A load balancer backend pool"
+    ],
+    correct: 1,
+    explanation: "Application Security Groups allow you to configure network security as a natural extension of an application's structure, letting you group VMs and define network security policies based on those groups rather than maintaining explicit IP address lists."
+  },
+  {
+    id: 11,
+    domain: "d3",
+    domainLabel: "Domain 3: Secure Compute",
+    text: "Which Azure feature should be used to protect an AKS cluster's API server from public internet access?",
+    options: [
+      "Azure Firewall",
+      "AKS private cluster or authorized IP ranges for API server",
+      "Network Security Groups",
+      "Azure DDoS Protection"
+    ],
+    correct: 1,
+    explanation: "AKS supports private clusters (where the API server endpoint is only accessible from within the VNet) or authorized IP ranges (limiting which IP addresses can access the public API server endpoint), both reducing attack surface."
+  },
+  {
+    id: 12,
+    domain: "d3",
+    domainLabel: "Domain 3: Secure Compute",
+    text: "What Kubernetes admission controller enforces pod security standards in AKS?",
+    options: [
+      "NetworkPolicy controller",
+      "Pod Security Admission (PSA)",
+      "RBAC controller",
+      "ResourceQuota controller"
+    ],
+    correct: 1,
+    explanation: "Pod Security Admission (replacing Pod Security Policies) is a built-in Kubernetes admission controller that enforces Pod Security Standards (privileged, baseline, restricted) at the namespace level, controlling pod creation based on security profiles."
+  },
+  {
+    id: 13,
+    domain: "d3",
+    domainLabel: "Domain 3: Secure Compute",
+    text: "Which Azure Container Registry feature allows you to sign container images to verify their integrity?",
+    options: [
+      "Container scanning",
+      "Content Trust (using Docker Notary/ORAS artifacts)",
+      "Private registry",
+      "Geo-replication"
+    ],
+    correct: 1,
+    explanation: "Azure Container Registry supports content trust, which uses cryptographic signing to ensure image integrity. Signed images can be verified to ensure they haven't been tampered with between creation and deployment."
+  },
+  {
+    id: 14,
+    domain: "d3",
+    domainLabel: "Domain 3: Secure Compute",
+    text: "What is the recommended way to prevent privilege escalation in AKS?",
+    options: [
+      "Disable all privileged containers",
+      "Use Azure RBAC for Kubernetes authorization, enable Pod Security Standards with 'restricted' profile, and avoid running as root",
+      "Use NSGs to restrict pod communication",
+      "Enable AKS private cluster"
+    ],
+    correct: 1,
+    explanation: "To prevent privilege escalation: use Azure RBAC for fine-grained K8s authorization, enforce 'restricted' Pod Security Standards (no privilege escalation, no root, read-only root filesystem), use non-root containers, and restrict Linux capabilities."
+  },
+  {
+    id: 15,
+    domain: "da",
+    domainLabel: "All Domains: Governance",
+    text: "Which Azure Policy effect prevents non-compliant resources from being created?",
+    options: [
+      "Audit",
+      "Deny",
+      "Modify",
+      "DeployIfNotExists"
+    ],
+    correct: 1,
+    explanation: "The \"Deny\" effect prevents a resource from being created or modified if it doesn't comply with the policy definition. \"Audit\" only logs non-compliance without blocking, while \"DeployIfNotExists\" deploys required configurations."
+  },
+  {
+    id: 16,
+    domain: "da",
+    domainLabel: "All Domains: Governance",
+    text: "What is the purpose of Azure Policy's \"DeployIfNotExists\" effect?",
+    options: [
+      "Deleting resources that don't comply",
+      "Automatically deploying required configurations or related resources when the main resource doesn't have them",
+      "Modifying existing resources to comply",
+      "Denying non-compliant resource creation"
+    ],
+    correct: 1,
+    explanation: "\"DeployIfNotExists\" triggers a template deployment when a resource is created or modified without the required related resource. For example, automatically deploying a Log Analytics extension to all VMs without it."
+  },
+  {
+    id: 17,
+    domain: "d4",
+    domainLabel: "Domain 4: Security Operations (Sentinel)",
+    text: "Which Microsoft Defender for Cloud feature provides attack path analysis?",
+    options: [
+      "Secure Score",
+      "Cloud Security Explorer and Attack Path Analysis",
+      "Regulatory Compliance",
+      "Workload protection plans"
+    ],
+    correct: 1,
+    explanation: "Attack Path Analysis in Defender for Cloud (part of Defender CSPM) uses a graph-based algorithm to identify potential attack paths that attackers could exploit, highlighting the most critical risk combinations."
+  },
+  {
+    id: 18,
+    domain: "d4",
+    domainLabel: "Domain 4: Security Operations (Sentinel)",
+    text: "What is the difference between Microsoft Sentinel Incidents and Alerts?",
+    options: [
+      "They are the same thing",
+      "Alerts are generated by analytics rules; Incidents are groups of correlated alerts that represent a potential security threat investigation",
+      "Incidents are generated by analytics rules; Alerts are user-reported",
+      "Alerts are from external sources; Incidents are internal"
+    ],
+    correct: 1,
+    explanation: "In Sentinel, Alerts are the individual detection events generated by analytics rules. Incidents are created from one or more correlated alerts and represent the complete investigation unit for a security threat."
+  },
+  {
+    id: 19,
+    domain: "d4",
+    domainLabel: "Domain 4: Security Operations (Sentinel)",
+    text: "Which Microsoft Sentinel feature allows threat hunters to proactively search for threats not yet detected by alerts?",
+    options: [
+      "Analytics rules",
+      "Hunting queries",
+      "Playbooks",
+      "Workbooks"
+    ],
+    correct: 1,
+    explanation: "Hunting queries in Microsoft Sentinel allow security analysts to proactively search through data using KQL queries to find threats that haven't triggered any alerts. Sentinel provides built-in hunting queries across various threat categories."
+  },
+  {
+    id: 20,
+    domain: "d4",
+    domainLabel: "Domain 4: Security Operations (Sentinel)",
+    text: "What does MITRE ATT&CK framework integration in Microsoft Sentinel provide?",
+    options: [
+      "Automatic threat mitigation",
+      "Mapping of security alerts and hunting queries to MITRE ATT&CK tactics and techniques for understanding attacker behavior",
+      "Importing threat intelligence feeds",
+      "Compliance reporting"
+    ],
+    correct: 1,
+    explanation: "MITRE ATT&CK integration maps Sentinel analytics rules, hunting queries, and incidents to specific tactics and techniques in the MITRE ATT&CK framework, helping security teams understand the attack stage and prioritize response."
+  },
+  {
+    id: 21,
+    domain: "d3",
+    domainLabel: "Domain 3: Key Vault Security",
+    text: "Which Azure Key Vault access model provides more granular control over individual secret/key/certificate operations?",
+    options: [
+      "Vault access policies",
+      "Azure RBAC for Key Vault",
+      "Both provide equal granularity",
+      "Shared Access Signatures"
+    ],
+    correct: 1,
+    explanation: "Azure RBAC for Key Vault provides more granular, standard RBAC controls allowing you to assign roles at the vault, secret, key, or certificate level with fine-grained permissions. Key Vault access policies operate at the vault level only."
+  },
+  {
+    id: 22,
+    domain: "d3",
+    domainLabel: "Domain 3: Key Vault Security",
+    text: "What is the purpose of the Azure Key Vault Purge Protection feature?",
+    options: [
+      "Automatically purging expired secrets",
+      "Preventing permanent deletion of Key Vault and its objects even by administrators during the soft-delete retention period",
+      "Protecting keys from being read",
+      "Encrypting Key Vault metadata"
+    ],
+    correct: 1,
+    explanation: "Purge Protection ensures that even if soft-delete is enabled and an admin tries to purge (permanently delete) a Key Vault or its objects, they cannot do so until the retention period expires. This protects against malicious insiders."
+  },
+  {
+    id: 23,
+    domain: "d3",
+    domainLabel: "Domain 3: Data Security",
+    text: "Which Azure service enables you to discover and classify sensitive data across your Azure data estate?",
+    options: [
+      "Azure Monitor",
+      "Microsoft Purview (formerly Azure Purview)",
+      "Azure Policy",
+      "Microsoft Defender for Cloud"
+    ],
+    correct: 1,
+    explanation: "Microsoft Purview provides unified data governance including data discovery, sensitive data classification, and data lineage across your on-premises, multi-cloud, and SaaS data sources."
+  },
+  {
+    id: 24,
+    domain: "d3",
+    domainLabel: "Domain 3: Data Security",
+    text: "What is the purpose of SQL Vulnerability Assessment in Microsoft Defender for SQL?",
+    options: [
+      "Real-time attack detection",
+      "Scanning databases for misconfigurations, excessive permissions, and vulnerability deviations from security best practices",
+      "Encrypting database connections",
+      "Auditing database queries"
+    ],
+    correct: 1,
+    explanation: "SQL Vulnerability Assessment scans your database configurations against a knowledge base of security rules, identifying deviations from best practices like excessive permissions, missing encryption, or authentication issues."
+  },
+  {
+    id: 25,
+    domain: "d3",
+    domainLabel: "Domain 3: Storage &amp; Database Security",
+    text: "Which Azure storage redundancy option provides maximum protection against regional disasters?",
+    options: [
+      "Locally Redundant Storage (LRS)",
+      "Geo-Redundant Storage (GRS) or Geo-Zone-Redundant Storage (GZRS)",
+      "Zone-Redundant Storage (ZRS)",
+      "Read-Access Geo-Redundant Storage (RA-GRS)"
+    ],
+    correct: 1,
+    explanation: "GRS replicates data to a secondary region hundreds of miles away. GZRS combines zone-redundancy in the primary region with geo-replication to a secondary region, providing the highest durability level (99.99999999999999% — 16 nines)."
+  },
+  {
+    id: 26,
+    domain: "d3",
+    domainLabel: "Domain 3: Storage &amp; Database Security",
+    text: "What happens when you enable \"Enforce HTTPS\" (Secure transfer required) on Azure Storage and a client uses HTTP?",
+    options: [
+      "The request is automatically redirected to HTTPS",
+      "The request is rejected with a 400 error",
+      "The request is logged and processed",
+      "The request is forwarded to Azure Firewall"
+    ],
+    correct: 1,
+    explanation: "When Secure Transfer Required is enabled, HTTP requests to the storage account are rejected with HTTP 400 (Bad Request). Unlike web servers, Azure Storage does not automatically redirect HTTP to HTTPS."
+  },
+  {
+    id: 27,
+    domain: "d3",
+    domainLabel: "Domain 3: Storage &amp; Database Security",
+    text: "Which feature of Azure SQL Database prevents connections from certain geographic locations?",
+    options: [
+      "Azure SQL Firewall rules",
+      "Azure SQL Firewall with geo-filtering or Conditional Access with Named Locations for Azure AD authentication",
+      "TDE",
+      "Row-Level Security"
+    ],
+    correct: 1,
+    explanation: "For IP-based restrictions, Azure SQL firewall rules filter by IP addresses. For Azure AD authenticated connections, Conditional Access Named Locations (country filtering) can restrict logins from specific countries."
+  },
+  {
+    id: 28,
+    domain: "d3",
+    domainLabel: "Domain 3: Storage &amp; Database Security",
+    text: "What is the benefit of using Customer-Managed Keys (CMK) over Platform-Managed Keys (PMK) for Azure Storage encryption?",
+    options: [
+      "CMK provides better performance",
+      "CMK gives the organization control over key lifecycle, enabling key rotation, revocation, and satisfying regulatory requirements for key custody",
+      "CMK is required for all encrypted storage",
+      "CMK is cheaper than PMK"
+    ],
+    correct: 1,
+    explanation: "Customer-Managed Keys (stored in Azure Key Vault) give organizations control over key lifecycle management including rotation, revocation, and access auditing. This is important for regulatory compliance and scenarios requiring \"bring your own key\" (BYOK)."
+  },
+  {
+    id: 29,
+    domain: "d4",
+    domainLabel: "Domain 4: Defender for Cloud &amp; Sentinel",
+    text: "Which Microsoft Defender for Cloud recommendation directly addresses the risk of internet-exposed management ports?",
+    options: [
+      "Enable MFA",
+      "Management ports of virtual machines should be protected with just-in-time network access control",
+      "Apply system updates",
+      "Enable endpoint protection"
+    ],
+    correct: 1,
+    explanation: "This Defender for Cloud recommendation identifies VMs with management ports (RDP 3389, SSH 22) exposed to the internet via NSGs, and recommends using Just-in-Time (JIT) VM access to lock down these ports."
+  },
+  {
+    id: 30,
+    domain: "d4",
+    domainLabel: "Domain 4: Defender for Cloud &amp; Sentinel",
+    text: "What is the purpose of Azure Confidential Computing?",
+    options: [
+      "Encrypting data in transit",
+      "Protecting data in use by running computations in a hardware-based Trusted Execution Environment (TEE)",
+      "Anonymizing user data",
+      "Encrypting data at rest"
+    ],
+    correct: 1,
+    explanation: "Azure Confidential Computing protects data while it is being processed (in use) using hardware-based TEEs like Intel SGX or AMD SEV-SNP. This complements encryption at rest and in transit, providing complete data protection lifecycle."
+  },
+  {
+    id: 31,
+    domain: "d4",
+    domainLabel: "Domain 4: Defender for Cloud &amp; Sentinel",
+    text: "Which Azure Defender alert indicates that cryptocurrency mining software has been detected on a VM?",
+    options: [
+      "Suspicious process execution",
+      "Digital currency mining activity",
+      "Malware detected",
+      "Unusual network activity"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for Servers generates \"Digital currency mining activity\" alerts when it detects behavior patterns associated with cryptocurrency mining on VMs, which often indicates unauthorized resource usage or compromised systems."
+  },
+  {
+    id: 32,
+    domain: "d4",
+    domainLabel: "Domain 4: Defender for Cloud &amp; Sentinel",
+    text: "What is the recommended subnet size for deploying Azure Firewall?",
+    options: [
+      "/29 (at least 8 IPs)",
+      "/26 (64 IPs) for production deployments to support scaling",
+      "/24 (256 IPs)",
+      "/32 (single IP)"
+    ],
+    correct: 1,
+    explanation: "Microsoft recommends a /26 subnet (AzureFirewallSubnet) for production Azure Firewall deployments. Azure Firewall scales by adding more firewall instances, each requiring an IP from the subnet. A /26 provides 64 IPs for scaling capacity."
+  },
+  {
+    id: 33,
+    domain: "d4",
+    domainLabel: "Domain 4: Defender for Cloud &amp; Sentinel",
+    text: "Which Azure service should be used when you need to share identical security policies across multiple Azure Firewall instances in different regions?",
+    options: [
+      "Azure Policy",
+      "Azure Firewall Policy (hierarchical policies)",
+      "ARM templates",
+      "Azure Blueprints"
+    ],
+    correct: 1,
+    explanation: "Azure Firewall Policy supports hierarchical policies with base and child policies. A base policy can define enterprise-wide rules that are inherited by regional child policies, enabling consistent security governance across multiple firewall deployments."
+  },
+  {
+    id: 34,
+    domain: "d4",
+    domainLabel: "Domain 4: Defender for Cloud &amp; Sentinel",
+    text: "What is the purpose of threat intelligence integration in Azure Firewall?",
+    options: [
+      "Providing performance metrics",
+      "Automatically denying or alerting traffic from/to known malicious IP addresses and domains based on Microsoft's threat intelligence feed",
+      "Encrypting traffic",
+      "Providing DDoS protection"
+    ],
+    correct: 1,
+    explanation: "Azure Firewall can use Microsoft's threat intelligence feed to automatically alert on or deny traffic to/from known malicious IP addresses, domains, and URLs. This provides a real-time, continuously updated list of known bad actors."
+  },
+  {
+    id: 35,
+    domain: "d4",
+    domainLabel: "Domain 4: Defender for Cloud &amp; Sentinel",
+    text: "Which Sentinel analytics rule type uses machine learning to detect multi-stage attacks?",
+    options: [
+      "Scheduled rules",
+      "Fusion rules",
+      "Microsoft Security rules",
+      "Anomaly rules"
+    ],
+    correct: 1,
+    explanation: "Fusion rules use machine learning to correlate and detect multi-stage attacks (cyber kill chain) by combining multiple low-fidelity signals from various data sources into high-fidelity incidents, detecting sophisticated threats like credential theft followed by data exfiltration."
+  },
+  {
+    id: 36,
+    domain: "d1",
+    domainLabel: "Domain 1: Identity (Advanced)",
+    text: "What is the primary use case for Microsoft Sentinel Watchlists?",
+    options: [
+      "Watching security dashboards",
+      "Importing and referencing data (like IP lists, user lists, asset inventories) in analytics rules and hunting queries",
+      "Tracking security incidents",
+      "Monitoring watchdog processes"
+    ],
+    correct: 1,
+    explanation: "Watchlists in Sentinel allow importing structured data (CSV files) that can be referenced in KQL queries. Common uses include importing lists of high-value users, known bad IPs, or asset inventories to enhance detection rules."
+  },
+  {
+    id: 37,
+    domain: "d1",
+    domainLabel: "Domain 1: Identity (Advanced)",
+    text: "Which Azure AD feature provides risk-based Conditional Access that evaluates sign-in risk in real-time?",
+    options: [
+      "Security Defaults",
+      "Identity Protection with sign-in risk policies",
+      "Named Locations",
+      "Authentication Methods policy"
+    ],
+    correct: 1,
+    explanation: "Microsoft Entra Identity Protection evaluates sign-in risk in real-time based on signals like anonymous IP, impossible travel, malware-linked IP, etc. Sign-in risk policies in Conditional Access can then require MFA or block access based on risk level."
+  },
+  {
+    id: 38,
+    domain: "d1",
+    domainLabel: "Domain 1: Identity (Advanced)",
+    text: "What is the purpose of Continuous Access Evaluation (CAE) in Azure AD?",
+    options: [
+      "Continuously monitoring user behavior",
+      "Enabling near real-time revocation of access tokens when critical events occur (like password reset or account disable)",
+      "Providing continuous MFA prompts",
+      "Monitoring device compliance continuously"
+    ],
+    correct: 1,
+    explanation: "CAE allows resource providers (like SharePoint, Exchange) to evaluate critical events from Azure AD in near real-time. If a user's password is reset, account disabled, or risk level changed, access tokens are revoked almost immediately rather than waiting for token expiration."
+  },
+  {
+    id: 39,
+    domain: "da",
+    domainLabel: "All Domains: Policy &amp; Governance",
+    text: "A security team needs to ensure that all storage accounts in a subscription have public blob access disabled. Which approach enforces this at scale?",
+    options: [
+      "Manually reviewing each storage account",
+      "Azure Policy with \"Deny\" effect for AllowBlobPublicAccess = true",
+      "Azure RBAC with restricted permissions",
+      "Azure Advisor recommendations"
+    ],
+    correct: 1,
+    explanation: "An Azure Policy with the \"Deny\" effect on the \"Storage accounts should prevent shared key access\" or \"Storage account public access should be disallowed\" built-in policies prevents any storage account from being created or modified with public access enabled."
+  },
+  {
+    id: 40,
+    domain: "d4",
+    domainLabel: "Domain 4: DevSecOps",
+    text: "What does Microsoft Defender for DevOps provide?",
+    options: [
+      "CI/CD pipeline automation",
+      "Security posture management for code repositories, pipelines (GitHub, Azure DevOps), and container images with vulnerability scanning",
+      "Code quality analysis",
+      "Performance testing for DevOps"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for DevOps extends Defender for Cloud to source code management platforms (GitHub, Azure DevOps, GitLab), providing security scanning for Infrastructure-as-Code misconfigurations, exposed secrets in code, and dependency vulnerabilities."
+  },
+  {
+    id: 41,
+    domain: "da",
+    domainLabel: "All Domains: Governance &amp; Monitoring",
+    text: "Which Azure resource type is used to define reusable, version-controlled packages of Azure resources including policies, RBAC, and ARM templates?",
+    options: [
+      "ARM templates",
+      "Azure Blueprints",
+      "Azure Policy initiatives",
+      "Management Groups"
+    ],
+    correct: 1,
+    explanation: "Azure Blueprints allow packaging Azure resources, policies, role assignments, and ARM templates into repeatable, version-controlled definitions that can be deployed across multiple subscriptions for governance consistency. (Note: Blueprints is being succeeded by Deployment Stacks)"
+  },
+  {
+    id: 42,
+    domain: "da",
+    domainLabel: "All Domains: Governance &amp; Monitoring",
+    text: "Which Azure Monitor feature provides automated anomaly detection for application telemetry?",
+    options: [
+      "Log Analytics queries",
+      "Smart Detection (Application Insights)",
+      "Azure Alerts",
+      "Azure Advisor"
+    ],
+    correct: 1,
+    explanation: "Application Insights Smart Detection automatically analyzes telemetry and uses machine learning to alert on anomalies like response time degradation, unusual failure rates, and abnormal volume of operations, without requiring manual threshold configuration."
+  },
+  {
+    id: 43,
+    domain: "da",
+    domainLabel: "All Domains: Governance &amp; Monitoring",
+    text: "What is the purpose of the Microsoft Secure Score in Microsoft 365 Defender (now Microsoft Defender portal)?",
+    options: [
+      "Measuring Azure infrastructure security only",
+      "Measuring organizational security posture across Microsoft 365 services with actionable improvement recommendations",
+      "Tracking security incidents",
+      "Measuring compliance posture"
+    ],
+    correct: 1,
+    explanation: "Microsoft Secure Score provides a measurement of organizational security posture across Microsoft 365 products (Azure AD, Defender for Endpoint, Teams, SharePoint, etc.) with specific, prioritized improvement actions to increase the score."
+  },
+  {
+    id: 44,
+    domain: "d4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "Which Sentinel feature enables no-code/low-code security automation for SOC teams?",
+    options: [
+      "Analytics rules",
+      "Automation rules and playbooks",
+      "Workbooks",
+      "UEBA"
+    ],
+    correct: 1,
+    explanation: "Sentinel Automation Rules provide no-code/low-code automation that can be triggered on incident creation or updates to perform actions like assigning incidents, changing status, adding tags, or triggering playbooks (Logic Apps) for more complex automation."
+  },
+  {
+    id: 45,
+    domain: "d4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "What is the purpose of Microsoft Defender for APIs?",
+    options: [
+      "Testing API performance",
+      "Discovering, classifying, and protecting Azure API Management APIs from threats like excessive data exposure, broken object authorization, and API abuse",
+      "Managing API versions",
+      "Documenting API schemas"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for APIs (integrated with Azure API Management) discovers onboarded APIs, classifies sensitive data, detects active threats like API abuse and broken authentication, and provides security recommendations for API endpoints."
+  },
+  {
+    id: 46,
+    domain: "d4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "Which Azure feature provides a single pane of glass for multi-cloud and hybrid security management?",
+    options: [
+      "Azure Security Center",
+      "Microsoft Defender for Cloud with multi-cloud connectors (AWS and GCP)",
+      "Azure Monitor",
+      "Microsoft Sentinel"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for Cloud supports multi-cloud security management by connecting to AWS (via Cloud Security Posture Management connector) and GCP, providing unified security posture and threat protection across Azure, AWS, and GCP."
+  },
+  {
+    id: 47,
+    domain: "da",
+    domainLabel: "All Domains: Architecture",
+    text: "What is Azure Landing Zone in the context of security?",
+    options: [
+      "A physical Azure region",
+      "A pre-configured, enterprise-scale Azure environment with built-in security controls, governance, and networking based on best practices",
+      "A deployment slot for applications",
+      "A VPN configuration template"
+    ],
+    correct: 1,
+    explanation: "Azure Landing Zones provide an architectural framework with built-in security controls, governance guardrails (policies, RBAC), and hub-spoke networking. They ensure new Azure environments start with security and compliance built-in from day one."
+  },
+  {
+    id: 48,
+    domain: "da",
+    domainLabel: "Advanced: KQL, AKS, Identity",
+    text: "Which KQL query syntax correctly extracts a JSON property from a log field in Microsoft Sentinel?",
+    options: [
+      "parse json(JsonField).propertyName",
+      "todynamic(JsonField).propertyName OR parse_json(JsonField).propertyName",
+      "json_extract(JsonField, 'propertyName')",
+      "JsonField['propertyName']"
+    ],
+    correct: 1,
+    explanation: "In KQL, todynamic() or parse_json() converts a JSON string to a dynamic type, allowing property access with dot notation. For example: todynamic(Properties).detail.properties.resourceName"
+  },
+  {
+    id: 49,
+    domain: "da",
+    domainLabel: "Advanced: KQL, AKS, Identity",
+    text: "What is the recommended approach for securing service-to-service communication within AKS?",
+    options: [
+      "Use shared secrets between services",
+      "Use Mutual TLS (mTLS) with a service mesh like Azure Service Mesh (Istio add-on) or Open Service Mesh",
+      "Use Azure Firewall for all service communication",
+      "Rely on Kubernetes NetworkPolicies alone"
+    ],
+    correct: 1,
+    explanation: "Mutual TLS (mTLS) encrypts and authenticates communication between services. Service meshes like the AKS-managed Istio add-on provide automatic mTLS, observability, and fine-grained traffic management without code changes to applications."
+  },
+  {
+    id: 50,
+    domain: "da",
+    domainLabel: "Advanced: KQL, AKS, Identity",
+    text: "Which Microsoft Entra ID feature allows you to discover all applications using legacy authentication in your tenant before blocking it?",
+    options: [
+      "Conditional Access What-If tool",
+      "Sign-in logs filtered by authentication protocol (Legacy Authentication)",
+      "Identity Protection risky sign-ins",
+      "Azure AD audit logs"
+    ],
+    correct: 1,
+    explanation: "Before blocking legacy authentication, you should review Azure AD Sign-in logs filtered by \"Client app: Legacy Authentication Clients\" or \"Authentication protocol: legacy\" to understand which users and apps are using legacy authentication. The Conditional Access What-If tool also helps test impact."
+  }
+];
+
+// ── State ──
+let answered  = new Array(QUESTIONS.length).fill(false);
+let results   = new Array(QUESTIONS.length).fill(null); // true/false/null
+
+// ── Render ──
+function render() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+
+  QUESTIONS.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'card-' + idx;
+
+    const letters = ['A', 'B', 'C', 'D'];
+
+    let optionsHTML = q.options.map((opt, oi) => {
+      return `<div class="option" id="opt-${idx}-${oi}" onclick="selectOption(${idx},${oi})">
+        <span class="option-letter">${letters[oi]}</span>
+        <span>${opt}</span>
+      </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="question-header">
+        <span class="q-number">Q${q.id}</span>
+        <span class="domain-badge ${q.domain}">${q.domainLabel}</span>
+      </div>
+      <div class="question-text">${q.text}</div>
+      <div class="options">${optionsHTML}</div>
+      <div class="explanation" id="exp-${idx}">
+        <strong>&#128161; Explanation:</strong> ${q.explanation}
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  updateScoreBar();
+}
+
+// ── Select option ──
+function selectOption(qIdx, optIdx) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true;
+
+  const q = QUESTIONS[qIdx];
+  const isCorrect = (optIdx === q.correct);
+  results[qIdx] = isCorrect;
+
+  const letters = ['A', 'B', 'C', 'D'];
+
+  // Style all options
+  q.options.forEach((_, oi) => {
+    const el = document.getElementById('opt-' + qIdx + '-' + oi);
+    el.classList.add('disabled');
+    if (oi === q.correct) {
+      el.classList.add(oi === optIdx ? 'correct' : 'reveal');
+    } else if (oi === optIdx) {
+      el.classList.add('wrong');
+    }
+  });
+
+  // Card border
+  const card = document.getElementById('card-' + qIdx);
+  card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+
+  // Show explanation
+  document.getElementById('exp-' + qIdx).classList.add('show');
+
+  updateScoreBar();
+}
+
+// ── Score bar ──
+function updateScoreBar() {
+  const total     = QUESTIONS.length;
+  const correct   = results.filter(r => r === true).length;
+  const wrong     = results.filter(r => r === false).length;
+  const answeredN = answered.filter(Boolean).length;
+
+  document.getElementById('sb-score').textContent    = correct + ' / ' + total;
+  document.getElementById('sb-correct').textContent  = correct;
+  document.getElementById('sb-wrong').textContent    = wrong;
+  document.getElementById('sb-answered').textContent = answeredN;
+
+  const pct = (answeredN / total) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+// ── Submit ──
+function submitExam() {
+  const total      = QUESTIONS.length;
+  const correct    = results.filter(r => r === true).length;
+  const wrong      = results.filter(r => r === false).length;
+  const unanswered = answered.filter(v => !v).length;
+  const pct        = Math.round((correct / total) * 100);
+  const pass       = pct >= 70;
+
+  document.getElementById('modal-title').textContent  = pass ? '🎉 PASSED!' : '❌ NOT PASSED';
+  document.getElementById('modal-title').className    = pass ? 'pass' : 'fail';
+  document.getElementById('modal-pct').textContent    = pct + '%';
+  document.getElementById('modal-pct').style.color    = pass ? '#3fb950' : '#f85149';
+  document.getElementById('modal-msg').textContent    = pass
+    ? 'Congratulations! You passed the exam. Keep up the excellent work!'
+    : 'You need 70% (35/50) to pass. Review the explanations and try again.';
+  document.getElementById('modal-correct').textContent   = correct;
+  document.getElementById('modal-wrong').textContent     = wrong;
+  document.getElementById('modal-unanswered').textContent = unanswered;
+
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+// ── Reset ──
+function resetExam() {
+  answered = new Array(QUESTIONS.length).fill(false);
+  results  = new Array(QUESTIONS.length).fill(null);
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Init ──
+render();
+</script>
+</body>
+</html>
