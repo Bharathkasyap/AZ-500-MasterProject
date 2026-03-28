@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AZ-500 Practice Exam 1 — 50 Questions</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --azure: #0078d4;
+    --azure-dark: #005a9e;
+    --azure-light: #c7e0f4;
+    --azure-bg: #f0f6fd;
+    --correct: #107c10;
+    --correct-bg: #dff6dd;
+    --incorrect: #d13438;
+    --incorrect-bg: #fde7e9;
+    --neutral: #605e5c;
+    --border: #d2d0ce;
+    --white: #ffffff;
+    --shadow: 0 2px 8px rgba(0,0,0,0.12);
+    --radius: 8px;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--azure-bg);
+    color: #201f1e;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, var(--azure-dark) 0%, var(--azure) 100%);
+    color: var(--white);
+    padding: 20px 24px 16px;
+    box-shadow: var(--shadow);
+  }
+  header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: .3px; }
+  header p  { font-size: .85rem; opacity: .88; margin-top: 3px; }
+
+  /* ── Progress bar ── */
+  #progress-section {
+    background: var(--white);
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  #progress-label { font-size: .82rem; color: var(--neutral); white-space: nowrap; min-width: 110px; }
+  #progress-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--azure-light);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  #progress-bar-fill {
+    height: 100%;
+    background: var(--azure);
+    border-radius: 99px;
+    transition: width .35s ease;
+    width: 0%;
+  }
+  #score-badge {
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--azure-dark);
+    white-space: nowrap;
+  }
+
+  /* ── Main layout ── */
+  main { max-width: 860px; margin: 32px auto; padding: 0 16px 60px; }
+
+  /* ── Question card ── */
+  #quiz-container { display: block; }
+  .q-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 32px 24px;
+    margin-bottom: 0;
+  }
+  .q-domain-badge {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    margin-bottom: 14px;
+  }
+  .badge-d1 { background: #e8f4ff; color: #004e8c; }
+  .badge-d2 { background: #f3f0ff; color: #4b0082; }
+  .badge-d3 { background: #f0fff4; color: #0a5c00; }
+  .badge-d4 { background: #fff4e0; color: #7a4100; }
+
+  .q-number { font-size: .8rem; color: var(--neutral); margin-bottom: 6px; }
+  .q-text   { font-size: 1.02rem; line-height: 1.6; font-weight: 500; margin-bottom: 22px; }
+
+  /* ── Answer choices ── */
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    text-align: left;
+    cursor: pointer;
+    font-size: .95rem;
+    line-height: 1.5;
+    transition: border-color .15s, background .15s;
+    width: 100%;
+  }
+  .choice-btn:hover:not(:disabled) {
+    border-color: var(--azure);
+    background: var(--azure-bg);
+  }
+  .choice-btn.selected {
+    border-color: var(--azure);
+    background: #e5f1fb;
+  }
+  .choice-btn.correct {
+    border-color: var(--correct);
+    background: var(--correct-bg);
+  }
+  .choice-btn.incorrect {
+    border-color: var(--incorrect);
+    background: var(--incorrect-bg);
+  }
+  .choice-letter {
+    font-weight: 700;
+    font-size: .88rem;
+    min-width: 22px;
+    padding-top: 1px;
+    color: var(--azure-dark);
+  }
+  .choice-btn.correct  .choice-letter { color: var(--correct); }
+  .choice-btn.incorrect .choice-letter { color: var(--incorrect); }
+
+  /* ── Feedback / explanation ── */
+  #feedback-box {
+    margin-top: 18px;
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    font-size: .9rem;
+    line-height: 1.55;
+    display: none;
+  }
+  #feedback-box.show { display: block; }
+  #feedback-box.fb-correct   { background: var(--correct-bg);   border-left: 4px solid var(--correct);   color: #0a3d0a; }
+  #feedback-box.fb-incorrect { background: var(--incorrect-bg); border-left: 4px solid var(--incorrect); color: #5a0a0d; }
+  #feedback-box strong { display: block; margin-bottom: 4px; font-size: .95rem; }
+
+  /* ── Action buttons ── */
+  .btn-row { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    padding: 10px 22px;
+    border-radius: var(--radius);
+    font-size: .92rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity .15s, transform .1s;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn-primary { background: var(--azure); color: var(--white); }
+  .btn-primary:hover:not(:disabled) { background: var(--azure-dark); }
+  .btn-secondary { background: var(--white); color: var(--azure); border: 1.5px solid var(--azure); }
+  .btn-secondary:hover:not(:disabled) { background: var(--azure-bg); }
+  .btn-success { background: var(--correct); color: var(--white); }
+
+  /* ── Results screen ── */
+  #results-container { display: none; }
+  .results-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 32px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .score-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 7px solid var(--azure);
+    margin: 0 auto 20px;
+    flex-direction: column;
+  }
+  .score-pct  { font-size: 2.2rem; font-weight: 800; color: var(--azure-dark); line-height: 1; }
+  .score-lbl  { font-size: .75rem; color: var(--neutral); margin-top: 2px; }
+  .results-card h2 { font-size: 1.5rem; margin-bottom: 8px; }
+  .results-card p  { color: var(--neutral); font-size: .95rem; }
+  .result-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin: 24px 0 0;
+    flex-wrap: wrap;
+  }
+  .stat-box {
+    text-align: center;
+    padding: 14px 24px;
+    border-radius: var(--radius);
+    background: var(--azure-bg);
+    min-width: 110px;
+  }
+  .stat-box .val { font-size: 1.7rem; font-weight: 800; color: var(--azure-dark); }
+  .stat-box .lbl { font-size: .78rem; color: var(--neutral); margin-top: 2px; }
+  .stat-box.green .val { color: var(--correct); }
+  .stat-box.red   .val { color: var(--incorrect); }
+
+  /* ── Review section ── */
+  #review-section { margin-top: 12px; }
+  #review-section h3 {
+    font-size: 1.15rem;
+    color: var(--azure-dark);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--azure-light);
+  }
+  .review-item {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    border-left: 5px solid var(--border);
+  }
+  .review-item.ri-correct   { border-left-color: var(--correct);   }
+  .review-item.ri-incorrect { border-left-color: var(--incorrect); }
+  .review-q    { font-size: .95rem; font-weight: 600; margin-bottom: 10px; line-height: 1.5; }
+  .review-meta { font-size: .85rem; margin-bottom: 5px; }
+  .review-meta span { font-weight: 600; }
+  .ri-correct  .ans-correct   { color: var(--correct); }
+  .ri-incorrect .ans-user      { color: var(--incorrect); }
+  .ri-incorrect .ans-correct   { color: var(--correct); }
+  .review-exp  { font-size: .83rem; color: #444; margin-top: 8px; line-height: 1.5;
+                 background: #f8f8f8; padding: 8px 12px; border-radius: 5px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .q-card, .results-card { padding: 20px 16px; }
+    main { padding: 0 10px 40px; }
+    .result-stats { gap: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AZ-500 Microsoft Azure Security Technologies — Practice Exam 1</h1>
+  <p>50 Questions &nbsp;|&nbsp; All 4 Exam Domains &nbsp;|&nbsp; 2026 Edition</p>
+</header>
+
+<div id="progress-section">
+  <div id="progress-label">Question 1 of 50</div>
+  <div id="progress-bar-track"><div id="progress-bar-fill"></div></div>
+  <div id="score-badge">Score: 0 / 0</div>
+</div>
+
+<main>
+  <!-- Quiz -->
+  <div id="quiz-container">
+    <div class="q-card">
+      <div id="q-domain-badge" class="q-domain-badge badge-d1"></div>
+      <div id="q-number" class="q-number"></div>
+      <div id="q-text" class="q-text"></div>
+      <div id="choices" class="choices"></div>
+      <div id="feedback-box"></div>
+      <div class="btn-row">
+        <button id="btn-submit" class="btn btn-primary" disabled onclick="submitAnswer()">Submit Answer</button>
+        <button id="btn-next"   class="btn btn-secondary" style="display:none" onclick="nextQuestion()">Next Question →</button>
+        <button id="btn-finish" class="btn btn-success"   style="display:none" onclick="showResults()">View Results</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results-container">
+    <div class="results-card">
+      <div class="score-circle">
+        <div class="score-pct" id="res-pct">0%</div>
+        <div class="score-lbl">Score</div>
+      </div>
+      <h2 id="res-headline"></h2>
+      <p id="res-subtext"></p>
+      <div class="result-stats">
+        <div class="stat-box green"><div class="val" id="res-correct">0</div><div class="lbl">Correct</div></div>
+        <div class="stat-box red">  <div class="val" id="res-wrong">0</div><div class="lbl">Incorrect</div></div>
+        <div class="stat-box">      <div class="val">50</div><div class="lbl">Total</div></div>
+      </div>
+      <div class="btn-row" style="justify-content:center;margin-top:28px;">
+        <button class="btn btn-primary" onclick="restartQuiz()">Retake Exam</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('review-section').scrollIntoView({behavior:'smooth'})">Review Answers ↓</button>
+      </div>
+    </div>
+    <div id="review-section">
+      <h3>📋 Answer Review — All 50 Questions</h3>
+      <div id="review-items"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ─────────────────────────────────────────────
+//  QUESTION BANK  (50 unique AZ-500 questions)
+// ─────────────────────────────────────────────
+const questions = [
+
+  // ═══════════════════════════════════════
+  //  DOMAIN 1 — Manage Identity and Access
+  //  Questions 1–13
+  // ═══════════════════════════════════════
+
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "Your organization requires that users can only sign in to Azure portal from corporate-managed devices located in the company's headquarters IP range. Which Microsoft Entra ID feature should you configure to enforce this requirement?",
+    choices: [
+      "A. Microsoft Entra ID Protection user risk policy",
+      "B. Conditional Access policy with Named Locations and device compliance filter",
+      "C. Azure AD B2C custom policy",
+      "D. Privileged Identity Management (PIM) activation policy"
+    ],
+    correct: 1,
+    explanation: "Conditional Access policies allow you to combine Named Locations (IP ranges) with a device compliance filter to restrict access to Azure portal only from compliant, corporate-managed devices at the specified headquarters IP range."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "A security engineer needs to ensure that a Global Administrator role assignment is time-bound, requires justification, and triggers an approval workflow before activation. Which Microsoft Entra ID feature fulfills all three requirements?",
+    choices: [
+      "A. Microsoft Entra ID Conditional Access",
+      "B. Azure Role-Based Access Control (RBAC) with deny assignments",
+      "C. Privileged Identity Management (PIM) eligible assignment with approval workflow",
+      "D. Administrative Units with scoped administrator roles"
+    ],
+    correct: 2,
+    explanation: "PIM eligible assignments allow roles to be time-bound, require justification on activation, and can be configured with a multi-stage approval workflow before the role becomes active."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "You are deploying an Azure Function App that needs to read secrets from Azure Key Vault without storing credentials in the application code or configuration. What is the recommended approach?",
+    choices: [
+      "A. Store the service principal client secret in an environment variable and reference it in the Key Vault access policy",
+      "B. Assign a system-assigned managed identity to the Function App and grant it the Key Vault Secrets User role",
+      "C. Use a shared access signature (SAS) token stored in the Function App settings",
+      "D. Configure a user-assigned managed identity on the Key Vault and share it across all function apps"
+    ],
+    correct: 1,
+    explanation: "A system-assigned managed identity tied to the Function App allows Azure to automatically manage credentials. Granting it the Key Vault Secrets User RBAC role (or an access policy Get permission) enables secretless access to Key Vault."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "A partner company needs read-only access to a specific Azure subscription resource group. The partner's users must authenticate with their own corporate identities. What is the correct approach?",
+    choices: [
+      "A. Create local Azure AD accounts for each partner user and assign them the Reader role",
+      "B. Use Azure AD B2C to federate the partner identity provider",
+      "C. Invite the partner users via Azure AD B2B collaboration and assign them the Reader role on the resource group",
+      "D. Configure a site-to-site VPN and grant the partner network access to the subscription"
+    ],
+    correct: 2,
+    explanation: "Azure AD B2B collaboration allows external users to sign in with their own organizational identities. After invitation, you assign them an RBAC role (Reader) scoped to the specific resource group."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "Your organization's security policy requires that all users who have not registered for MFA within 14 days must be blocked from signing in. Which combination of features should you configure?",
+    choices: [
+      "A. Conditional Access sign-in risk policy set to High, combined with MFA enforcement",
+      "B. Microsoft Entra Identity Protection user risk policy requiring MFA registration, and a Conditional Access policy blocking users with high user risk",
+      "C. An Access Review that removes users who haven't registered for MFA",
+      "D. PIM activation policy requiring MFA at activation time"
+    ],
+    correct: 1,
+    explanation: "Identity Protection's MFA registration policy can require users to register within a grace period, and a Conditional Access policy targeting high user risk can block sign-in, enforcing the 14-day window requirement."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "A company has 500 guest users who were granted access to a Teams site 18 months ago. Security policy mandates that guest access is reviewed and recertified every 6 months. Which Microsoft Entra ID feature automates this requirement?",
+    choices: [
+      "A. Privileged Identity Management access reviews scoped to guest users",
+      "B. Microsoft Entra Entitlement Management access packages",
+      "C. Microsoft Entra Access Reviews configured for guest users with auto-remove on denial",
+      "D. Conditional Access policy targeting guest user sign-in frequency"
+    ],
+    correct: 2,
+    explanation: "Microsoft Entra Access Reviews allow you to schedule recurring reviews of guest user access. The auto-apply result feature can automatically remove guests who are denied or do not respond, meeting the 6-month recertification requirement."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "You need to restrict a helpdesk team so they can reset passwords and manage licenses only for users in a specific department, without granting tenant-wide administrative rights. What should you configure?",
+    choices: [
+      "A. Assign the Helpdesk Administrator role at the subscription scope using RBAC",
+      "B. Create an Administrative Unit containing the department's users and assign the Password Administrator and License Administrator roles scoped to that Administrative Unit",
+      "C. Use PIM to make the helpdesk team eligible for the Global Administrator role with a very short activation window",
+      "D. Create a custom RBAC role with password reset permissions at the resource group scope"
+    ],
+    correct: 1,
+    explanation: "Administrative Units in Microsoft Entra ID enable role assignments scoped to a subset of users or groups, allowing helpdesk staff to perform password resets and license management only for users within that Administrative Unit."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "During an incident, a Global Administrator account is compromised. Your organization needs to regain tenant access immediately without relying on any standard sign-in flow. What should have been configured in advance?",
+    choices: [
+      "A. A second Global Administrator account protected with conditional access",
+      "B. Emergency access (break-glass) accounts excluded from all Conditional Access policies, secured with strong passwords, and stored in a physical safe",
+      "C. A PIM eligible assignment for a backup administrator",
+      "D. A service principal with Global Administrator rights for automation"
+    ],
+    correct: 1,
+    explanation: "Break-glass emergency access accounts are cloud-only accounts excluded from Conditional Access policies. They should use very strong passwords, be stored securely offline, and are used only when normal administrative access paths are unavailable."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "A developer is building a multi-tenant SaaS application where customers can sign up using their personal email addresses (Gmail, Outlook.com). Which Azure identity service is most appropriate for handling customer authentication?",
+    choices: [
+      "A. Microsoft Entra ID (workforce tenant) with B2B guest invitations",
+      "B. Azure AD B2C with social identity provider federation",
+      "C. Microsoft Entra External Identities with cross-tenant sync",
+      "D. Privileged Identity Management with just-in-time access"
+    ],
+    correct: 1,
+    explanation: "Azure AD B2C is designed for customer-facing (CIAM) scenarios, supporting federation with social identity providers like Google and Microsoft accounts, allowing end-users to self-register with personal email addresses."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "Your Conditional Access policy is configured to require MFA for all sign-ins from outside corporate IP ranges. A user reports they can sign in without MFA while traveling. Which configuration is most likely the cause?",
+    choices: [
+      "A. The user's account is in the Excluded users section of the Conditional Access policy",
+      "B. The user's device is marked as compliant, bypassing the Named Location condition",
+      "C. The sign-in risk level is set to Medium, which skips MFA enforcement",
+      "D. The user has a PIM active assignment that overrides Conditional Access"
+    ],
+    correct: 0,
+    explanation: "Conditional Access policies have an Exclusions section for users and groups. If a user's account (or a group they belong to) is excluded, the policy will not apply to them even if all conditions match."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "You want to allow users in your tenant to reset their own passwords without calling the helpdesk, while requiring them to verify identity through both a mobile app notification and an email code. Which feature and configuration achieves this?",
+    choices: [
+      "A. Azure AD MFA with verification methods set to Authenticator app and email",
+      "B. Self-Service Password Reset (SSPR) with the number of authentication methods required set to 2, enabling Microsoft Authenticator and email as methods",
+      "C. Conditional Access authentication strength policy requiring phishing-resistant MFA",
+      "D. Identity Protection sign-in risk remediation requiring password change"
+    ],
+    correct: 1,
+    explanation: "SSPR allows users to reset passwords without helpdesk involvement. Setting the required methods count to 2 and enabling Microsoft Authenticator (app notification) and email as methods enforces dual-verification before a password reset is allowed."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "A virtual machine in Azure needs to authenticate to Microsoft SQL Database without any stored credentials. The VM is in a different resource group from the SQL server. What is the best solution?",
+    choices: [
+      "A. Create a service principal, store its secret in Azure Key Vault, and reference it from the VM",
+      "B. Enable a system-assigned managed identity on the VM and configure Azure AD authentication on SQL, granting the managed identity access",
+      "C. Use a user-assigned managed identity attached to the SQL server",
+      "D. Configure a connection string with Windows Integrated Authentication"
+    ],
+    correct: 1,
+    explanation: "A system-assigned managed identity on the VM provides an automatically managed Azure AD identity. By enabling Azure AD authentication on Azure SQL and granting the managed identity a database role, the VM can authenticate without any stored credentials."
+  },
+  {
+    domain: "D1",
+    domainLabel: "Domain 1: Identity & Access",
+    text: "An organization uses Microsoft Entra Entitlement Management to control access to sensitive project resources. A new employee should receive access to three specific applications, two SharePoint sites, and one Azure resource group as a single unit, with automatic removal after 90 days. How should this be configured?",
+    choices: [
+      "A. Create a dynamic group with a membership rule targeting the employee's department",
+      "B. Configure an Access Package in Entitlement Management containing all required resources with a 90-day expiration policy",
+      "C. Use PIM to create an eligible assignment bundle for all resources",
+      "D. Create a Conditional Access policy that grants access to the required resources based on user attributes"
+    ],
+    correct: 1,
+    explanation: "Entitlement Management Access Packages bundle multiple resources (apps, groups, SharePoint, Azure roles) into a single requestable unit, with configurable expiration policies that automatically remove access after the defined period."
+  },
+
+  // ═══════════════════════════════════════
+  //  DOMAIN 2 — Secure Networking
+  //  Questions 14–25
+  // ═══════════════════════════════════════
+
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "A web application VM in Azure is receiving a volumetric UDP flood DDoS attack that is saturating the network link. The VM is in a Virtual Network that has Azure DDoS Protection Basic enabled. What is the correct action and its limitation?",
+    choices: [
+      "A. DDoS Protection Basic provides automatic mitigation for volumetric attacks; no additional action is needed",
+      "B. DDoS Protection Basic only protects Azure infrastructure; upgrade to DDoS Protection Standard for per-VNet, adaptive tuning and application-layer protection",
+      "C. Configure an NSG deny rule to block UDP traffic on all ports",
+      "D. Enable Azure Firewall Premium with IDPS to detect and drop the UDP flood"
+    ],
+    correct: 1,
+    explanation: "DDoS Protection Basic (now called Infrastructure Protection) protects Azure's shared infrastructure. DDoS Protection Standard (Network Protection) provides per-VNet adaptive tuning, telemetry, and DDoS Rapid Response support needed to protect individual workloads against volumetric attacks."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "Administrators currently use RDP over the public internet to manage Windows VMs in Azure, exposing port 3389 to the world. You need to eliminate this exposure while still allowing RDP access from Azure portal without a public IP on the VM. What should you deploy?",
+    choices: [
+      "A. A VPN Gateway with point-to-site connectivity and certificate authentication",
+      "B. Azure Bastion in the same VNet as the VMs",
+      "C. Just-in-Time VM access to open port 3389 only when needed",
+      "D. A Network Security Group rule allowing RDP only from the IT team's IP range"
+    ],
+    correct: 1,
+    explanation: "Azure Bastion provides browser-based RDP/SSH access to VMs directly through Azure portal over TLS, eliminating the need for public IPs or exposed management ports on the VMs."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "You need Azure Firewall to decrypt HTTPS traffic, inspect it for threats using signature-based detection, and re-encrypt it before forwarding to backend servers. Which Azure Firewall tier and feature combination is required?",
+    choices: [
+      "A. Azure Firewall Standard with application rules and FQDN filtering",
+      "B. Azure Firewall Premium with TLS inspection and IDPS enabled",
+      "C. Azure Firewall Standard with threat intelligence-based filtering in Alert and Deny mode",
+      "D. Azure Firewall Premium with DNAT rules and network rules"
+    ],
+    correct: 1,
+    explanation: "Azure Firewall Premium includes TLS inspection (which decrypts, inspects, and re-encrypts HTTPS traffic) and IDPS (Intrusion Detection and Prevention System) with signature-based detection, both required for deep packet inspection of encrypted traffic."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "A PaaS service (Azure SQL Database) must only be accessible from a specific subnet in your VNet. You want the traffic to travel over the Microsoft backbone network without a public IP, and ensure the SQL server's public endpoint is completely disabled. What should you configure?",
+    choices: [
+      "A. Service Endpoint on the subnet with a VNet firewall rule on Azure SQL",
+      "B. Private Endpoint in the subnet, disable public access on Azure SQL, and configure private DNS zone integration",
+      "C. VNet peering with the Azure SQL managed instance VNet",
+      "D. An NSG rule allowing port 1433 only from the subnet's IP range"
+    ],
+    correct: 1,
+    explanation: "Private Endpoints assign a private IP from your VNet to the PaaS service. Disabling public access on Azure SQL ensures all traffic flows privately. Private DNS zone integration ensures name resolution returns the private IP rather than the public one."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "An NSG is applied both to a subnet and to the NIC of a VM within that subnet. An inbound rule on the subnet NSG allows HTTP (port 80) from any source. The NIC NSG has no rules allowing port 80. What is the effective result for inbound HTTP traffic to the VM?",
+    choices: [
+      "A. Traffic is allowed because the subnet NSG allow rule takes precedence",
+      "B. Traffic is denied because NSG rules are evaluated at the NIC level last, and the NIC NSG default deny applies since no allow rule exists",
+      "C. Traffic is allowed because the default allow rule in the NIC NSG permits all traffic from within the VNet",
+      "D. Traffic is denied because both NSGs must be evaluated and there is a conflict"
+    ],
+    correct: 1,
+    explanation: "For inbound traffic, the subnet NSG is evaluated first, then the NIC NSG. Even though the subnet NSG allows the traffic, the NIC NSG's default implicit deny rule will block it because no explicit allow rule for port 80 exists at the NIC level."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "Your organization's web application sits behind Azure Application Gateway. You need to block common OWASP Top 10 attacks such as SQL injection and cross-site scripting before they reach the application. What should you enable?",
+    choices: [
+      "A. Azure DDoS Protection Standard on the Application Gateway's VNet",
+      "B. Web Application Firewall (WAF) policy on the Application Gateway in Prevention mode with OWASP Core Rule Set 3.2",
+      "C. Azure Firewall Premium with IDPS signatures for web attacks",
+      "D. NSG rules blocking common attack payload signatures"
+    ],
+    correct: 1,
+    explanation: "Application Gateway WAF with an OWASP Core Rule Set (CRS) in Prevention mode inspects HTTP/S requests and blocks SQL injection, XSS, and other OWASP Top 10 threats before they reach the backend application."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "You need to allow SSH access (port 22) to a Linux VM in Azure but only when an administrator explicitly requests it, and the access should automatically expire after 3 hours. Which feature should you use?",
+    choices: [
+      "A. Azure Bastion with native SSH tunneling",
+      "B. Just-in-Time (JIT) VM access in Microsoft Defender for Servers",
+      "C. An NSG rule with a 3-hour TTL set using Azure Automation",
+      "D. Azure Firewall DNAT rule with a scheduled maintenance window"
+    ],
+    correct: 1,
+    explanation: "Just-in-Time VM access (part of Defender for Servers) locks down management ports by default and creates a time-limited NSG rule only when an administrator explicitly requests access, automatically removing it after the configured timeout."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "Your company has offices connected to Azure via ExpressRoute. Security policy requires that all branch-office-to-branch-office traffic and branch-to-Azure traffic is routed through a central security inspection hub. Which networking architecture achieves this with minimal configuration?",
+    choices: [
+      "A. VNet peering between all VNets with UDRs pointing to a firewall NVA",
+      "B. Azure Virtual WAN (vWAN) with Secured Virtual Hub (Azure Firewall integrated)",
+      "C. Azure VPN Gateway in hub-and-spoke topology with BGP route propagation",
+      "D. Azure Front Door with private link backends for each office"
+    ],
+    correct: 1,
+    explanation: "Azure Virtual WAN with a Secured Virtual Hub integrates Azure Firewall (or a third-party NVA) directly into the hub, enabling centralized security inspection for all branch-to-Azure and branch-to-branch traffic without complex UDR management."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "You need to capture and analyze network flow data for all traffic entering and leaving a subnet to investigate a potential data exfiltration incident. Which tool provides this capability in Azure?",
+    choices: [
+      "A. Azure Monitor diagnostic settings with AllMetrics enabled on the VNet",
+      "B. NSG Flow Logs sent to a Storage Account, analyzed using Azure Network Watcher Traffic Analytics",
+      "C. Azure Firewall Premium IDPS alert logs",
+      "D. Microsoft Defender for Cloud network map"
+    ],
+    correct: 1,
+    explanation: "NSG Flow Logs capture source/destination IP, port, protocol, and allow/deny decisions for all flows through an NSG. Traffic Analytics (built on Network Watcher) processes these logs to provide visual insights into network traffic patterns and potential exfiltration."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "A globally distributed web application uses Azure Front Door to route user requests to the nearest regional backend. You need to protect against application-layer attacks (Layer 7) at the Front Door edge. What should you configure?",
+    choices: [
+      "A. Azure DDoS Protection Standard on the Front Door profile",
+      "B. WAF policy associated with the Azure Front Door profile, configured in Prevention mode",
+      "C. Azure Firewall Premium with IDPS deployed in each region",
+      "D. Application Gateway WAF in each region behind Front Door"
+    ],
+    correct: 1,
+    explanation: "Azure Front Door supports WAF policies that inspect and filter HTTP/S traffic at the edge before it reaches regional backends. A WAF policy in Prevention mode blocks malicious requests based on managed rule sets and custom rules globally."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "Your organization is setting up a site-to-site VPN between an on-premises datacenter and Azure. Security requirements mandate using IKEv2 with AES-256 encryption and SHA-256 integrity. Where is this configured?",
+    choices: [
+      "A. In the NSG associated with the GatewaySubnet",
+      "B. In a custom IPsec/IKE policy on the VPN connection resource",
+      "C. In the Local Network Gateway properties for the on-premises device",
+      "D. In the Azure Firewall policy applied to the hub VNet"
+    ],
+    correct: 1,
+    explanation: "Custom IPsec/IKE policies are configured directly on the VPN connection resource in Azure, allowing you to specify exact IKEv2 parameters including encryption algorithm (AES-256), integrity (SHA-256), DH group, and PFS group."
+  },
+  {
+    domain: "D2",
+    domainLabel: "Domain 2: Secure Networking",
+    text: "You want to ensure that Azure Storage in your VNet can only be accessed from a specific subnet without the traffic traversing the public internet, but you do NOT want to disable the storage account's public endpoint. Which feature should you use?",
+    choices: [
+      "A. Private Endpoint with public access disabled",
+      "B. Service Endpoint configured on the subnet with a VNet service endpoint rule on the storage account",
+      "C. Azure Firewall application rule allowing only the subnet's traffic to storage",
+      "D. NSG application security group rule restricting storage access"
+    ],
+    correct: 1,
+    explanation: "Service Endpoints extend your VNet identity to the Azure service, routing traffic from the subnet to storage over the Microsoft backbone. Adding a VNet rule on the storage account restricts access to that subnet while keeping the public endpoint technically enabled but restricted."
+  },
+
+  // ═══════════════════════════════════════════════════════
+  //  DOMAIN 3 — Secure Compute, Storage, and Databases
+  //  Questions 26–37
+  // ═══════════════════════════════════════════════════════
+
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "You must encrypt a Windows VM's OS disk and data disks so that encryption keys are stored in Azure Key Vault and protected by an HSM-backed customer-managed key (CMK). The solution must prevent data recovery if the key is deleted. Which service handles this?",
+    choices: [
+      "A. Azure Disk Encryption (ADE) using BitLocker with a Key Encryption Key (KEK) stored in Key Vault",
+      "B. Server-Side Encryption (SSE) with a Platform-Managed Key (PMK)",
+      "C. Azure Confidential Computing with vTPM-backed encryption",
+      "D. Storage Service Encryption with customer-managed keys in a managed HSM"
+    ],
+    correct: 0,
+    explanation: "Azure Disk Encryption uses BitLocker (Windows) to encrypt OS and data disks. A Key Encryption Key (KEK) stored in Azure Key Vault wraps the disk encryption keys, ensuring that deleting or revoking the CMK in Key Vault prevents disk decryption."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "A development team stores application secrets in Azure Key Vault. A developer accidentally deletes a secret. The security team needs to recover the secret and ensure accidental permanent deletion is impossible in the future. What two settings must be enabled?",
+    choices: [
+      "A. Key Vault firewall and virtual network restrictions",
+      "B. Soft-delete and Purge Protection on the Key Vault",
+      "C. Key Vault access policy with Create and Delete permissions restricted",
+      "D. Azure Policy with Deny effect preventing Key Vault deletion"
+    ],
+    correct: 1,
+    explanation: "Soft-delete retains deleted Key Vault objects for a configurable retention period (7–90 days), allowing recovery. Purge Protection prevents anyone (including administrators) from permanently purging soft-deleted objects before the retention period expires."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "A third-party vendor needs temporary read access to a specific blob container in Azure Storage for 48 hours. The access must be scoped only to that container and expire automatically. What is the most secure approach?",
+    choices: [
+      "A. Share the storage account access key with the vendor and rotate it after 48 hours",
+      "B. Generate a Service SAS token scoped to the container with a 48-hour expiry and read permission",
+      "C. Create a user delegation SAS signed with Azure AD credentials scoped to the container",
+      "D. Assign the vendor account the Storage Blob Data Reader role at the container scope with a PIM time-limited assignment"
+    ],
+    correct: 2,
+    explanation: "A user delegation SAS is signed with Azure AD credentials rather than account keys, making it more secure. It can be scoped to a specific container with read-only permissions and a 48-hour expiry, and does not expose the account key."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "Microsoft Defender for SQL detects an unusual number of failed login attempts on an Azure SQL Database followed by a successful login from an unexpected geographic location. What type of alert is this, and which Defender feature flagged it?",
+    choices: [
+      "A. Vulnerability assessment finding from Microsoft Defender for SQL",
+      "B. Advanced Threat Protection alert indicating a potential brute-force attack followed by a successful login anomaly",
+      "C. SQL Audit log anomaly detected by Log Analytics query",
+      "D. Microsoft Sentinel fusion alert correlating identity and database events"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for SQL's Advanced Threat Protection detects anomalous database activities such as brute-force attempts and logins from unusual locations, generating security alerts that appear in Microsoft Defender for Cloud."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "You are deploying an AKS cluster that will run containers pulling images from Azure Container Registry (ACR). You want to ensure only images from your organization's ACR can be deployed and no external registry images are allowed. What should you configure?",
+    choices: [
+      "A. An NSG rule on the AKS node pool subnet blocking outbound internet access to container registries",
+      "B. Azure Policy with the 'Kubernetes cluster containers should only use allowed images' built-in policy, restricting image registries to your ACR",
+      "C. A network policy in the AKS cluster blocking pod egress to external container registries",
+      "D. Microsoft Defender for Containers runtime protection with custom threat rules"
+    ],
+    correct: 1,
+    explanation: "The Azure Policy built-in policy for AKS ('Kubernetes cluster containers should only use allowed images') enforces that pods can only pull images from specified registries (your ACR), preventing use of external or untrusted registries."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "Your organization needs to ensure that Azure SQL Database data is encrypted at rest using keys that your organization controls, and the keys must be stored in a Key Vault that your organization manages. Which feature should you configure?",
+    choices: [
+      "A. Azure SQL Transparent Data Encryption (TDE) with a customer-managed key (CMK) stored in Azure Key Vault",
+      "B. Azure SQL Always Encrypted with Column Encryption Keys stored in Key Vault",
+      "C. Azure SQL Dynamic Data Masking to protect sensitive columns",
+      "D. Azure SQL Ledger tables with cryptographic verification"
+    ],
+    correct: 0,
+    explanation: "TDE with customer-managed keys (BYOK) in Azure Key Vault encrypts SQL Database data files at rest. The database encryption key (DEK) is protected by your CMK in Key Vault, giving your organization control over the encryption lifecycle."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "A VM scale set hosts a web application processing sensitive financial data. Security requirements mandate that the VM agent reports on OS vulnerabilities, missing patches, and misconfigurations. Which Microsoft solution provides this without installing additional third-party agents?",
+    choices: [
+      "A. Azure Monitor Agent with a custom Data Collection Rule",
+      "B. Microsoft Defender for Servers Plan 2 with integrated vulnerability assessment (Microsoft Defender Vulnerability Management)",
+      "C. Azure Security Benchmark policy initiative assigned to the subscription",
+      "D. Microsoft Sentinel with the Windows Security Events data connector"
+    ],
+    correct: 1,
+    explanation: "Defender for Servers Plan 2 includes Microsoft Defender Vulnerability Management (MDVM), which provides agentless and agent-based vulnerability scanning, OS misconfiguration assessment, and missing patch detection without requiring separate third-party tools."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "An application uses Azure Cosmos DB and stores documents containing personally identifiable information (PII). You need to verify that all data in Cosmos DB is encrypted at rest using a key your organization manages. What is the correct configuration?",
+    choices: [
+      "A. Enable Azure Cosmos DB Always Encrypted with client-side encryption keys",
+      "B. Configure Cosmos DB account to use customer-managed keys (CMK) stored in Azure Key Vault",
+      "C. Enable Azure Defender for Cosmos DB to detect unauthorized access to unencrypted data",
+      "D. Use Azure Purview to classify PII data and apply encryption labels"
+    ],
+    correct: 1,
+    explanation: "Azure Cosmos DB supports customer-managed keys (CMK) configured at account creation using a Key Vault key URI. This encrypts all data at rest in Cosmos DB under your organization's key rather than Microsoft-managed keys."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "A container image in Azure Container Registry has been scanned and found to contain a critical CVE in a base OS layer. What is the correct remediation workflow using Microsoft Defender for Containers?",
+    choices: [
+      "A. Enable ACR geo-replication to create a clean copy of the image in another region",
+      "B. Review the vulnerability finding in Defender for Cloud, rebuild the image with an updated base layer, push to ACR, and re-scan to confirm remediation",
+      "C. Apply an NSG rule to block external access to the ACR endpoint",
+      "D. Use Azure Policy to quarantine the ACR repository containing the vulnerable image"
+    ],
+    correct: 1,
+    explanation: "Defender for Containers surfaces vulnerability findings per image layer in Defender for Cloud. The correct remediation is to update the base image to a patched version, rebuild and push the new image, then verify the CVE is resolved in the next scan."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "You need to configure Azure App Service to store and retrieve connection strings securely, ensure the App Service can access Key Vault without embedding credentials, and rotate the connection string without redeploying the application. What is the recommended approach?",
+    choices: [
+      "A. Store the connection string in App Service Configuration as an application setting and encrypt it using App Service certificates",
+      "B. Enable a system-assigned managed identity on the App Service, store the connection string as a Key Vault secret, and reference it via a Key Vault reference in App Service Configuration",
+      "C. Use Azure Pipelines to inject the connection string at deployment time via pipeline variables",
+      "D. Store the connection string in Azure Blob Storage with a private endpoint and have the app download it at startup"
+    ],
+    correct: 1,
+    explanation: "Key Vault references in App Service Configuration (format: @Microsoft.KeyVault(SecretUri=...)) allow App Service to dynamically retrieve secrets using a managed identity. Rotating the secret in Key Vault automatically reflects without redeployment."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "You are enabling Microsoft Defender for Storage on a storage account. What threats does this plan specifically detect that standard storage monitoring does not?",
+    choices: [
+      "A. Misconfigured RBAC permissions on the storage account",
+      "B. Anomalous access patterns such as access from Tor exit nodes, unusual data exfiltration, and malware uploaded to Blob storage (hash reputation analysis)",
+      "C. Overly permissive SAS token expiration dates",
+      "D. Unencrypted data transfers over HTTP to the storage account"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for Storage detects security anomalies including access from Tor exit nodes, unusual geographic patterns, potential data exfiltration, and performs hash reputation analysis to detect malware uploaded to Blob storage."
+  },
+  {
+    domain: "D3",
+    domainLabel: "Domain 3: Compute, Storage & Databases",
+    text: "Your security team needs to store cryptographic keys for a regulated application using FIPS 140-2 Level 3 validated HSM, where Azure operators have zero access to key material. Which Azure Key Vault offering satisfies this requirement?",
+    choices: [
+      "A. Azure Key Vault Standard tier with RSA 4096-bit keys",
+      "B. Azure Key Vault Premium tier with HSM-protected keys",
+      "C. Azure Key Vault Managed HSM (Hardware Security Module)",
+      "D. Azure Dedicated HSM service"
+    ],
+    correct: 2,
+    explanation: "Azure Key Vault Managed HSM is a fully managed, FIPS 140-2 Level 3 validated single-tenant HSM service. It provides customer-controlled keys with zero operator access to key material, satisfying the most stringent regulatory requirements."
+  },
+
+  // ═══════════════════════════════════════════════
+  //  DOMAIN 4 — Manage Security Operations
+  //  Questions 38–50
+  // ═══════════════════════════════════════════════
+
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "Your organization's Microsoft Defender for Cloud Secure Score is 47%. The recommendation 'MFA should be enabled on accounts with owner permissions on your subscription' shows 30 unhealthy resources. What is the fastest way to understand which specific accounts need MFA enabled?",
+    choices: [
+      "A. Export the Secure Score to a CSV file and filter by recommendation name",
+      "B. Click the recommendation in Defender for Cloud to view the list of unhealthy resources, which shows the specific user accounts lacking MFA",
+      "C. Run an Azure Policy compliance report for the MFA policy",
+      "D. Query Microsoft Sentinel UEBA for accounts with high risk scores"
+    ],
+    correct: 1,
+    explanation: "Each Defender for Cloud recommendation has a detail page listing all unhealthy resources (in this case, specific user accounts). Clicking through from the Secure Score dashboard directly shows which accounts need remediation."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "A security analyst needs to automatically create a ticket in ServiceNow whenever Microsoft Sentinel generates a high-severity incident. Which Sentinel feature enables this automation?",
+    choices: [
+      "A. Sentinel Analytics Rule with a custom KQL query outputting to a ServiceNow webhook",
+      "B. Sentinel Automation Rule triggering a Playbook (Azure Logic App) that calls the ServiceNow API on incident creation",
+      "C. Sentinel Workbook with a live dashboard showing high-severity incidents sent via email",
+      "D. Microsoft Defender for Cloud workflow automation exporting incidents to ServiceNow"
+    ],
+    correct: 1,
+    explanation: "Sentinel Automation Rules can trigger Playbooks (Logic Apps) based on incident creation or update conditions. A Playbook using the ServiceNow Logic App connector can automatically create tickets when a high-severity incident is generated."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "You need to configure Azure Policy to automatically deploy a Log Analytics agent to all new Windows VMs created in a subscription. The agent must be deployed even if the VM is created without it. Which policy effect should you use?",
+    choices: [
+      "A. Audit — logs non-compliant VMs but does not deploy the agent",
+      "B. Deny — blocks creation of VMs that don't have the agent installed",
+      "C. DeployIfNotExists — deploys the agent to VMs that don't already have it",
+      "D. Append — adds the agent resource definition to the VM template"
+    ],
+    correct: 2,
+    explanation: "The DeployIfNotExists policy effect performs a deployment (via a remediation task using a managed identity) when a resource is created or updated without the required resource, making it ideal for automatically deploying the Log Analytics agent to VMs."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "A Microsoft Sentinel analytics rule is generating hundreds of false-positive alerts daily for a legitimate administrative activity. How should you suppress these false positives without disabling the rule entirely?",
+    choices: [
+      "A. Delete the analytics rule and recreate it with a different KQL query",
+      "B. Add a watchlist or exclusion filter to the KQL query to exclude known-good entities, or configure alert suppression/incident grouping in the rule settings",
+      "C. Increase the analytics rule's incident creation threshold to reduce noise",
+      "D. Assign a low severity to the rule so analysts can deprioritize it"
+    ],
+    correct: 1,
+    explanation: "Sentinel watchlists allow you to import lists of known-good entities (IPs, users, hostnames) that can be referenced in KQL queries to exclude them. Alternatively, Sentinel supports alert suppression windows and incident grouping to reduce false-positive noise."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "Your organization must meet a compliance requirement to retain all Azure activity logs, sign-in logs, and resource diagnostic logs in an immutable, tamper-proof location for 7 years. What combination of services achieves this?",
+    choices: [
+      "A. Send logs to an Event Hub and archive to an on-premises SIEM",
+      "B. Configure diagnostic settings to send logs to a Log Analytics workspace with a 7-year retention policy",
+      "C. Export logs to Azure Storage with immutable blob storage (WORM policy) and configure a 7-year time-based retention lock",
+      "D. Send logs to Microsoft Sentinel with a data retention setting of 7 years"
+    ],
+    correct: 2,
+    explanation: "Azure Storage immutable blob storage with time-based retention policies (WORM — Write Once Read Many) ensures logs cannot be modified or deleted until the retention period expires, meeting regulatory tamper-proof requirements for 7-year retention."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "A Microsoft Sentinel analytics rule using UEBA detects that a user account has been granted new privileged role assignments, made impossible-travel sign-ins, and accessed 50x more data than their baseline in the past 24 hours. What Sentinel UEBA feature contributes to this detection?",
+    choices: [
+      "A. Fusion ML alert correlation combining multiple low-fidelity signals into a high-confidence incident",
+      "B. Scheduled analytics rule with multi-condition KQL query",
+      "C. Entity behavior analytics building a behavioral baseline and scoring anomalous deviations using an investigation priority score",
+      "D. Threat intelligence matching the user's IP against known bad indicators"
+    ],
+    correct: 2,
+    explanation: "Sentinel UEBA builds behavioral baselines for users and entities over time. Deviations from baseline (unusual data access volume, new privileged assignments, impossible travel) are scored as an investigation priority score, surfacing compromised accounts."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "You need to ensure that all resources deployed in your Azure subscription inherit a specific tag (CostCenter) automatically if one is not provided. If a resource is created without the tag, it should still be deployed but the policy should add the tag. Which Azure Policy effect achieves this?",
+    choices: [
+      "A. Deny — prevents resource creation if the CostCenter tag is missing",
+      "B. Audit — logs resources missing the tag to the compliance report",
+      "C. Modify — adds or replaces the CostCenter tag on resources that don't have it",
+      "D. Append — adds the CostCenter tag to the resource request"
+    ],
+    correct: 2,
+    explanation: "The Modify policy effect can add, replace, or remove resource tags (and other properties). It applies during resource creation and update, automatically adding the CostCenter tag without blocking deployment, unlike Deny which would reject the request."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "Microsoft Defender for Identity detects lateral movement in your on-premises Active Directory environment. An attacker appears to be using Pass-the-Hash to move between machines. Which Defender product is detecting this activity?",
+    choices: [
+      "A. Microsoft Defender for Endpoint (MDE) detecting suspicious process behavior on endpoints",
+      "B. Microsoft Defender for Identity (MDI) monitoring AD DS domain controller traffic for PTH attack patterns",
+      "C. Microsoft Defender for Cloud Apps detecting anomalous user activity in cloud applications",
+      "D. Microsoft Sentinel UEBA detecting deviation from normal user behavioral baseline"
+    ],
+    correct: 1,
+    explanation: "Microsoft Defender for Identity (MDI) monitors domain controller network traffic and detects identity-based attack techniques including Pass-the-Hash, Pass-the-Ticket, lateral movement, and reconnaissance against Active Directory."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "Your SOC team needs to investigate whether a specific external IP address has been communicating with any Azure resource in your environment over the past 30 days. Which Microsoft Sentinel capability enables this investigation?",
+    choices: [
+      "A. Sentinel Analytics Rules with a scheduled query for the IP address",
+      "B. Sentinel Entity Investigation using the IP entity timeline to view all related alerts, incidents, and activities",
+      "C. Microsoft Defender for Cloud network map filtered by IP address",
+      "D. Azure Network Watcher IP flow verify tool"
+    ],
+    correct: 1,
+    explanation: "Sentinel's Entity Investigation page for an IP address provides a timeline of all associated alerts, incidents, bookmarks, and activities from connected data sources over a configurable historical window, enabling comprehensive threat investigation."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "A company wants to detect when Azure resources are deployed outside of approved regions. They want a proactive block rather than just an audit finding. Which Azure Policy configuration achieves this?",
+    choices: [
+      "A. Assign the 'Allowed locations' built-in policy with Audit effect to log non-compliant deployments",
+      "B. Assign the 'Allowed locations' built-in policy with Deny effect, specifying the approved regions as allowed values",
+      "C. Create a Conditional Access policy restricting Azure portal access to approved regions",
+      "D. Configure Microsoft Defender for Cloud to generate alerts for resources in non-approved regions"
+    ],
+    correct: 1,
+    explanation: "The built-in 'Allowed locations' Azure Policy with the Deny effect proactively blocks resource deployments to any region not listed in the policy parameters, preventing non-compliant deployments at the ARM layer."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "Microsoft Defender for Cloud Apps (MCAS) is configured as a Cloud Access Security Broker (CASB). You need to automatically block file uploads containing sensitive data classified as 'Confidential' to unsanctioned cloud storage apps. Which MCAS feature achieves this?",
+    choices: [
+      "A. Cloud Discovery anomaly detection policy",
+      "B. Activity policy triggering an alert on file upload events",
+      "C. Session policy with real-time DLP inspection that blocks uploads matching the Confidential sensitivity label to unsanctioned apps",
+      "D. Access policy blocking sign-in to unsanctioned applications from unmanaged devices"
+    ],
+    correct: 2,
+    explanation: "MCAS session policies (in conjunction with Conditional Access App Control) can perform real-time DLP inspection during cloud app sessions. A session policy can block file uploads to unsanctioned apps when the file matches a sensitivity label or DLP content inspection rule."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "You are configuring Microsoft Sentinel to ingest security events from 50 Azure VMs. You want to collect Windows Security Event ID 4688 (process creation) and 4624 (logon) events with minimal log ingestion cost. Which data connector and tier combination is recommended?",
+    choices: [
+      "A. Azure Monitor Diagnostics connector with AllEvents tier",
+      "B. Microsoft Sentinel Windows Security Events data connector (via AMA) using the 'Common' or custom event selector to collect only the required Event IDs",
+      "C. Syslog data connector forwarding all Windows events via a syslog forwarder",
+      "D. Microsoft Defender for Endpoint connector pulling all raw device events"
+    ],
+    correct: 1,
+    explanation: "The Windows Security Events via AMA (Azure Monitor Agent) connector supports custom XPath queries to collect only specific Event IDs. Selecting only Events 4688 and 4624 (Common tier or custom) minimizes ingestion volume and cost compared to collecting all events."
+  },
+  {
+    domain: "D4",
+    domainLabel: "Domain 4: Security Operations",
+    text: "A threat intelligence analyst has identified a list of known malicious IP addresses used in a recent campaign targeting financial organizations. They want Microsoft Sentinel to automatically generate an incident when any Azure resource communicates with these IPs. What is the most efficient way to enable this?",
+    choices: [
+      "A. Write a custom KQL analytics rule with all malicious IPs hard-coded as a where clause filter",
+      "B. Upload the malicious IPs as Threat Intelligence Indicators (via STIX/TAXII or Sentinel TI data connector), then enable the built-in TI analytics rules that match indicators against network logs",
+      "C. Create a Sentinel watchlist with the IPs and reference it in all network-related analytics rules",
+      "D. Configure Microsoft Defender for Cloud threat intelligence feed to block the IPs at the network level"
+    ],
+    correct: 1,
+    explanation: "Sentinel's Threat Intelligence platform accepts STIX/TAXII feeds and manual indicator imports. Built-in TI analytics rules automatically correlate ingested malicious IP indicators against network connection logs (CEF, Syslog, AzureNetworkAnalytics), generating incidents without custom KQL per indicator."
+  }
+];
+
+// ─────────────────────────────────────────────
+//  QUIZ STATE
+// ─────────────────────────────────────────────
+let current   = 0;
+let selected  = null;
+let submitted = false;
+let score     = 0;
+let answered  = 0;
+const userAnswers = new Array(questions.length).fill(null);
+
+// ─────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────
+function render() {
+  const q = questions[current];
+
+  // Domain badge
+  const badge = document.getElementById('q-domain-badge');
+  badge.textContent = q.domainLabel;
+  badge.className = 'q-domain-badge ' + {
+    D1: 'badge-d1', D2: 'badge-d2', D3: 'badge-d3', D4: 'badge-d4'
+  }[q.domain];
+
+  document.getElementById('q-number').textContent = `Question ${current + 1} of ${questions.length}`;
+  document.getElementById('q-text').textContent   = q.text;
+
+  // Choices
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-letter">${['A','B','C','D'][i]}.</span><span>${c.replace(/^[A-D]\.\s*/,'')}</span>`;
+    btn.onclick = () => selectChoice(i);
+    choicesEl.appendChild(btn);
+  });
+
+  // Feedback
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box';
+  fb.style.display = 'none';
+
+  // Buttons
+  document.getElementById('btn-submit').disabled = true;
+  document.getElementById('btn-next').style.display   = 'none';
+  document.getElementById('btn-finish').style.display = 'none';
+
+  // Restore state if already answered
+  if (userAnswers[current] !== null) {
+    restoreState();
+  }
+
+  selected  = userAnswers[current];
+  submitted = userAnswers[current] !== null;
+
+  updateProgress();
+}
+
+function selectChoice(idx) {
+  if (submitted) return;
+  selected = idx;
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach((b, i) => {
+    b.classList.toggle('selected', i === idx);
+  });
+  document.getElementById('btn-submit').disabled = false;
+}
+
+function submitAnswer() {
+  if (selected === null || submitted) return;
+  submitted = true;
+  userAnswers[current] = selected;
+  answered++;
+
+  const q    = questions[current];
+  const btns = document.querySelectorAll('.choice-btn');
+  const isCorrect = selected === q.correct;
+
+  if (isCorrect) score++;
+
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    b.classList.remove('selected');
+    if (i === q.correct) b.classList.add('correct');
+    if (i === selected && !isCorrect) b.classList.add('incorrect');
+  });
+
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box show ' + (isCorrect ? 'fb-correct' : 'fb-incorrect');
+  fb.style.display = 'block';
+  fb.innerHTML = `<strong>${isCorrect ? '✅ Correct!' : '❌ Incorrect'}</strong>${q.explanation}`;
+
+  document.getElementById('btn-submit').disabled = true;
+  const isLast = current === questions.length - 1;
+  document.getElementById('btn-next').style.display   = isLast ? 'none'  : 'inline-block';
+  document.getElementById('btn-finish').style.display = isLast ? 'inline-block' : 'none';
+
+  updateProgress();
+}
+
+function restoreState() {
+  const q      = questions[current];
+  const uAns   = userAnswers[current];
+  const isCorr = uAns === q.correct;
+  const btns   = document.querySelectorAll('.choice-btn');
+
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.correct) b.classList.add('correct');
+    if (i === uAns && !isCorr) b.classList.add('incorrect');
+  });
+
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box show ' + (isCorr ? 'fb-correct' : 'fb-incorrect');
+  fb.style.display = 'block';
+  fb.innerHTML = `<strong>${isCorr ? '✅ Correct!' : '❌ Incorrect'}</strong>${q.explanation}`;
+
+  document.getElementById('btn-submit').disabled = true;
+  const isLast = current === questions.length - 1;
+  document.getElementById('btn-next').style.display   = isLast ? 'none'  : 'inline-block';
+  document.getElementById('btn-finish').style.display = isLast ? 'inline-block' : 'none';
+}
+
+function nextQuestion() {
+  if (current < questions.length - 1) {
+    current++;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round(((current + (submitted ? 1 : 0)) / questions.length) * 100);
+  document.getElementById('progress-bar-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Question ${current + 1} of ${questions.length}`;
+  document.getElementById('score-badge').textContent = `Score: ${score} / ${answered}`;
+}
+
+// ─────────────────────────────────────────────
+//  RESULTS
+// ─────────────────────────────────────────────
+function showResults() {
+  document.getElementById('quiz-container').style.display  = 'none';
+  document.getElementById('results-container').style.display = 'block';
+  document.getElementById('progress-section').style.display  = 'none';
+
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('res-pct').textContent   = pct + '%';
+  document.getElementById('res-correct').textContent = score;
+  document.getElementById('res-wrong').textContent   = questions.length - score;
+
+  let headline, subtext;
+  if (pct >= 80) { headline = '🎉 Excellent Work!';  subtext = 'You are well-prepared for the AZ-500 exam. Keep reviewing weak areas.'; }
+  else if (pct >= 70) { headline = '👍 Good Progress!'; subtext = 'You are close to the passing threshold. Focus on the domains where you missed questions.'; }
+  else { headline = '📚 Keep Studying!'; subtext = 'Review the domains where you lost points and revisit the study materials.'; }
+
+  document.getElementById('res-headline').textContent = headline;
+  document.getElementById('res-subtext').textContent  = subtext;
+
+  buildReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildReview() {
+  const container = document.getElementById('review-items');
+  container.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+
+  questions.forEach((q, i) => {
+    const ua      = userAnswers[i];
+    const isCorr  = ua === q.correct;
+    const div     = document.createElement('div');
+    div.className = 'review-item ' + (isCorr ? 'ri-correct' : 'ri-incorrect');
+
+    const userAnsText    = ua !== null ? `${letters[ua]}. ${q.choices[ua].replace(/^[A-D]\.\s*/,'')}` : 'Not answered';
+    const correctAnsText = `${letters[q.correct]}. ${q.choices[q.correct].replace(/^[A-D]\.\s*/,'')}`;
+
+    div.innerHTML = `
+      <div class="q-domain-badge ${{'D1':'badge-d1','D2':'badge-d2','D3':'badge-d3','D4':'badge-d4'}[q.domain]}" style="font-size:.68rem;padding:2px 8px;margin-bottom:8px;">${q.domainLabel}</div>
+      <div class="review-q">${i + 1}. ${q.text}</div>
+      <div class="review-meta">Your answer: <span class="ans-user">${userAnsText}</span></div>
+      <div class="review-meta">Correct answer: <span class="ans-correct">${correctAnsText}</span></div>
+      <div class="review-exp">💡 ${q.explanation}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function restartQuiz() {
+  current = 0;
+  selected = null;
+  submitted = false;
+  score = 0;
+  answered = 0;
+  userAnswers.fill(null);
+
+  document.getElementById('quiz-container').style.display    = 'block';
+  document.getElementById('results-container').style.display = 'none';
+  document.getElementById('progress-section').style.display  = 'flex';
+
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
