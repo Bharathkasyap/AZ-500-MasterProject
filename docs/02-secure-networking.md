@@ -265,23 +265,48 @@ az network private-endpoint create \
 
 **Q1.** Your web application is hosted on Azure VMs in a subnet. You need to allow inbound HTTPS (port 443) from the internet while blocking all other inbound traffic. You also need to allow all outbound traffic. What is the minimum NSG configuration required?
 
-> **Answer:** Add an inbound rule with priority < 65500, Source = Internet, Destination = *, Port = 443, Protocol = TCP, Action = Allow. The default `DenyAllInBound` rule at priority 65500 handles blocking everything else. No changes needed for outbound (default allows VNet + Internet).
+- A) Add an inbound Allow rule for port 443, and add an outbound Deny rule for all other ports
+- B) Add an inbound Allow rule for port 443; the default DenyAllInBound rule handles blocking everything else, and no outbound changes are needed
+- C) Add an inbound Allow rule for port 443 and a separate inbound Deny rule at lower priority covering all ports
+- D) Enable an Azure Firewall DNAT rule for port 443 in addition to the NSG
+
+> **Answer:** **B** — Add an inbound rule with priority < 65500, Source = Internet, Destination = *, Port = 443, Protocol = TCP, Action = Allow. The default `DenyAllInBound` rule at priority 65500 handles blocking everything else. No changes needed for outbound (default allows VNet + Internet).
 
 **Q2.** You need to inspect all outbound internet traffic from your Azure VNets for malicious FQDNs using threat intelligence. Which Azure service should you use?
 
-> **Answer:** **Azure Firewall** with Threat Intelligence mode set to **Alert and Deny**. NSGs cannot perform FQDN or threat intelligence filtering.
+- A) Network Security Groups with Application Security Groups
+- B) Azure DDoS Network Protection
+- C) Azure Firewall with Threat Intelligence mode set to Alert and Deny
+- D) Azure Web Application Firewall (WAF)
+
+> **Answer:** **C** — **Azure Firewall** with Threat Intelligence mode set to **Alert and Deny**. NSGs cannot perform FQDN or threat intelligence filtering.
 
 **Q3.** A storage account currently has a public endpoint. You need to ensure that the storage account is only accessible from within your VNet and not exposed to the public internet. What should you implement?
 
-> **Answer:** Create a **Private Endpoint** for the storage account within the VNet, and configure the storage account to deny public network access. Create a **Private DNS zone** (`privatelink.blob.core.windows.net`) to resolve the storage FQDN to the private IP.
+- A) Configure VNet service endpoints on the storage account subnet
+- B) Enable Azure Firewall to filter all access to the storage account
+- C) Create a Private Endpoint for the storage account in the VNet, disable public network access, and configure a Private DNS zone
+- D) Configure NSG rules to block all internet source traffic to the storage account
+
+> **Answer:** **C** — Create a **Private Endpoint** for the storage account within the VNet, and configure the storage account to deny public network access. Create a **Private DNS zone** (`privatelink.blob.core.windows.net`) to resolve the storage FQDN to the private IP.
 
 **Q4.** You are designing DDoS protection for a public-facing web application running on Azure. The application needs protection against both network-layer (L3/L4) and application-layer (L7) attacks. What combination of services should you use?
 
-> **Answer:** **Azure DDoS Network Protection** for L3/L4 volumetric and protocol attacks, plus **Azure Web Application Firewall (WAF)** on Application Gateway or Front Door for L7 attacks.
+- A) Azure DDoS Basic and Azure Firewall Premium
+- B) Azure DDoS Network Protection and Azure Web Application Firewall (WAF) on Application Gateway or Front Door
+- C) Azure Firewall with IDPS enabled and Azure DDoS Basic
+- D) Azure Front Door with caching and Azure Bastion
+
+> **Answer:** **B** — **Azure DDoS Network Protection** for L3/L4 volumetric and protocol attacks, plus **Azure Web Application Firewall (WAF)** on Application Gateway or Front Door for L7 attacks.
 
 **Q5.** An NSG rule has Priority 100 allowing TCP port 22 (SSH) from 10.0.0.0/8, and a rule with Priority 200 denying TCP port 22 from any source. A user at IP 10.1.2.3 tries to SSH. What happens?
 
-> **Answer:** The connection is **allowed**. Priority 100 (lower number = higher priority) matches first and allows the traffic. Rule evaluation stops at the first match.
+- A) The connection is denied — Priority 200 is processed before Priority 100
+- B) The connection is denied — both rules are evaluated and deny overrides allow
+- C) The connection is allowed — Priority 100 matches first and rule evaluation stops
+- D) The connection is allowed — Azure always permits traffic from RFC 1918 address ranges
+
+> **Answer:** **C** — The connection is **allowed**. Priority 100 (lower number = higher priority) matches first and allows the traffic. Rule evaluation stops at the first match.
 
 ---
 

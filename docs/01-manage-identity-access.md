@@ -278,19 +278,49 @@ Azure RBAC controls access to **Azure resources** (separate from Azure AD role a
 ## 🔬 Practice Questions
 
 **Q1.** A company requires that all Global Administrators activate their role for a maximum of 2 hours and must provide an approval before activation. Which Azure service should be configured?
-> **Answer:** Azure AD Privileged Identity Management (PIM) — configure eligible assignment with approval required and maximum activation duration of 2 hours.
+
+- A) Azure AD Conditional Access
+- B) Azure AD Privileged Identity Management (PIM)
+- C) Azure Role-Based Access Control (RBAC)
+- D) Microsoft Defender for Identity
+
+> **Answer:** **B** — Azure AD Privileged Identity Management (PIM) — configure eligible assignment with approval required and maximum activation duration of 2 hours.
 
 **Q2.** You need to implement a Conditional Access policy that requires MFA only when users sign in from outside the corporate network. What should you configure as the condition?
-> **Answer:** Named locations — define the corporate IP range as a trusted named location, then set the policy to apply when the location is **not** the trusted named location.
+
+- A) Sign-in risk policy
+- B) Device compliance policy
+- C) Named locations
+- D) User risk policy
+
+> **Answer:** **C** — Named locations — define the corporate IP range as a trusted named location, then set the policy to apply when the location is **not** the trusted named location.
 
 **Q3.** A web application running on an Azure VM needs to read secrets from Azure Key Vault without storing any credentials. What is the recommended approach?
-> **Answer:** Enable a **system-assigned managed identity** on the VM and grant it the **Key Vault Secrets User** role (or Key Vault access policy) on the Key Vault.
+
+- A) Store credentials in Azure App Configuration
+- B) Use a service principal with a client secret stored in a config file
+- C) Enable a system-assigned managed identity on the VM and grant it the Key Vault Secrets User role
+- D) Use a user-assigned managed identity with a self-signed certificate
+
+> **Answer:** **C** — Enable a **system-assigned managed identity** on the VM and grant it the **Key Vault Secrets User** role (or Key Vault access policy) on the Key Vault.
 
 **Q4.** What is the minimum Azure AD license required to use Azure AD Identity Protection?
-> **Answer:** Azure AD Premium P2.
+
+- A) Azure AD Free
+- B) Microsoft 365 Business Basic
+- C) Azure AD Premium P1
+- D) Azure AD Premium P2
+
+> **Answer:** **D** — Azure AD Premium P2.
 
 **Q5.** A user has the Contributor role on a resource group and the Reader role on a specific storage account in that resource group. What is the user's effective permission on the storage account?
-> **Answer:** Contributor (more permissive role wins; RBAC uses additive permissions — the most permissive applicable role applies).
+
+- A) Reader (most restrictive role wins)
+- B) Contributor (most permissive role wins; RBAC is additive)
+- C) No access (conflicting permissions cancel out)
+- D) Storage Blob Data Contributor
+
+> **Answer:** **B** — Contributor (more permissive role wins; RBAC uses additive permissions — the most permissive applicable role applies).
 
 ---
 
