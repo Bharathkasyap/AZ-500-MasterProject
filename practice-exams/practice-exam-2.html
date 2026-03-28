@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AZ-500 Practice Exam 2 - Secure Networking</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #F3F2F1; color: #323130; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    header { background: #0078D4; color: #fff; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    header h1 { font-size: 1.3rem; font-weight: 700; }
+    header p { font-size: 0.9rem; opacity: 0.88; margin-top: 2px; }
+    header a.back { color: #fff; text-decoration: none; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.4); border-radius: 5px; padding: 7px 14px; font-size: 0.88rem; font-weight: 600; white-space: nowrap; transition: background 0.15s; }
+    header a.back:hover { background: rgba(255,255,255,0.3); }
+
+    /* Progress */
+    .progress-wrap { background: #fff; padding: 14px 24px; border-bottom: 1px solid #E1DFDD; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }
+    .progress-label { font-size: 0.88rem; color: #605E5C; margin-bottom: 6px; font-weight: 600; }
+    .progress-bar-bg { background: #E1DFDD; border-radius: 999px; height: 10px; overflow: hidden; }
+    .progress-bar-fill { background: #0078D4; height: 100%; border-radius: 999px; transition: width 0.3s ease; width: 0%; }
+
+    /* Main */
+    main { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; width: 100%; flex: 1; }
+
+    /* Question card */
+    .question-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; padding: 24px 26px; border-left: 5px solid #0078D4; }
+    .question-card.reviewed { border-left-color: #F7630C; }
+    .q-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .q-num { font-size: 0.78rem; font-weight: 700; color: #0078D4; background: #EFF6FC; border: 1px solid #C7E0F4; border-radius: 4px; padding: 3px 9px; white-space: nowrap; flex-shrink: 0; }
+    .q-text { font-size: 0.98rem; line-height: 1.65; color: #201F1E; flex: 1; }
+    .options { margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
+    .options input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .options label { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border: 1.5px solid #E1DFDD; border-radius: 6px; cursor: pointer; font-size: 0.93rem; line-height: 1.55; transition: background 0.12s, border-color 0.12s; }
+    .options label:hover { background: #EFF6FC; border-color: #C7E0F4; }
+    .options input[type="radio"]:checked + label { background: #EFF6FC; border-color: #0078D4; font-weight: 600; }
+    .option-correct { background: #DFF6DD !important; border: 2px solid #107C10 !important; color: #107C10; font-weight: bold !important; }
+    .option-incorrect { background: #FDE7E9 !important; border: 2px solid #D13438 !important; color: #D13438 !important; }
+
+    /* Review checkbox */
+    .review-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.85rem; color: #605E5C; cursor: pointer; user-select: none; width: fit-content; }
+    .review-row input[type="checkbox"] { accent-color: #F7630C; width: 15px; height: 15px; cursor: pointer; }
+
+    /* Show answer button */
+    .show-btn { margin-top: 14px; background: #005A9E; color: #fff; border: none; border-radius: 5px; padding: 8px 18px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .show-btn:hover:not(:disabled) { background: #004880; }
+    .show-btn:disabled { background: #C8C6C4; color: #605E5C; cursor: default; }
+
+    /* Explanation */
+    .explanation { display: none; margin-top: 14px; background: #F3F2F1; border-left: 4px solid #0078D4; border-radius: 4px; padding: 12px 16px; font-size: 0.88rem; color: #323130; line-height: 1.6; }
+    .explanation.visible { display: block; }
+    .explanation strong { color: #0078D4; }
+
+    /* Submit */
+    .submit-wrap { text-align: center; margin-top: 32px; }
+    .submit-btn { background: #0078D4; color: #fff; border: none; border-radius: 6px; padding: 14px 48px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: background 0.15s; box-shadow: 0 2px 8px rgba(0,120,212,0.25); }
+    .submit-btn:hover { background: #005A9E; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #fff; border-radius: 12px; padding: 36px 32px; max-width: 460px; width: 100%; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.22); }
+    .modal h2 { font-size: 1.4rem; color: #0078D4; margin-bottom: 8px; }
+    .modal .score-num { font-size: 3rem; font-weight: 800; margin: 16px 0 4px; color: #323130; }
+    .modal .score-pct { font-size: 1.1rem; color: #605E5C; margin-bottom: 10px; }
+    .modal .scaled { font-size: 1rem; color: #605E5C; margin-bottom: 18px; }
+    .modal .result-badge { display: inline-block; font-size: 1.2rem; font-weight: 800; border-radius: 6px; padding: 8px 28px; margin-bottom: 22px; }
+    .result-badge.pass { background: #DFF6DD; color: #107C10; border: 2px solid #107C10; }
+    .result-badge.fail { background: #FDE7E9; color: #D13438; border: 2px solid #D13438; }
+    .modal .retake-btn { background: #0078D4; color: #fff; border: none; border-radius: 6px; padding: 11px 32px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .modal .retake-btn:hover { background: #005A9E; }
+    .modal .back-link { display: block; margin-top: 14px; color: #0078D4; font-size: 0.9rem; text-decoration: none; }
+    .modal .back-link:hover { text-decoration: underline; }
+
+    footer { background: #323130; color: #A19F9D; text-align: center; padding: 14px; font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.05rem; }
+      .question-card { padding: 18px 16px; }
+      main { padding: 20px 12px 50px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>AZ-500 Practice Exam 2</h1>
+    <p>Domain 2: Secure Networking &mdash; Questions 51&ndash;100</p>
+  </div>
+  <a class="back" href="index.html">&#8592; Back to Index</a>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label" id="progressLabel">0 of 50 answered</div>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+</div>
+
+<main id="examMain"></main>
+
+<div class="modal-overlay" id="scoreModal">
+  <div class="modal">
+    <h2>Exam Results</h2>
+    <div class="score-num" id="modalScore"></div>
+    <div class="score-pct" id="modalPct"></div>
+    <div class="scaled" id="modalScaled"></div>
+    <div class="result-badge" id="modalBadge"></div>
+    <br>
+    <button class="retake-btn" onclick="location.reload()">&#8635; Retake Exam</button>
+    <a class="back-link" href="index.html">&#8592; Back to Exam Index</a>
+  </div>
+</div>
+
+<footer>AZ-500 Master Project | Practice Exams</footer>
+
+<script>
+const questions = [
+  {
+    q: "A company has deployed web applications in Azure that are publicly accessible. They need protection against common web exploits like SQL injection and cross-site scripting. Which Azure service provides this protection?",
+    options: ["A. Azure Firewall", "B. Network Security Group", "C. Azure Web Application Firewall (WAF)", "D. Azure DDoS Protection"],
+    correct: 2,
+    explanation: "Azure WAF on Application Gateway or Azure Front Door provides centralized protection against common web vulnerabilities like SQL injection and XSS using OWASP core rule sets."
+  },
+  {
+    q: "An NSG rule has priority 100 allowing port 443 and priority 200 blocking all traffic. What is the effective result for HTTPS traffic?",
+    options: ["A. HTTPS is blocked because the block rule exists", "B. HTTPS is allowed because lower priority number wins", "C. HTTPS is blocked because deny overrides allow", "D. No traffic is affected"],
+    correct: 1,
+    explanation: "NSG rules are evaluated in priority order from lowest number (highest priority) to highest number. Priority 100 (allow 443) is evaluated before priority 200 (deny all), so HTTPS traffic is allowed."
+  },
+  {
+    q: "Your organization needs to protect Azure resources from volumetric DDoS attacks. They need detailed attack analytics and response team support. Which tier should you choose?",
+    options: ["A. Azure DDoS Protection Basic", "B. Azure DDoS Network Protection", "C. Azure Firewall Premium", "D. Azure Front Door WAF"],
+    correct: 1,
+    explanation: "Azure DDoS Network Protection (formerly Standard) provides enhanced DDoS mitigation with detailed attack telemetry, alerts, and access to the DDoS Rapid Response team."
+  },
+  {
+    q: "A VM in subnet A needs to communicate with a VM in subnet B within the same VNet, but traffic must be filtered by specific ports. What Azure service should you use?",
+    options: ["A. Azure Firewall", "B. Network Security Group on the subnet", "C. User-defined route", "D. Virtual network peering"],
+    correct: 1,
+    explanation: "Network Security Groups (NSGs) applied to subnets can filter inbound and outbound traffic between subnets within the same VNet based on port, protocol, and IP address rules."
+  },
+  {
+    q: "Your organization needs to provide secure RDP and SSH access to Azure VMs without exposing those ports to the internet. Which service should you deploy?",
+    options: ["A. VPN Gateway with P2S", "B. Azure Bastion", "C. Just-In-Time VM access", "D. Azure AD Application Proxy"],
+    correct: 1,
+    explanation: "Azure Bastion provides secure RDP/SSH access to Azure VMs directly through the Azure portal over TLS, without requiring public IP addresses or exposing RDP/SSH ports to the internet."
+  },
+  {
+    q: "An organization wants to connect their on-premises network to Azure with guaranteed bandwidth, private connectivity, and without traversing the public internet. Which service should they use?",
+    options: ["A. Site-to-Site VPN", "B. Point-to-Site VPN", "C. Azure ExpressRoute", "D. Azure Virtual WAN"],
+    correct: 2,
+    explanation: "Azure ExpressRoute provides private, dedicated connectivity between on-premises networks and Azure through a connectivity provider, without traversing the public internet."
+  },
+  {
+    q: "You need to prevent an Azure SQL Database from being accessible over the public internet while still allowing access from Azure services in the same VNet. What should you configure?",
+    options: ["A. Azure Firewall rules", "B. Private Endpoint for Azure SQL", "C. Service Endpoint for Azure SQL", "D. NSG rules blocking public access"],
+    correct: 1,
+    explanation: "Private Endpoints create a private IP address within your VNet for the Azure SQL Database, making it accessible only through private connectivity and optionally disabling public access."
+  },
+  {
+    q: "Which Azure Firewall feature allows you to filter outbound internet traffic based on fully qualified domain names (FQDNs)?",
+    options: ["A. Network rules", "B. Application rules with FQDN filtering", "C. NAT rules", "D. DNS proxy"],
+    correct: 1,
+    explanation: "Azure Firewall Application rules allow filtering based on FQDNs (like *.microsoft.com), providing layer-7 outbound traffic control compared to IP-based network rules."
+  },
+  {
+    q: "Your company has multiple VNets across regions and needs centralized network security management. Which Azure networking architecture should you implement?",
+    options: ["A. VNet peering mesh", "B. Hub-and-spoke with Azure Firewall in the hub", "C. Multiple standalone Azure Firewalls", "D. NSG-only architecture"],
+    correct: 1,
+    explanation: "Hub-and-spoke with Azure Firewall in the hub provides centralized inspection and filtering of all traffic between spokes and to the internet, simplifying security management."
+  },
+  {
+    q: "A web application in Azure needs to route traffic through WAF before it reaches the application. The application should only accept traffic from the WAF. What should you configure?",
+    options: ["A. NSG rules allowing only Azure Front Door IPs", "B. Application Gateway with WAF in front, with NSG restricting traffic to App Gateway subnet only", "C. Azure Firewall application rules", "D. Service tags in NSG for load balancer traffic"],
+    correct: 1,
+    explanation: "Deploying Application Gateway with WAF and restricting the application backend to only accept traffic from the Application Gateway subnet ensures all traffic passes through WAF inspection."
+  },
+  {
+    q: "Which NSG service tag represents all Azure load balancer probe traffic?",
+    options: ["A. Internet", "B. VirtualNetwork", "C. AzureLoadBalancer", "D. AzureTrafficManager"],
+    correct: 2,
+    explanation: "The AzureLoadBalancer service tag in NSG rules represents the IP address of Azure's infrastructure load balancer probes, necessary to allow health probes to reach your VMs."
+  },
+  {
+    q: "Your organization needs to control egress traffic from an Azure Kubernetes Service (AKS) cluster to the internet. Which solution provides the most control?",
+    options: ["A. NSG on the AKS subnet", "B. Route egress traffic through Azure Firewall using UDR", "C. AKS network policy", "D. Private cluster configuration"],
+    correct: 1,
+    explanation: "Routing AKS egress traffic through Azure Firewall using User-Defined Routes (UDR) allows you to inspect, filter, and log all outbound traffic with FQDN and application-level rules."
+  },
+  {
+    q: "What is the difference between Azure Firewall Standard and Azure Firewall Premium?",
+    options: ["A. Premium supports more rules", "B. Premium adds IDPS, TLS inspection, URL filtering, and web categories", "C. Standard supports VNet integration while Premium doesn't", "D. Premium is only for enterprise subscriptions"],
+    correct: 1,
+    explanation: "Azure Firewall Premium adds advanced features: Intrusion Detection and Prevention System (IDPS), TLS inspection for encrypted traffic, URL filtering, and web category filtering."
+  },
+  {
+    q: "A company needs to apply the same NSG rules to multiple VMs regardless of their subnet. Which feature allows grouping VMs logically for NSG rules?",
+    options: ["A. Azure Load Balancer backend pool", "B. Application Security Groups (ASGs)", "C. Azure AD groups", "D. Virtual machine scale sets"],
+    correct: 1,
+    explanation: "Application Security Groups (ASGs) allow you to define network security groups based on application structure, grouping VMs by role (like WebServers, DBServers) for simplified NSG rule management."
+  },
+  {
+    q: "Your company wants to ensure that traffic between two VNet peers must pass through an Azure Firewall for inspection. What must you configure?",
+    options: ["A. VNet peering with gateway transit", "B. User-Defined Routes (UDR) forcing traffic to Azure Firewall private IP", "C. NSG on both VNet subnets", "D. Azure Firewall network rules allowing peered VNet traffic"],
+    correct: 1,
+    explanation: "By default, peered VNet traffic flows directly. User-Defined Routes (UDR) must be configured in both peered VNets to force traffic through the Azure Firewall's private IP for inspection."
+  },
+  {
+    q: "Which type of VPN connection is best for remote users needing to connect to Azure resources from their individual devices?",
+    options: ["A. Site-to-Site VPN", "B. VNet-to-VNet VPN", "C. ExpressRoute", "D. Point-to-Site VPN"],
+    correct: 3,
+    explanation: "Point-to-Site (P2S) VPN connections allow individual remote users to connect to an Azure VNet from their devices using clients like OpenVPN, IKEv2, or SSTP."
+  },
+  {
+    q: "Azure DDoS Protection is deployed at which layer of the Azure infrastructure?",
+    options: ["A. At the individual VM level", "B. At the VNet level and Azure network edge", "C. At the Azure Firewall level only", "D. At the Application Gateway level only"],
+    correct: 1,
+    explanation: "Azure DDoS Network Protection is enabled on virtual networks and provides protection at the Azure network edge, absorbing attack traffic before it can reach your resources."
+  },
+  {
+    q: "Which Private Endpoint feature ensures DNS queries resolve to the private IP address instead of the public endpoint?",
+    options: ["A. Private DNS zone integration", "B. NSG on the private endpoint subnet", "C. Azure Firewall DNS proxy", "D. Custom DNS server configuration only"],
+    correct: 0,
+    explanation: "Integrating a Private Endpoint with a Private DNS Zone ensures DNS queries for the service resolve to the private IP address of the endpoint within the VNet, not the public IP."
+  },
+  {
+    q: "Your organization needs to inspect TLS-encrypted traffic passing through Azure Firewall. Which tier supports this?",
+    options: ["A. Azure Firewall Standard", "B. Azure Firewall Basic", "C. Azure Firewall Premium with TLS inspection enabled", "D. Azure Application Gateway WAF"],
+    correct: 2,
+    explanation: "TLS inspection (SSL termination and re-encryption) is an Azure Firewall Premium feature that allows the firewall to decrypt, inspect, and re-encrypt HTTPS traffic."
+  },
+  {
+    q: "What is the purpose of configuring \"forced tunneling\" on a VPN Gateway?",
+    options: ["A. To speed up VPN connection establishment", "B. To route all internet-bound traffic from Azure VMs back through the on-premises network", "C. To force all Azure resources to use a specific subnet", "D. To enforce encryption on all VPN traffic"],
+    correct: 1,
+    explanation: "Forced tunneling routes all internet-bound traffic from Azure VMs through the VPN tunnel back to on-premises, allowing on-premises security controls (like proxy/firewall) to inspect that traffic."
+  },
+  {
+    q: "A company needs to protect a public-facing web application from SQL injection, XSS, and HTTP protocol violations. Which WAF mode actually blocks these attacks?",
+    options: ["A. Detection mode", "B. Prevention mode", "C. Monitoring mode", "D. Audit mode"],
+    correct: 1,
+    explanation: "WAF Prevention mode actively blocks requests that match attack patterns. Detection mode only logs the attacks without blocking them, making Prevention mode required for active protection."
+  },
+  {
+    q: "Which Azure service allows you to centrally manage routing and security policies across multiple regions with a managed hub?",
+    options: ["A. VNet Global Peering", "B. Azure Virtual WAN with Secured Virtual Hub", "C. Hub-and-spoke with multiple firewalls", "D. Azure Traffic Manager"],
+    correct: 1,
+    explanation: "Azure Virtual WAN with Secured Virtual Hub provides a Microsoft-managed network hub with integrated Azure Firewall, simplifying large-scale network security across multiple regions."
+  },
+  {
+    q: "Your NSG has a rule denying all inbound traffic at priority 4096. You need to allow HTTPS from specific IPs. What priority number ensures your allow rule takes precedence?",
+    options: ["A. 4097", "B. Any number from 100-4095 lower than the deny rule", "C. 4096 (same priority)", "D. 5000"],
+    correct: 1,
+    explanation: "NSG rules are processed from lowest to highest priority number. A rule with a lower number than 4096 will be evaluated first, allowing the specific HTTPS traffic before the deny-all rule."
+  },
+  {
+    q: "Which Azure Firewall rule type is used to configure DNAT (Destination Network Address Translation) for inbound connections?",
+    options: ["A. Application rules", "B. Network rules", "C. NAT rules", "D. Infrastructure rules"],
+    correct: 2,
+    explanation: "NAT rules in Azure Firewall translate inbound traffic (DNAT) from the firewall's public IP and port to a private IP and port of a backend resource."
+  },
+  {
+    q: "A company needs to ensure that blob storage is accessible only from within specific VNets, not from the public internet. Which feature should they configure?",
+    options: ["A. Storage account firewall with VNet rules (Service Endpoints)", "B. Private Endpoint only", "C. SAS token restrictions", "D. Azure Firewall application rules"],
+    correct: 0,
+    explanation: "Storage account firewall with VNet rules (using Service Endpoints) restricts access to the storage account to traffic from specified VNets while blocking all other public access."
+  },
+  {
+    q: "What is the key security difference between VNet Service Endpoints and Private Endpoints for Azure PaaS services?",
+    options: ["A. Service Endpoints are more secure", "B. Private Endpoints keep traffic on the Azure backbone while Service Endpoints still use public IPs with restricted access", "C. They provide identical security levels", "D. Service Endpoints assign a private IP while Private Endpoints don't"],
+    correct: 1,
+    explanation: "Private Endpoints assign a private IP within your VNet and route traffic through the Microsoft backbone. Service Endpoints keep the public endpoint but restrict which VNets can access it."
+  },
+  {
+    q: "Your company's ExpressRoute circuit needs redundancy. What is the recommended configuration?",
+    options: ["A. Single ExpressRoute circuit with BGP", "B. Two ExpressRoute circuits from different providers/peering locations", "C. ExpressRoute with Site-to-Site VPN backup", "D. ExpressRoute FastPath configuration"],
+    correct: 1,
+    explanation: "Microsoft recommends two ExpressRoute circuits from different service providers or peering locations for circuit-level redundancy to ensure high availability and protection against single provider failures."
+  },
+  {
+    q: "Which NSG flow log feature allows you to determine if a specific network connection is being allowed or denied?",
+    options: ["A. Azure Monitor alerts", "B. Traffic Analytics with NSG flow logs", "C. Azure Firewall logs", "D. VNet network watcher connection monitor"],
+    correct: 1,
+    explanation: "Traffic Analytics processes NSG flow logs to provide visibility into traffic patterns, allowing you to see whether specific connections are allowed or denied and by which NSG rule."
+  },
+  {
+    q: "A company wants to block access to certain website categories (social media, gambling) for all Azure VM outbound traffic. Which Azure service provides URL category filtering?",
+    options: ["A. Azure Firewall Standard with application rules", "B. Azure Firewall Premium with web categories", "C. NSG application security groups", "D. Azure Front Door routing rules"],
+    correct: 1,
+    explanation: "Azure Firewall Premium includes web category filtering, which allows you to allow or block traffic to entire website categories (like social media or gambling) without managing individual URLs."
+  },
+  {
+    q: "You need to inspect inbound traffic for known malicious patterns and threat signatures entering your Azure VNet. Which Azure Firewall Premium feature provides this?",
+    options: ["A. TLS Inspection", "B. IDPS (Intrusion Detection and Prevention System)", "C. URL Filtering", "D. Application rules with FQDN tags"],
+    correct: 1,
+    explanation: "Azure Firewall Premium's IDPS feature uses signature-based detection to identify and optionally block network traffic matching known malicious patterns and threat intelligence."
+  },
+  {
+    q: "Which type of NSG rule do you need to allow Azure AD authentication traffic through a restrictive NSG?",
+    options: ["A. Allow inbound from Internet service tag", "B. Allow outbound to AzureActiveDirectory service tag", "C. Allow outbound to AzureCloud service tag", "D. Allow inbound from AzureLoadBalancer"],
+    correct: 1,
+    explanation: "To allow Azure AD authentication from VMs behind a restrictive NSG, you need an outbound rule allowing traffic to the AzureActiveDirectory service tag, which represents Azure AD IP ranges."
+  },
+  {
+    q: "A company needs private connectivity to Azure PaaS services, and the private endpoint IP must be resolvable by on-premises DNS servers. What configuration is needed?",
+    options: ["A. Configure on-premises DNS forwarder to Azure Private DNS zones", "B. Add static host entries on-premises", "C. Configure public DNS override on-premises", "D. Deploy separate DNS servers in Azure"],
+    correct: 0,
+    explanation: "On-premises DNS servers must be configured to forward DNS queries for private endpoint FQDNs to Azure DNS (168.63.129.16) so they resolve to the private IP, enabling on-premises connectivity."
+  },
+  {
+    q: "Azure Bastion is deployed in which subnet of a virtual network?",
+    options: ["A. GatewaySubnet", "B. AzureFirewallSubnet", "C. AzureBastionSubnet", "D. ManagementSubnet"],
+    correct: 2,
+    explanation: "Azure Bastion requires a dedicated subnet named exactly \"AzureBastionSubnet\" with a minimum /26 CIDR range within the virtual network it will serve."
+  },
+  {
+    q: "What is the default maximum number of NSG security rules (inbound or outbound) per Network Security Group?",
+    options: ["A. 100 per direction", "B. 1,000 per direction", "C. 500 per direction", "D. 4,096 per direction"],
+    correct: 1,
+    explanation: "Azure NSGs support a default maximum of 1,000 inbound and 1,000 outbound security rules per NSG. This limit can be increased by contacting Azure Support."
+  },
+  {
+    q: "Which Azure Firewall logging destination provides the lowest latency for real-time threat detection?",
+    options: ["A. Storage account archival", "B. Log Analytics workspace", "C. Event Hub streaming", "D. Diagnostic settings to SIEM"],
+    correct: 2,
+    explanation: "Event Hub streaming provides the lowest latency for real-time log ingestion, making it ideal for integration with real-time SIEM systems for immediate threat detection."
+  },
+  {
+    q: "A security team needs to ensure that all traffic between on-premises and Azure is encrypted and authenticated. Which ExpressRoute feature provides layer-2 encryption?",
+    options: ["A. ExpressRoute Private Peering", "B. ExpressRoute FastPath", "C. MACsec encryption on ExpressRoute Direct", "D. IPsec over ExpressRoute"],
+    correct: 2,
+    explanation: "MACsec (IEEE 802.1AE) encryption is available on ExpressRoute Direct ports, providing layer-2 encryption between your edge routers and Microsoft's edge routers."
+  },
+  {
+    q: "Your organization discovered that an NSG is blocking Azure Monitor agent connectivity from VMs. Which service tag should you allow outbound to fix this?",
+    options: ["A. AzureMonitor", "B. AzureCloud", "C. WindowsVirtualDesktop", "D. AzureActiveDirectory"],
+    correct: 0,
+    explanation: "The AzureMonitor service tag represents the IP address ranges used by Azure Monitor services. Adding an outbound NSG rule allowing traffic to AzureMonitor resolves connectivity issues for monitoring agents."
+  },
+  {
+    q: "What is the primary purpose of Azure Network Watcher's IP flow verify feature?",
+    options: ["A. Check DNS resolution", "B. Verify if a specific packet would be allowed or denied by NSG rules", "C. Monitor VPN connectivity", "D. Capture network traffic packets"],
+    correct: 1,
+    explanation: "IP flow verify tests whether traffic would be allowed or denied by evaluating NSG rules for a specific combination of source/destination IP, port, protocol, and direction."
+  },
+  {
+    q: "A company deployed Azure Front Door with WAF for their global application. What is the benefit of WAF at the Front Door level versus Application Gateway?",
+    options: ["A. Front Door WAF only supports custom rules", "B. Front Door WAF provides global protection at the edge, closer to attackers, with better DDoS absorbing capacity", "C. Application Gateway WAF is more feature-rich", "D. There is no security difference"],
+    correct: 1,
+    explanation: "WAF at Azure Front Door operates at Microsoft's global edge POPs, blocking malicious traffic closer to the source before it reaches the Azure region, reducing origin load and improving latency."
+  },
+  {
+    q: "Which feature allows Azure Firewall to act as a DNS server and selectively forward queries to custom DNS servers?",
+    options: ["A. Azure Private DNS resolver", "B. Azure Firewall DNS proxy", "C. Azure DNS Private zones", "D. Network Virtual Appliance DNS"],
+    correct: 1,
+    explanation: "Azure Firewall DNS proxy intercepts DNS queries, allows FQDN-based filtering, and forwards queries to configured DNS servers, enabling FQDN filtering for non-HTTP/S traffic."
+  },
+  {
+    q: "Your team needs to prevent specific Azure VM subnets from accessing the internet while still allowing Azure service connectivity. What approach satisfies this?",
+    options: ["A. Remove the default internet route and add Service Endpoints for needed Azure services", "B. Apply NSG deny-all outbound rules", "C. Disable public IP on all VMs", "D. Configure forced tunneling to on-premises"],
+    correct: 0,
+    explanation: "Removing the default 0.0.0.0/0 internet route and using Service Endpoints or Private Endpoints for Azure PaaS services allows internal Azure service traffic without enabling general internet access."
+  },
+  {
+    q: "Which Azure service can inspect traffic between VMs within the same subnet?",
+    options: ["A. NSG applied to the NIC", "B. Azure Firewall", "C. User-Defined Routes to a network virtual appliance", "D. Application Security Groups"],
+    correct: 0,
+    explanation: "NSGs applied at the Network Interface Card (NIC) level can filter traffic between VMs in the same subnet, as subnet-level NSGs only control traffic entering/leaving the subnet, not intra-subnet traffic."
+  },
+  {
+    q: "A company needs to filter and inspect all traffic from spoke VNets to on-premises through a centralized hub. Which routing configuration is required?",
+    options: ["A. BGP route injection only", "B. UDR in spoke VNets pointing default gateway to Azure Firewall in hub VNet", "C. VNet peering with gateway transit", "D. ExpressRoute route filtering"],
+    correct: 1,
+    explanation: "UDRs (User-Defined Routes) in spoke VNets override default routing and direct traffic through the Azure Firewall in the hub VNet, enabling centralized inspection of spoke-to-on-premises traffic."
+  },
+  {
+    q: "What is the recommended subnet size for Azure Bastion to support all features including IP-based connections?",
+    options: ["A. /27", "B. /29", "C. /26", "D. /24"],
+    correct: 2,
+    explanation: "Microsoft recommends a /26 subnet for AzureBastionSubnet to support all Bastion features and future scale, though /27 is the minimum for the Standard SKU."
+  },
+  {
+    q: "Which WAF rule set is based on OWASP and is commonly used in Azure WAF?",
+    options: ["A. Microsoft Default Rule Set (DRS)", "B. OWASP ModSecurity Core Rule Set (CRS)", "C. Azure Managed Rule Set", "D. Custom rule set only"],
+    correct: 1,
+    explanation: "Azure WAF uses the OWASP ModSecurity Core Rule Set (CRS) versions like 3.0, 3.1, or 3.2, which protect against the OWASP Top 10 vulnerabilities and other common web attacks."
+  },
+  {
+    q: "You need to configure an NSG to allow Azure Backup service to connect to VMs. Which service tag should you allow?",
+    options: ["A. AzureBackup", "B. AzureStorage", "C. AzureCloud", "D. Internet"],
+    correct: 0,
+    explanation: "The AzureBackup service tag represents IP address ranges used by Azure Backup, and adding an outbound NSG allow rule for this tag enables Azure Backup to communicate with VMs."
+  },
+  {
+    q: "What is the primary security benefit of Private Link over Service Endpoints?",
+    options: ["A. Private Link is cheaper", "B. Private Link assigns a private IP in your VNet; the service is not accessible from the public internet at all when public access is disabled", "C. Service Endpoints are less secure", "D. Private Link doesn't require DNS configuration"],
+    correct: 1,
+    explanation: "Private Link creates a private IP in your VNet and allows completely disabling public internet access to the service. Service Endpoints restrict which VNets can access the service but the service still has a public endpoint."
+  },
+  {
+    q: "Which protocol does VPN Gateway use for IKEv2 VPN connections with Azure?",
+    options: ["A. SSL/TLS", "B. IPsec/IKEv2", "C. WireGuard", "D. OpenVPN with TCP 443"],
+    correct: 1,
+    explanation: "IKEv2 VPN in Azure VPN Gateway uses the IPsec/IKEv2 protocol suite for establishing secure VPN tunnels, providing strong authentication and encryption for site-to-site and point-to-site connections."
+  },
+  {
+    q: "Your company wants to block access from Tor exit nodes and known malicious IPs at the network level automatically. Which Azure feature provides this using threat intelligence?",
+    options: ["A. NSG with IP deny list", "B. Azure Firewall with threat intelligence-based filtering", "C. Azure DDoS Protection", "D. Azure Sentinel network rules"],
+    correct: 1,
+    explanation: "Azure Firewall Threat Intelligence-based filtering uses Microsoft's threat intelligence feed to automatically alert on or deny traffic from known malicious IP addresses and domains including Tor exit nodes."
+  },
+  {
+    q: "A company deployed a new VNet peering between VNet-A and VNet-B. Users in VNet-A cannot reach VMs in VNet-B. What should you check first?",
+    options: ["A. ExpressRoute circuit status", "B. Whether peering is configured in BOTH directions and peering state is Connected", "C. DNS resolution settings", "D. Azure Firewall rules between VNets"],
+    correct: 1,
+    explanation: "VNet peering must be created in both VNets (VNet-A to VNet-B AND VNet-B to VNet-A). If only one side is configured, the peering state shows as \"Initiated\" rather than \"Connected\" and traffic cannot flow."
+  }
+];
+
+let answeredCount = 0;
+const answered = new Array(questions.length).fill(false);
+const QUESTION_OFFSET = 50;
+
+function buildExam() {
+  const main = document.getElementById('examMain');
+  let html = '';
+  questions.forEach((q, i) => {
+    html += `
+    <div class="question-card" id="card-${i}">
+      <div class="q-header">
+        <span class="q-num">Question ${i + 1 + QUESTION_OFFSET}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="options" id="options-${i}">
+        ${q.options.map((opt, j) => `
+          <div>
+            <input type="radio" name="q${i}" id="q${i}o${j}" value="${j}">
+            <label for="q${i}o${j}" id="label-${i}-${j}">${opt}</label>
+          </div>
+        `).join('')}
+      </div>
+      <label class="review-row" for="review-${i}">
+        <input type="checkbox" id="review-${i}" onchange="toggleReview(${i})"> Mark for Review
+      </label>
+      <button class="show-btn" id="showbtn-${i}" onclick="showAnswer(${i})">Show Answer</button>
+      <div class="explanation" id="exp-${i}"><strong>Explanation:</strong> ${q.explanation}</div>
+    </div>`;
+  });
+  html += `<div class="submit-wrap"><button class="submit-btn" onclick="submitExam()">&#10003; Submit Exam</button></div>`;
+  main.innerHTML = html;
+}
+
+function showAnswer(qIndex) {
+  const q = questions[qIndex];
+  const btn = document.getElementById(`showbtn-${qIndex}`);
+  if (btn.disabled) return;
+
+  q.options.forEach((_, j) => {
+    const lbl = document.getElementById(`label-${qIndex}-${j}`);
+    if (j === q.correct) {
+      lbl.classList.add('option-correct');
+    } else {
+      lbl.classList.add('option-incorrect');
+    }
+  });
+
+  q.options.forEach((_, j) => {
+    const radio = document.getElementById(`q${qIndex}o${j}`);
+    if (radio) radio.disabled = true;
+  });
+
+  btn.disabled = true;
+  btn.textContent = 'Answer Shown \u2713';
+
+  document.getElementById(`exp-${qIndex}`).classList.add('visible');
+
+  if (!answered[qIndex]) {
+    answered[qIndex] = true;
+    answeredCount++;
+    updateProgress();
+  }
+}
+
+function updateProgress() {
+  const pct = (answeredCount / questions.length) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${answeredCount} of ${questions.length} answered`;
+}
+
+function toggleReview(qIndex) {
+  const card = document.getElementById(`card-${qIndex}`);
+  const cb = document.getElementById(`review-${qIndex}`);
+  if (cb.checked) {
+    card.classList.add('reviewed');
+  } else {
+    card.classList.remove('reviewed');
+  }
+}
+
+function submitExam() {
+  let correct = 0;
+  questions.forEach((q, i) => {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    if (selected && parseInt(selected.value) === q.correct) {
+      correct++;
+    }
+  });
+
+  const total = questions.length;
+  const pct = Math.round((correct / total) * 100);
+  const scaled = pct * 10;
+  const pass = scaled >= 700;
+
+  document.getElementById('modalScore').textContent = `${correct} / ${total}`;
+  document.getElementById('modalPct').textContent = `${pct}% Correct`;
+  document.getElementById('modalScaled').textContent = `Scaled Score: ${scaled} / 1000`;
+  const badge = document.getElementById('modalBadge');
+  badge.textContent = pass ? '\u2713 PASS' : '\u2717 FAIL';
+  badge.className = 'result-badge ' + (pass ? 'pass' : 'fail');
+
+  document.getElementById('scoreModal').classList.add('active');
+}
+
+buildExam();
+updateProgress();
+</script>
+</body>
+</html>
