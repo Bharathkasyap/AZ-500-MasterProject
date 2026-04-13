@@ -278,19 +278,49 @@ Azure RBAC controls access to **Azure resources** (separate from Azure AD role a
 ## 🔬 Practice Questions
 
 **Q1.** A company requires that all Global Administrators activate their role for a maximum of 2 hours and must provide an approval before activation. Which Azure service should be configured?
+
+<details>
+<summary>Show Answer &amp; Explanation</summary>
+
 > **Answer:** Azure AD Privileged Identity Management (PIM) — configure eligible assignment with approval required and maximum activation duration of 2 hours.
 
+</details>
+
 **Q2.** You need to implement a Conditional Access policy that requires MFA only when users sign in from outside the corporate network. What should you configure as the condition?
+
+<details>
+<summary>Show Answer &amp; Explanation</summary>
+
 > **Answer:** Named locations — define the corporate IP range as a trusted named location, then set the policy to apply when the location is **not** the trusted named location.
 
+</details>
+
 **Q3.** A web application running on an Azure VM needs to read secrets from Azure Key Vault without storing any credentials. What is the recommended approach?
+
+<details>
+<summary>Show Answer &amp; Explanation</summary>
+
 > **Answer:** Enable a **system-assigned managed identity** on the VM and grant it the **Key Vault Secrets User** role (or Key Vault access policy) on the Key Vault.
 
+</details>
+
 **Q4.** What is the minimum Azure AD license required to use Azure AD Identity Protection?
+
+<details>
+<summary>Show Answer &amp; Explanation</summary>
+
 > **Answer:** Azure AD Premium P2.
 
+</details>
+
 **Q5.** A user has the Contributor role on a resource group and the Reader role on a specific storage account in that resource group. What is the user's effective permission on the storage account?
+
+<details>
+<summary>Show Answer &amp; Explanation</summary>
+
 > **Answer:** Contributor (more permissive role wins; RBAC uses additive permissions — the most permissive applicable role applies).
+
+</details>
 
 ---
 
