@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AZ-500 Practice Exam 3 - Secure Compute, Storage, and Databases</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #F3F2F1; color: #323130; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    header { background: #0078D4; color: #fff; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    header h1 { font-size: 1.3rem; font-weight: 700; }
+    header p { font-size: 0.9rem; opacity: 0.88; margin-top: 2px; }
+    header a.back { color: #fff; text-decoration: none; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.4); border-radius: 5px; padding: 7px 14px; font-size: 0.88rem; font-weight: 600; white-space: nowrap; transition: background 0.15s; }
+    header a.back:hover { background: rgba(255,255,255,0.3); }
+
+    /* Progress */
+    .progress-wrap { background: #fff; padding: 14px 24px; border-bottom: 1px solid #E1DFDD; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }
+    .progress-label { font-size: 0.88rem; color: #605E5C; margin-bottom: 6px; font-weight: 600; }
+    .progress-bar-bg { background: #E1DFDD; border-radius: 999px; height: 10px; overflow: hidden; }
+    .progress-bar-fill { background: #0078D4; height: 100%; border-radius: 999px; transition: width 0.3s ease; width: 0%; }
+
+    /* Main */
+    main { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; width: 100%; flex: 1; }
+
+    /* Question card */
+    .question-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; padding: 24px 26px; border-left: 5px solid #0078D4; }
+    .question-card.reviewed { border-left-color: #F7630C; }
+    .q-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .q-num { font-size: 0.78rem; font-weight: 700; color: #0078D4; background: #EFF6FC; border: 1px solid #C7E0F4; border-radius: 4px; padding: 3px 9px; white-space: nowrap; flex-shrink: 0; }
+    .q-text { font-size: 0.98rem; line-height: 1.65; color: #201F1E; flex: 1; }
+    .options { margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
+    .options input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .options label { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border: 1.5px solid #E1DFDD; border-radius: 6px; cursor: pointer; font-size: 0.93rem; line-height: 1.55; transition: background 0.12s, border-color 0.12s; }
+    .options label:hover { background: #EFF6FC; border-color: #C7E0F4; }
+    .options input[type="radio"]:checked + label { background: #EFF6FC; border-color: #0078D4; font-weight: 600; }
+    .option-correct { background: #DFF6DD !important; border: 2px solid #107C10 !important; color: #107C10; font-weight: bold !important; }
+    .option-incorrect { background: #FDE7E9 !important; border: 2px solid #D13438 !important; color: #D13438 !important; }
+
+    /* Review checkbox */
+    .review-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.85rem; color: #605E5C; cursor: pointer; user-select: none; width: fit-content; }
+    .review-row input[type="checkbox"] { accent-color: #F7630C; width: 15px; height: 15px; cursor: pointer; }
+
+    /* Show answer button */
+    .show-btn { margin-top: 14px; background: #005A9E; color: #fff; border: none; border-radius: 5px; padding: 8px 18px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .show-btn:hover:not(:disabled) { background: #004880; }
+    .show-btn:disabled { background: #C8C6C4; color: #605E5C; cursor: default; }
+
+    /* Explanation */
+    .explanation { display: none; margin-top: 14px; background: #F3F2F1; border-left: 4px solid #0078D4; border-radius: 4px; padding: 12px 16px; font-size: 0.88rem; color: #323130; line-height: 1.6; }
+    .explanation.visible { display: block; }
+    .explanation strong { color: #0078D4; }
+
+    /* Submit */
+    .submit-wrap { text-align: center; margin-top: 32px; }
+    .submit-btn { background: #0078D4; color: #fff; border: none; border-radius: 6px; padding: 14px 48px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: background 0.15s; box-shadow: 0 2px 8px rgba(0,120,212,0.25); }
+    .submit-btn:hover { background: #005A9E; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #fff; border-radius: 12px; padding: 36px 32px; max-width: 460px; width: 100%; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.22); }
+    .modal h2 { font-size: 1.4rem; color: #0078D4; margin-bottom: 8px; }
+    .modal .score-num { font-size: 3rem; font-weight: 800; margin: 16px 0 4px; color: #323130; }
+    .modal .score-pct { font-size: 1.1rem; color: #605E5C; margin-bottom: 10px; }
+    .modal .scaled { font-size: 1rem; color: #605E5C; margin-bottom: 18px; }
+    .modal .result-badge { display: inline-block; font-size: 1.2rem; font-weight: 800; border-radius: 6px; padding: 8px 28px; margin-bottom: 22px; }
+    .result-badge.pass { background: #DFF6DD; color: #107C10; border: 2px solid #107C10; }
+    .result-badge.fail { background: #FDE7E9; color: #D13438; border: 2px solid #D13438; }
+    .modal .retake-btn { background: #0078D4; color: #fff; border: none; border-radius: 6px; padding: 11px 32px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .modal .retake-btn:hover { background: #005A9E; }
+    .modal .back-link { display: block; margin-top: 14px; color: #0078D4; font-size: 0.9rem; text-decoration: none; }
+    .modal .back-link:hover { text-decoration: underline; }
+
+    footer { background: #323130; color: #A19F9D; text-align: center; padding: 14px; font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.05rem; }
+      .question-card { padding: 18px 16px; }
+      main { padding: 20px 12px 50px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>AZ-500 Practice Exam 3</h1>
+    <p>Domain 3: Secure Compute, Storage, and Databases &mdash; Questions 101&ndash;150</p>
+  </div>
+  <a class="back" href="index.html">&#8592; Back to Index</a>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-label" id="progressLabel">0 of 50 answered</div>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+</div>
+
+<main id="examMain"></main>
+
+<div class="modal-overlay" id="scoreModal">
+  <div class="modal">
+    <h2>Exam Results</h2>
+    <div class="score-num" id="modalScore"></div>
+    <div class="score-pct" id="modalPct"></div>
+    <div class="scaled" id="modalScaled"></div>
+    <div class="result-badge" id="modalBadge"></div>
+    <br>
+    <button class="retake-btn" onclick="location.reload()">&#8635; Retake Exam</button>
+    <a class="back-link" href="index.html">&#8592; Back to Exam Index</a>
+  </div>
+</div>
+
+<footer>AZ-500 Master Project | Practice Exams</footer>
+
+<script>
+const questions = [
+  {
+    q: "A company wants to ensure that RDP port 3389 is only open on Azure VMs when an administrator explicitly requests access, for a limited time. Which feature provides this?",
+    options: ["A. Azure Bastion", "B. Just-In-Time (JIT) VM Access in Microsoft Defender for Cloud", "C. NSG with scheduled rules", "D. Azure Firewall DNAT rules"],
+    correct: 1,
+    explanation: "Just-In-Time VM Access locks down inbound traffic to Azure VMs by default and only opens specific ports for specific source IPs during a limited time window when requested."
+  },
+  {
+    q: "Your organization stores sensitive data in Azure Blob Storage. You need to encrypt data at rest with customer-managed keys stored in Azure Key Vault. What should you configure?",
+    options: ["A. Azure Storage client-side encryption", "B. Storage Service Encryption with customer-managed keys (CMK)", "C. SAS tokens with encryption parameters", "D. Azure Disk Encryption"],
+    correct: 1,
+    explanation: "Azure Storage Service Encryption (SSE) supports Customer-Managed Keys (CMK) stored in Azure Key Vault, giving you control over the encryption keys used to protect data at rest."
+  },
+  {
+    q: "What Azure feature scans container images in Azure Container Registry for known vulnerabilities?",
+    options: ["A. Microsoft Defender for Containers (Defender for container registries)", "B. Azure Security Center image scanning", "C. Azure Policy for container images", "D. AKS admission controller"],
+    correct: 0,
+    explanation: "Microsoft Defender for Containers includes container registry scanning that assesses container images for OS and application vulnerabilities when pushed to Azure Container Registry."
+  },
+  {
+    q: "A developer accidentally checked in a storage account access key to a public GitHub repository. What is the FIRST action you should take?",
+    options: ["A. Delete the storage account", "B. Rotate/regenerate the compromised access key immediately", "C. Enable soft delete on the storage account", "D. File a security incident report"],
+    correct: 1,
+    explanation: "Immediately rotating/regenerating the compromised storage account access key invalidates the exposed key, preventing unauthorized access. This should be the first action before any investigation."
+  },
+  {
+    q: "Which Azure SQL Database feature encrypts data in transit and at rest, including in memory during queries, using always-encrypted column keys?",
+    options: ["A. Transparent Data Encryption (TDE)", "B. Always Encrypted", "C. Dynamic Data Masking", "D. Row-Level Security"],
+    correct: 1,
+    explanation: "Always Encrypted ensures data is encrypted at the client side and never exposed in plaintext to the database engine, protecting sensitive data even from database administrators."
+  },
+  {
+    q: "You need to implement Transparent Data Encryption (TDE) for Azure SQL Database with a customer-managed key. What is this configuration called?",
+    options: ["A. Bring Your Own Key (BYOK) TDE", "B. Service-managed TDE", "C. Always Encrypted CMK", "D. Column-level encryption"],
+    correct: 0,
+    explanation: "TDE with customer-managed keys (BYOK - Bring Your Own Key) stores the TDE protector key in Azure Key Vault under your control, rather than using a Microsoft-managed key."
+  },
+  {
+    q: "An Azure VM disk contains sensitive data. Which Azure service encrypts both the OS disk and data disks using BitLocker (Windows) or DM-Crypt (Linux)?",
+    options: ["A. Azure Storage Service Encryption", "B. Azure Disk Encryption (ADE)", "C. Azure Confidential Computing", "D. Host-based encryption"],
+    correct: 1,
+    explanation: "Azure Disk Encryption uses BitLocker on Windows and DM-Crypt on Linux to encrypt OS and data disks, with encryption keys stored in Azure Key Vault."
+  },
+  {
+    q: "Which AKS security feature restricts what system calls containers can make to the host kernel?",
+    options: ["A. Azure Policy pod security", "B. Seccomp profiles", "C. Network policies", "D. RBAC for Kubernetes"],
+    correct: 1,
+    explanation: "Seccomp (Secure Computing Mode) profiles restrict the system calls a container can make to the host kernel, reducing the attack surface if a container is compromised."
+  },
+  {
+    q: "You need to ensure Azure Functions can access Key Vault secrets without storing credentials. What is the recommended approach?",
+    options: ["A. Store the Key Vault access key in application settings", "B. Use managed identity and Key Vault references in application settings", "C. Use service principal client secret in environment variables", "D. Embed the secret value directly in the function code"],
+    correct: 1,
+    explanation: "Managed identity with Key Vault references allows Azure Functions to access secrets securely. The @Microsoft.KeyVault() reference syntax resolves secrets at runtime without storing credentials."
+  },
+  {
+    q: "Which Azure SQL Database security feature masks sensitive data in query results for non-privileged users without modifying the data itself?",
+    options: ["A. Always Encrypted", "B. Transparent Data Encryption", "C. Dynamic Data Masking (DDM)", "D. Row-Level Security"],
+    correct: 2,
+    explanation: "Dynamic Data Masking limits sensitive data exposure by masking it for non-privileged users in query results (e.g., showing XXXX-4242 instead of a credit card number) without encrypting the underlying data."
+  },
+  {
+    q: "A company wants to restrict access to Azure Container Instances to only authenticated users via managed identity. What should they configure?",
+    options: ["A. ACR with admin user enabled", "B. Pull from ACR using managed identity assigned to the container group", "C. Service principal credentials in container environment variables", "D. Public ACR with access tokens"],
+    correct: 1,
+    explanation: "Assigning a managed identity to the container group and granting it AcrPull permissions on the Azure Container Registry enables authenticated pulls without storing registry credentials."
+  },
+  {
+    q: "Which Azure Key Vault access control model provides fine-grained permissions using Azure RBAC at the secret, key, and certificate level?",
+    options: ["A. Key Vault access policies", "B. Azure RBAC for Key Vault data plane", "C. Key Vault network firewall", "D. Managed HSM access control"],
+    correct: 1,
+    explanation: "Azure RBAC for Key Vault data plane provides fine-grained permissions (e.g., Key Vault Secrets User for specific secrets) and integrates with Azure AD identity governance, unlike the older access policy model."
+  },
+  {
+    q: "What security feature should you enable on Azure App Service to prevent the application from being co-located with other tenants' apps on shared infrastructure?",
+    options: ["A. Always-on SSL", "B. Managed identity", "C. App isolation using App Service Environment (ASE)", "D. Authentication/Authorization middleware"],
+    correct: 2,
+    explanation: "App Service Environments (ASE) deploy App Service on dedicated infrastructure within a VNet, preventing other tenants' apps from sharing underlying compute resources."
+  },
+  {
+    q: "Which Azure Cosmos DB security feature controls access at the document/item level based on user identity?",
+    options: ["A. Cosmos DB firewall rules", "B. Resource tokens for fine-grained access", "C. Always Encrypted for Cosmos DB", "D. Private Endpoint"],
+    correct: 1,
+    explanation: "Cosmos DB resource tokens provide user-level permissions scoped to specific containers, documents, or stored procedures, enabling fine-grained access control beyond account-level or database-level keys."
+  },
+  {
+    q: "A Shared Access Signature (SAS) token for Azure Storage was exposed. What should you do to immediately revoke it?",
+    options: ["A. Delete the storage account", "B. Rotate the storage account key used to sign the SAS", "C. Change the storage account firewall rules", "D. Remove the blob container"],
+    correct: 1,
+    explanation: "Service SAS tokens are signed with the storage account key, so rotating the key immediately invalidates all SAS tokens signed with that key, preventing further unauthorized access."
+  },
+  {
+    q: "Which feature in Microsoft Defender for Servers provides vulnerability assessment for Azure VMs?",
+    options: ["A. Just-In-Time VM Access", "B. Adaptive application controls", "C. Integrated vulnerability assessment (Qualys or Microsoft Defender Vulnerability Management)", "D. File integrity monitoring"],
+    correct: 2,
+    explanation: "Microsoft Defender for Servers includes integrated vulnerability assessment powered by Qualys or Microsoft Defender Vulnerability Management, scanning VMs for OS and application vulnerabilities."
+  },
+  {
+    q: "Your AKS cluster processes sensitive data and needs to ensure container images are from trusted registries only. What should you implement?",
+    options: ["A. Azure Policy with allowed container registries policy", "B. NSG rules on AKS subnet", "C. Kubernetes namespace restrictions", "D. AKS node pool taints"],
+    correct: 0,
+    explanation: "Azure Policy for AKS (using Gatekeeper OPA) can enforce that only container images from approved registries are deployed, blocking unauthorized images at admission time."
+  },
+  {
+    q: "An application stores connection strings to Azure SQL in App Service configuration. What is the most secure way to manage these?",
+    options: ["A. Store them as app settings in plain text", "B. Reference Azure Key Vault secrets using managed identity", "C. Store them in Azure Blob Storage and read at startup", "D. Hardcode them in the application code"],
+    correct: 1,
+    explanation: "Using Key Vault references in App Service configuration with managed identity means the connection string is fetched from Key Vault at runtime, never stored in plain text and automatically rotated."
+  },
+  {
+    q: "Which Azure Storage feature generates time-limited, permission-scoped URLs for accessing specific blobs without exposing the account key?",
+    options: ["A. Stored access policy", "B. Shared Access Signature (SAS) tokens", "C. Azure AD delegated permissions", "D. Account-level firewall rules"],
+    correct: 1,
+    explanation: "SAS tokens generate URLs with embedded permissions, IP restrictions, and time limits, allowing controlled access to specific storage resources without sharing the account key."
+  },
+  {
+    q: "What is the purpose of Azure Confidential Computing with AMD SEV-SNP or Intel SGX?",
+    options: ["A. Encrypts data at rest only", "B. Encrypts data in use, protecting it even from the hypervisor and cloud operator", "C. Provides hardware-based DDoS protection", "D. Enables GPU-accelerated encryption"],
+    correct: 1,
+    explanation: "Azure Confidential Computing encrypts data while it is being processed (data in use) using hardware-based Trusted Execution Environments, protecting it from the hypervisor, OS, and cloud operators."
+  },
+  {
+    q: "Which SQL Server feature logs all database events for compliance auditing in Azure SQL Database?",
+    options: ["A. Dynamic Data Masking", "B. Threat Detection", "C. SQL Auditing", "D. Always Encrypted"],
+    correct: 2,
+    explanation: "Azure SQL Auditing tracks database events (logins, queries, schema changes) and writes them to an audit log in Azure Storage, Log Analytics, or Event Hub for compliance and forensic purposes."
+  },
+  {
+    q: "A company needs to ensure their AKS workloads follow the principle of least privilege for Kubernetes API access. What should they implement?",
+    options: ["A. Kubernetes ClusterRoleBindings for all service accounts", "B. Kubernetes RBAC with minimal role bindings per workload", "C. AKS node pool identity", "D. Azure AD integration for AKS only"],
+    correct: 1,
+    explanation: "Kubernetes RBAC allows granting service accounts the minimum permissions required for each workload, following least privilege to limit the blast radius if a pod is compromised."
+  },
+  {
+    q: "Which Azure Disk Encryption scenario encrypts disks using platform-managed keys at the host level, before data is stored in the storage service?",
+    options: ["A. Azure Disk Encryption (ADE) with BitLocker", "B. Encryption at host (server-side encryption at host)", "C. Storage Service Encryption (SSE)", "D. Customer-managed key SSE"],
+    correct: 1,
+    explanation: "Encryption at host performs server-side encryption at the Azure host level, encrypting temp disks and disk caches before data moves to Azure Storage, filling the gap Azure Disk Encryption leaves for cache data."
+  },
+  {
+    q: "Your Azure SQL Managed Instance needs to communicate with Azure services without public internet exposure. What should you deploy?",
+    options: ["A. Service Endpoint for SQL", "B. Azure SQL MI is always deployed in a VNet — use Private Link for additional services", "C. Azure Firewall rules", "D. NSG on the MI subnet"],
+    correct: 1,
+    explanation: "Azure SQL Managed Instance is always deployed within a VNet (unlike Azure SQL Database). Network communication is controlled via NSGs and routing within the dedicated VNet, and Private Link can be used for additional services."
+  },
+  {
+    q: "Which access control mechanism in Azure Key Vault is evaluated FIRST: network firewall or access policy/RBAC?",
+    options: ["A. Access policy is evaluated first", "B. Network firewall is evaluated first — requests blocked by firewall never reach authorization", "C. Both are evaluated simultaneously", "D. RBAC is always evaluated before firewall"],
+    correct: 1,
+    explanation: "The Key Vault network firewall is evaluated first. If the source IP is not in the allowed list or doesn't match private endpoint conditions, the request is rejected before access policies or RBAC are evaluated."
+  },
+  {
+    q: "A web app on Azure App Service needs to accept HTTPS only. Which setting enforces this?",
+    options: ["A. CORS configuration", "B. HTTPS Only toggle in App Service TLS/SSL settings", "C. Custom domain with SSL binding", "D. Managed certificate auto-renewal"],
+    correct: 1,
+    explanation: "The \"HTTPS Only\" setting in Azure App Service TLS/SSL settings redirects all HTTP requests to HTTPS, ensuring encrypted communication and preventing plain-text HTTP access to the application."
+  },
+  {
+    q: "What is the purpose of Key Vault soft-delete and purge protection?",
+    options: ["A. Encrypt keys at rest with double encryption", "B. Prevent accidental or malicious permanent deletion of Key Vault objects", "C. Enable automatic key rotation", "D. Restrict key vault access to specific service principals"],
+    correct: 1,
+    explanation: "Soft-delete retains deleted Key Vault objects for a configurable retention period. Purge protection prevents permanent deletion during the retention period, protecting against ransomware and accidental deletion."
+  },
+  {
+    q: "Which feature in Azure Container Registry prevents image tags from being overwritten or deleted?",
+    options: ["A. Geo-replication", "B. Quarantine policy", "C. Image tag locking (lock on repository/tag)", "D. Content trust with Notary"],
+    correct: 2,
+    explanation: "ACR supports locking image tags or repositories to prevent modification or deletion, ensuring deployed image versions remain intact and providing immutability for audit and compliance."
+  },
+  {
+    q: "Your Azure SQL Database is being probed for SQL injection attacks. Which feature should you enable to receive alerts about potential attacks?",
+    options: ["A. SQL Auditing to storage", "B. Microsoft Defender for SQL — Advanced Threat Protection", "C. Dynamic Data Masking", "D. Row-Level Security"],
+    correct: 1,
+    explanation: "Microsoft Defender for SQL (Advanced Threat Protection) uses behavioral analytics to detect anomalous activities like SQL injection attempts, unusual access patterns, and brute-force attacks."
+  },
+  {
+    q: "A security team needs to ensure AKS cluster nodes are running secure, hardened OS images. Which feature provides ongoing node security updates?",
+    options: ["A. AKS automatic upgrades", "B. Node image upgrades (node OS image auto-upgrade channel)", "C. Azure Policy for AKS", "D. Container image scanning"],
+    correct: 1,
+    explanation: "AKS node image upgrades allow automatic application of OS security patches to node images. The auto-upgrade channels (e.g., NodeImage) keep nodes updated without manual intervention."
+  },
+  {
+    q: "What is the recommended method for authenticating to Azure Container Registry from Azure Kubernetes Service?",
+    options: ["A. Admin user with username/password", "B. Service principal with password stored in Kubernetes secret", "C. Managed identity with AcrPull role assignment", "D. ACR token with scope maps"],
+    correct: 2,
+    explanation: "Using AKS managed identity with AcrPull role on ACR is the recommended approach as it eliminates credential management, supports automatic rotation, and follows the least privilege principle."
+  },
+  {
+    q: "Which Azure Storage feature protects against accidental blob deletion by retaining deleted blobs for a specified period?",
+    options: ["A. Blob versioning", "B. Blob soft delete", "C. Immutable storage", "D. Geo-redundant storage (GRS)"],
+    correct: 1,
+    explanation: "Blob soft delete retains deleted blobs and snapshots for a configurable retention period (1-365 days), allowing recovery from accidental deletion or overwrite."
+  },
+  {
+    q: "A company requires that their encryption keys never leave the Hardware Security Module (HSM). Which Azure Key Vault offering satisfies this?",
+    options: ["A. Standard Key Vault with software-protected keys", "B. Premium Key Vault with HSM-backed keys", "C. Azure Managed HSM (Dedicated HSM)", "D. Customer-managed keys in storage"],
+    correct: 2,
+    explanation: "Azure Managed HSM is a fully managed, single-tenant HSM service where keys are generated and used within the HSM boundary and never exported in plaintext, meeting the strictest key sovereignty requirements."
+  },
+  {
+    q: "Which feature prevents Azure Storage data from being modified or deleted for a regulatory hold period?",
+    options: ["A. Blob soft delete", "B. Immutable storage with WORM (Write Once Read Many) policies", "C. Storage account firewall", "D. Azure Backup for storage"],
+    correct: 1,
+    explanation: "Azure Immutable Blob Storage with time-based retention or legal hold policies implements WORM storage, preventing any modification or deletion of blobs during the retention period for regulatory compliance."
+  },
+  {
+    q: "A company's App Service application handles healthcare data and must comply with HIPAA. Which App Service isolation feature provides dedicated infrastructure?",
+    options: ["A. Premium App Service Plan", "B. App Service Environment (ASE) v3", "C. Private Endpoint for App Service", "D. VNet integration for App Service"],
+    correct: 1,
+    explanation: "App Service Environment (ASE) v3 deploys App Service on dedicated infrastructure within a VNet, providing network isolation, dedicated resources, and enhanced compliance for sensitive workloads like HIPAA."
+  },
+  {
+    q: "What type of Azure SQL Database threat detection alert indicates that the same account is trying many different passwords?",
+    options: ["A. SQL injection", "B. Brute force attack detection", "C. Unusual export", "D. Potential SQL injection"],
+    correct: 1,
+    explanation: "Microsoft Defender for SQL detects brute force attacks where an attacker tries multiple passwords against the same account, generating alerts for this anomalous authentication behavior."
+  },
+  {
+    q: "You need to restrict which Azure regions your Key Vault can be accessed from. Which Key Vault feature allows this?",
+    options: ["A. Key Vault access policies", "B. Azure Policy geo-restrictions", "C. Key Vault network firewall and virtual network rules", "D. Conditional Access for Key Vault"],
+    correct: 2,
+    explanation: "Key Vault network firewall allows restricting access to specific IP address ranges, VNets, or Private Endpoints. Combined with VNet rules, this limits access to resources in specific regions/networks."
+  },
+  {
+    q: "Which encryption type does Azure Disk Encryption for Windows use to encrypt VM disks?",
+    options: ["A. AES-128-XTS", "B. BitLocker with AES-256", "C. DM-Crypt with LUKS", "D. VeraCrypt"],
+    correct: 1,
+    explanation: "Azure Disk Encryption on Windows uses BitLocker with AES-256 encryption to encrypt OS and data disks. On Linux, it uses DM-Crypt with LUKS."
+  },
+  {
+    q: "Your AKS cluster needs pods in different namespaces to be network-isolated from each other. What should you implement?",
+    options: ["A. AKS node pool separation", "B. Kubernetes Network Policies", "C. Azure NSG on AKS subnet", "D. Service mesh without mTLS"],
+    correct: 1,
+    explanation: "Kubernetes Network Policies define rules for pod-to-pod communication within the cluster, allowing isolation between namespaces and enforcement of microsegmentation at the pod level."
+  },
+  {
+    q: "What is the security benefit of enabling Advanced Threat Protection (ATP) on Azure Storage accounts?",
+    options: ["A. Encrypts blobs at rest", "B. Detects anomalous access patterns and potential security threats like malware upload or unusual data exfiltration", "C. Prevents public blob access", "D. Enables geo-replication for resilience"],
+    correct: 1,
+    explanation: "Microsoft Defender for Storage (ATP) uses Microsoft Threat Intelligence to detect anomalous access patterns, malware uploads (hash reputation), and potential data exfiltration from storage accounts."
+  },
+  {
+    q: "A company needs to enforce that Azure VMs in a specific resource group can only run pre-approved VM SKUs. What should you use?",
+    options: ["A. Azure RBAC custom roles", "B. Azure Policy with allowed VM SKUs definition", "C. Management group restrictions", "D. Resource locks"],
+    correct: 1,
+    explanation: "Azure Policy can enforce that only specific VM SKUs are allowed in a resource group or subscription, preventing deployment of non-compliant VM sizes that may lack security features."
+  },
+  {
+    q: "Which Key Vault feature automatically creates a new version of a key before the current version expires?",
+    options: ["A. Key rotation with autorotation policy", "B. Key purge protection", "C. Key backup", "D. Key versioning"],
+    correct: 0,
+    explanation: "Azure Key Vault supports automatic key rotation policies that create new key versions on a schedule or near expiry, ensuring applications always use fresh cryptographic material without manual intervention."
+  },
+  {
+    q: "What is the MOST secure way to store database connection strings for an application running on Azure Container Instances?",
+    options: ["A. Environment variables in container definition", "B. Azure Key Vault with managed identity", "C. Azure Blob Storage encrypted container", "D. Configuration file baked into container image"],
+    correct: 1,
+    explanation: "Azure Key Vault with managed identity is the most secure approach — credentials are never stored in container definitions, images, or code, and access is controlled through Azure RBAC."
+  },
+  {
+    q: "Which Azure feature can detect when your storage account is being accessed from a Tor exit node?",
+    options: ["A. Azure Monitor alerts", "B. Microsoft Defender for Storage threat detection", "C. Storage analytics logging only", "D. NSG flow logs"],
+    correct: 1,
+    explanation: "Microsoft Defender for Storage uses Microsoft's threat intelligence to detect access from known malicious IPs including Tor exit nodes, alerting the security team to potential unauthorized access."
+  },
+  {
+    q: "Your organization requires that Azure SQL data classification labels are applied to columns containing PII. Which feature provides data discovery and classification?",
+    options: ["A. Dynamic Data Masking", "B. SQL Data Discovery and Classification", "C. Advanced Threat Protection", "D. SQL Auditing"],
+    correct: 1,
+    explanation: "SQL Data Discovery and Classification scans the database for potentially sensitive columns and allows applying sensitivity labels and information types, supporting compliance with GDPR, HIPAA, and other regulations."
+  },
+  {
+    q: "Which AKS feature integrates with Azure AD to control what users can do within the Kubernetes cluster using their Azure AD identities?",
+    options: ["A. AKS managed identity", "B. AKS Azure AD integration with Kubernetes RBAC", "C. AKS node pool system identity", "D. Container registry integration"],
+    correct: 1,
+    explanation: "AKS Azure AD integration maps Azure AD users and groups to Kubernetes RBAC roles, allowing cluster access control using existing Azure AD identities without managing separate Kubernetes credentials."
+  },
+  {
+    q: "A company wants to ensure secrets are never logged in Azure App Service diagnostic logs. Which approach prevents this?",
+    options: ["A. Enable HTTPS only", "B. Store secrets in Key Vault and reference them; never put secret values in app settings directly", "C. Enable application logging to blob storage", "D. Restrict App Service diagnostic settings"],
+    correct: 1,
+    explanation: "Using Key Vault references in App Service means the actual secret value is fetched at runtime and never appears in application configuration or deployment logs, preventing accidental secret exposure."
+  },
+  {
+    q: "What is the purpose of Azure Defender for Key Vault?",
+    options: ["A. Encrypts Key Vault keys with additional layer", "B. Detects unusual and potentially harmful access attempts to Key Vault", "C. Automatically rotates all keys", "D. Enforces key expiry policies"],
+    correct: 1,
+    explanation: "Microsoft Defender for Key Vault detects anomalous access patterns such as access from unusual locations, high-volume access, or access from known malicious IPs, and generates security alerts."
+  },
+  {
+    q: "Which Azure SQL feature allows row-level access restrictions based on the executing user's identity?",
+    options: ["A. Dynamic Data Masking", "B. Always Encrypted", "C. Row-Level Security (RLS)", "D. Column-level encryption"],
+    correct: 2,
+    explanation: "Row-Level Security (RLS) allows defining security predicates that filter which rows a user can see or modify based on their identity, enabling multi-tenant data isolation or user-scoped data access."
+  },
+  {
+    q: "A company needs to ensure that Azure storage accounts only accept connections using TLS 1.2 or higher. How should they enforce this?",
+    options: ["A. NSG rule blocking older TLS versions", "B. Set minimum TLS version to TLS 1.2 in storage account settings and enforce via Azure Policy", "C. Azure Firewall TLS inspection rules", "D. Custom SSL certificates only"],
+    correct: 1,
+    explanation: "Azure Storage accounts have a \"Minimum TLS version\" setting that can be set to TLS 1.2. This can be enforced across all storage accounts using Azure Policy to deny creation of non-compliant accounts."
+  }
+];
+
+let answeredCount = 0;
+const answered = new Array(questions.length).fill(false);
+const QUESTION_OFFSET = 100;
+
+function buildExam() {
+  const main = document.getElementById('examMain');
+  let html = '';
+  questions.forEach((q, i) => {
+    html += `
+    <div class="question-card" id="card-${i}">
+      <div class="q-header">
+        <span class="q-num">Question ${i + 1 + QUESTION_OFFSET}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="options" id="options-${i}">
+        ${q.options.map((opt, j) => `
+          <div>
+            <input type="radio" name="q${i}" id="q${i}o${j}" value="${j}">
+            <label for="q${i}o${j}" id="label-${i}-${j}">${opt}</label>
+          </div>
+        `).join('')}
+      </div>
+      <label class="review-row" for="review-${i}">
+        <input type="checkbox" id="review-${i}" onchange="toggleReview(${i})"> Mark for Review
+      </label>
+      <button class="show-btn" id="showbtn-${i}" onclick="showAnswer(${i})">Show Answer</button>
+      <div class="explanation" id="exp-${i}"><strong>Explanation:</strong> ${q.explanation}</div>
+    </div>`;
+  });
+  html += `<div class="submit-wrap"><button class="submit-btn" onclick="submitExam()">&#10003; Submit Exam</button></div>`;
+  main.innerHTML = html;
+}
+
+function showAnswer(qIndex) {
+  const q = questions[qIndex];
+  const btn = document.getElementById(`showbtn-${qIndex}`);
+  if (btn.disabled) return;
+
+  q.options.forEach((_, j) => {
+    const lbl = document.getElementById(`label-${qIndex}-${j}`);
+    if (j === q.correct) {
+      lbl.classList.add('option-correct');
+    } else {
+      lbl.classList.add('option-incorrect');
+    }
+  });
+
+  q.options.forEach((_, j) => {
+    const radio = document.getElementById(`q${qIndex}o${j}`);
+    if (radio) radio.disabled = true;
+  });
+
+  btn.disabled = true;
+  btn.textContent = 'Answer Shown \u2713';
+
+  document.getElementById(`exp-${qIndex}`).classList.add('visible');
+
+  if (!answered[qIndex]) {
+    answered[qIndex] = true;
+    answeredCount++;
+    updateProgress();
+  }
+}
+
+function updateProgress() {
+  const pct = (answeredCount / questions.length) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${answeredCount} of ${questions.length} answered`;
+}
+
+function toggleReview(qIndex) {
+  const card = document.getElementById(`card-${qIndex}`);
+  const cb = document.getElementById(`review-${qIndex}`);
+  if (cb.checked) {
+    card.classList.add('reviewed');
+  } else {
+    card.classList.remove('reviewed');
+  }
+}
+
+function submitExam() {
+  let correct = 0;
+  questions.forEach((q, i) => {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    if (selected && parseInt(selected.value) === q.correct) {
+      correct++;
+    }
+  });
+
+  const total = questions.length;
+  const pct = Math.round((correct / total) * 100);
+  const scaled = pct * 10;
+  const pass = scaled >= 700;
+
+  document.getElementById('modalScore').textContent = `${correct} / ${total}`;
+  document.getElementById('modalPct').textContent = `${pct}% Correct`;
+  document.getElementById('modalScaled').textContent = `Scaled Score: ${scaled} / 1000`;
+  const badge = document.getElementById('modalBadge');
+  badge.textContent = pass ? '\u2713 PASS' : '\u2717 FAIL';
+  badge.className = 'result-badge ' + (pass ? 'pass' : 'fail');
+
+  document.getElementById('scoreModal').classList.add('active');
+}
+
+buildExam();
+updateProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AZ-500 Practice Exams - Azure Security Technologies</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #F3F2F1; color: #323130; min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: #0078D4; color: #fff; padding: 32px 24px; text-align: center; }
+    header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
+    header p { font-size: 1.1rem; margin-top: 6px; opacity: 0.9; }
+    main { flex: 1; max-width: 1100px; margin: 0 auto; padding: 36px 24px; width: 100%; }
+    .intro { background: #fff; border-radius: 8px; padding: 24px 28px; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid #0078D4; }
+    .intro h2 { font-size: 1.15rem; color: #0078D4; margin-bottom: 10px; }
+    .intro p { line-height: 1.7; color: #444; font-size: 0.97rem; }
+    .intro .badge { display: inline-block; background: #0078D4; color: #fff; border-radius: 4px; padding: 3px 10px; font-size: 0.82rem; font-weight: 600; margin-right: 8px; margin-top: 12px; }
+    .intro .badge.pass { background: #107C10; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+    .card { background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.09); padding: 28px 24px; display: flex; flex-direction: column; transition: transform 0.18s ease, box-shadow 0.18s ease; border-top: 4px solid #0078D4; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,120,212,0.18); }
+    .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .card-num { background: #0078D4; color: #fff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+    .card h3 { font-size: 1rem; font-weight: 700; color: #0078D4; }
+    .card .domain { font-size: 0.87rem; color: #605E5C; margin-bottom: 10px; line-height: 1.5; }
+    .card .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .card .tag { background: #EFF6FC; color: #0078D4; border: 1px solid #C7E0F4; border-radius: 4px; padding: 3px 9px; font-size: 0.78rem; font-weight: 600; }
+    .card .tag.count { background: #F3F2F1; color: #323130; border-color: #D2D0CE; }
+    .card a.btn { display: block; text-align: center; background: #0078D4; color: #fff; text-decoration: none; padding: 11px 0; border-radius: 6px; font-weight: 600; font-size: 0.95rem; margin-top: auto; transition: background 0.15s; }
+    .card a.btn:hover { background: #005A9E; }
+    footer { background: #323130; color: #A19F9D; text-align: center; padding: 18px; font-size: 0.88rem; }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.4rem; }
+      main { padding: 20px 14px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AZ-500 Practice Exams</h1>
+    <p>Azure Security Technologies</p>
+  </header>
+  <main>
+    <div class="intro">
+      <h2>About the AZ-500 Exam</h2>
+      <p>
+        The AZ-500: Azure Security Technologies exam measures your ability to implement security controls,
+        maintain an organization's security posture, identify and remediate security vulnerabilities, and
+        implement threat protection for cloud and hybrid environments. These practice exams cover all four
+        domains of the AZ-500 certification.
+      </p>
+      <span class="badge">200 Questions Total</span>
+      <span class="badge">50 per Domain</span>
+      <span class="badge pass">Passing Score: 700 / 1000</span>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-num">1</div>
+          <h3>Practice Exam 1</h3>
+        </div>
+        <div class="domain">Domain 1: Manage Identity and Access</div>
+        <div class="meta">
+          <span class="tag">Q1 – Q50</span>
+          <span class="tag count">50 Questions</span>
+        </div>
+        <a class="btn" href="practice-exam-1.html">Start Exam</a>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-num">2</div>
+          <h3>Practice Exam 2</h3>
+        </div>
+        <div class="domain">Domain 2: Secure Networking</div>
+        <div class="meta">
+          <span class="tag">Q51 – Q100</span>
+          <span class="tag count">50 Questions</span>
+        </div>
+        <a class="btn" href="practice-exam-2.html">Start Exam</a>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-num">3</div>
+          <h3>Practice Exam 3</h3>
+        </div>
+        <div class="domain">Domain 3: Secure Compute, Storage &amp; Databases</div>
+        <div class="meta">
+          <span class="tag">Q101 – Q150</span>
+          <span class="tag count">50 Questions</span>
+        </div>
+        <a class="btn" href="practice-exam-3.html">Start Exam</a>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-num">4</div>
+          <h3>Practice Exam 4</h3>
+        </div>
+        <div class="domain">Domain 4: Manage Security Operations</div>
+        <div class="meta">
+          <span class="tag">Q151 – Q200</span>
+          <span class="tag count">50 Questions</span>
+        </div>
+        <a class="btn" href="practice-exam-4.html">Start Exam</a>
+      </div>
+    </div>
+  </main>
+  <footer>AZ-500 Master Project | Practice Exams</footer>
+</body>
+</html>
